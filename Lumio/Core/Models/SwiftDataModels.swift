@@ -1,5 +1,6 @@
 import SwiftData
 import Foundation
+import SwiftUI
 
 @Model
 final class PDFFolder {

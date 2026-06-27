@@ -121,7 +121,7 @@ struct FolderRow: View {
 // MARK: — Folder Detail
 
 struct FolderDetailView: View {
-    @ObservedObject var folder: PDFFolder
+    @Bindable var folder: PDFFolder
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
     @EnvironmentObject private var appState: AppState
     @Environment(\.modelContext) private var modelContext

@@ -10,14 +10,19 @@
 		01F0B902FB6D029D67264D48 /* DeveloperModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46838FB7998E4CAC71C736F7 /* DeveloperModeView.swift */; };
 		02748FC6637A459980811809 /* OnboardingStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553280A34E5E26BE6065CB9F /* OnboardingStepView.swift */; };
 		0588BC6D02A7C54F9268F755 /* PDFService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2C3A29D048FF2DD55E1593 /* PDFService.swift */; };
+		0696EDE41E26930623EE8551 /* LumioBriefingLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B65688E0CFA32239F74AAB /* LumioBriefingLiveActivity.swift */; };
 		0F8A1AFED19705882EAA9C3D /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441D4B719935A890199742E9 /* RootView.swift */; };
 		19AA7BDF6C8205F32CC99065 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8FA7D99752DF818468209AF /* ChatViewModel.swift */; };
+		1D4FA407877AC120DFED0A9C /* LumioTodayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44C8795AF6BC601EDFB1D878 /* LumioTodayWidget.swift */; };
+		26360EF072B317DE3B210D30 /* LiveActivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB37907C308EE92921E9C18 /* LiveActivityService.swift */; };
 		337132F6900782CD18FBD0E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14FA7110BBFBC6448A26C840 /* Assets.xcassets */; };
 		3C4C53337872A841C38107B8 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF54D8AFFE1A01AC1558973A /* SubscriptionManager.swift */; };
+		48B07B0AB5B7B29D3880DDFD /* LumioDynamicIslandBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21A27F0F71C04B344C2DF61 /* LumioDynamicIslandBundle.swift */; };
 		4A344B8E2EC520C71C2D70D1 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA48C8AF90AC73A83391B04 /* SpeechService.swift */; };
 		745E5ECD423A2463EC35E678 /* LumioUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE6098D84F60AAA5C8CAAD3 /* LumioUITests.swift */; };
 		7896BB8BFE165062C8141DE2 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1F09B386C51B86A03E8AD6 /* PaywallView.swift */; };
 		81FB4BB83169AF6006D8837D /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EB7BEF0A1A348E30B0C0E8F /* AIService.swift */; };
+		8DDDDF417373D782C6EAA739 /* LumioWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 380413F29FFBA82FBEB1A691 /* LumioWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9526AD58F745FCA65D3A15C2 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8BD392039AC572C861EFDE /* AppState.swift */; };
 		96893A54167533CF228F34A1 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA787B7689086AF4BFC7109 /* ChatView.swift */; };
 		A8BF8F3D6AEE8D665CF761CE /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C80803545FB80EE408D7EDD /* TodayView.swift */; };
@@ -25,11 +30,14 @@
 		AB667F5E5453F047F5DE2589 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22880EC8D849EB2BB1C4CF97 /* CalendarService.swift */; };
 		AC420AAA13E50A6BC7CCBD1C /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AFD9F0EC3B89E66BCECB09 /* OnboardingViewModel.swift */; };
 		C899971CA7E64CBFBF689815 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3E52FDCA722E9EC392E4FE94 /* Localizable.strings */; };
+		CDD7F96CEF9782DE5282A14D /* LiveActivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB37907C308EE92921E9C18 /* LiveActivityService.swift */; };
 		D073C9F212E527063EC6CEF6 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D698E53BE485BF711A70FC /* ThemeManager.swift */; };
 		D4439ACB75E9A7C91247785F /* LumioApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1262592F932571451E303AB /* LumioApp.swift */; };
 		D7C4F48393B73DCD0D3349FF /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C5765A26A414F4A9338019 /* MainTabView.swift */; };
+		DCD62B118819502687C10D11 /* LumioWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F40A2BDD302AB2C96C200 /* LumioWidgetBundle.swift */; };
 		E12B7266A0D754032F026DDD /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B8333D45697E66F3D1F415 /* LibraryView.swift */; };
 		E4F1886B11951808865FC9F3 /* SwiftDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0843B976E75FD3634CDA0813 /* SwiftDataModels.swift */; };
+		ED2078D368DC54432682A2F4 /* LumioDynamicIsland.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AB271E6CFE2390F85F248AD6 /* LumioDynamicIsland.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F067AB1DFFFADDC50881D449 /* TodayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B3708C238B582338CCDC7 /* TodayViewModel.swift */; };
 		F0742BBF8550C5AA76D9DB56 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF77936F92758F5D3B8D83E0 /* NotificationService.swift */; };
 		F42AA6E55E13C1A390DBB316 /* OnboardingContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96EA9B375A0C43D916A8270 /* OnboardingContainerView.swift */; };
@@ -51,19 +59,52 @@
 			remoteGlobalIDString = 8ED5C6987C83F9077B7E2D5C;
 			remoteInfo = Lumio;
 		};
+		8FF8B6ABA5C5994C2BE9D09C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 88CA312C3F119011E028C087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D3764E3EE5CB2E569D76E98;
+			remoteInfo = LumioWidgetExtension;
+		};
+		ADBD7BBE5E50FCD04ADD5F60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 88CA312C3F119011E028C087 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4BB43C88A25E0A3FE24A4089;
+			remoteInfo = LumioDynamicIsland;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7A9BEDE594D5B012482EFF67 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				ED2078D368DC54432682A2F4 /* LumioDynamicIsland.appex in Embed Foundation Extensions */,
+				8DDDDF417373D782C6EAA739 /* LumioWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		05C5765A26A414F4A9338019 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		08430B3A477D7F93A96A8CEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0843B976E75FD3634CDA0813 /* SwiftDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataModels.swift; sourceTree = "<group>"; };
 		148D4EF05C0373A66FD8B07C /* Lumio.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Lumio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14FA7110BBFBC6448A26C840 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1AA48C8AF90AC73A83391B04 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
 		22880EC8D849EB2BB1C4CF97 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		2C64E3D180D9C05CE91BB795 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		34D698E53BE485BF711A70FC /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		380413F29FFBA82FBEB1A691 /* LumioWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = LumioWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		3EB7BEF0A1A348E30B0C0E8F /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		4062E261C739FCC2CE301214 /* LumioUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LumioUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		441D4B719935A890199742E9 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		44C8795AF6BC601EDFB1D878 /* LumioTodayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioTodayWidget.swift; sourceTree = "<group>"; };
 		46838FB7998E4CAC71C736F7 /* DeveloperModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperModeView.swift; sourceTree = "<group>"; };
 		4C80803545FB80EE408D7EDD /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		553280A34E5E26BE6065CB9F /* OnboardingStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStepView.swift; sourceTree = "<group>"; };
@@ -72,9 +113,12 @@
 		6C31990B400E83E284AD25C4 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7B8BD392039AC572C861EFDE /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		7CE6098D84F60AAA5C8CAAD3 /* LumioUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioUITests.swift; sourceTree = "<group>"; };
+		84B65688E0CFA32239F74AAB /* LumioBriefingLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioBriefingLiveActivity.swift; sourceTree = "<group>"; };
 		8BCF9DF465E3AEB48FF25328 /* LumioTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LumioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FB37907C308EE92921E9C18 /* LiveActivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityService.swift; sourceTree = "<group>"; };
 		91AFD9F0EC3B89E66BCECB09 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		A4DC63E04C85C0FD3AAF9BDA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		AB271E6CFE2390F85F248AD6 /* LumioDynamicIsland.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = LumioDynamicIsland.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABCC65D5E4201CB6960463B8 /* Lumio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Lumio.entitlements; sourceTree = "<group>"; };
 		B05349DD390F5584FEFF1ADE /* LumioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioTests.swift; sourceTree = "<group>"; };
 		B96EA9B375A0C43D916A8270 /* OnboardingContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerView.swift; sourceTree = "<group>"; };
@@ -84,9 +128,11 @@
 		D1262592F932571451E303AB /* LumioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioApp.swift; sourceTree = "<group>"; };
 		D7B8333D45697E66F3D1F415 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		DF77936F92758F5D3B8D83E0 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		E21A27F0F71C04B344C2DF61 /* LumioDynamicIslandBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioDynamicIslandBundle.swift; sourceTree = "<group>"; };
 		E8FA7D99752DF818468209AF /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F54991DCB350A318338C10BB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F62F40A2BDD302AB2C96C200 /* LumioWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioWidgetBundle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -123,6 +169,16 @@
 			path = Lumio;
 			sourceTree = "<group>";
 		};
+		4FB82BE2317EEE80CF84462C /* LumioWidgetExtension */ = {
+			isa = PBXGroup;
+			children = (
+				2C64E3D180D9C05CE91BB795 /* Info.plist */,
+				44C8795AF6BC601EDFB1D878 /* LumioTodayWidget.swift */,
+				F62F40A2BDD302AB2C96C200 /* LumioWidgetBundle.swift */,
+			);
+			path = LumioWidgetExtension;
+			sourceTree = "<group>";
+		};
 		5134D59732F2C23F08D54DD1 /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -147,8 +203,10 @@
 			isa = PBXGroup;
 			children = (
 				148D4EF05C0373A66FD8B07C /* Lumio.app */,
+				AB271E6CFE2390F85F248AD6 /* LumioDynamicIsland.appex */,
 				8BCF9DF465E3AEB48FF25328 /* LumioTests.xctest */,
 				4062E261C739FCC2CE301214 /* LumioUITests.xctest */,
+				380413F29FFBA82FBEB1A691 /* LumioWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -168,6 +226,7 @@
 			children = (
 				3EB7BEF0A1A348E30B0C0E8F /* AIService.swift */,
 				22880EC8D849EB2BB1C4CF97 /* CalendarService.swift */,
+				8FB37907C308EE92921E9C18 /* LiveActivityService.swift */,
 				DF77936F92758F5D3B8D83E0 /* NotificationService.swift */,
 				BD2C3A29D048FF2DD55E1593 /* PDFService.swift */,
 				1AA48C8AF90AC73A83391B04 /* SpeechService.swift */,
@@ -197,8 +256,10 @@
 			isa = PBXGroup;
 			children = (
 				44BEDA547BFEEFF01C9BE7EE /* Lumio */,
+				AE334FAD917CF5B33B2C5B1A /* LumioDynamicIsland */,
 				A15D80A91964EF20F9AED4F2 /* LumioTests */,
 				93BEA1C688BE2F8EA3EE2F57 /* LumioUITests */,
+				4FB82BE2317EEE80CF84462C /* LumioWidgetExtension */,
 				62D86F86E4D857C0B8E6E927 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -226,6 +287,16 @@
 				613B3708C238B582338CCDC7 /* TodayViewModel.swift */,
 			);
 			path = Today;
+			sourceTree = "<group>";
+		};
+		AE334FAD917CF5B33B2C5B1A /* LumioDynamicIsland */ = {
+			isa = PBXGroup;
+			children = (
+				08430B3A477D7F93A96A8CEA /* Info.plist */,
+				84B65688E0CFA32239F74AAB /* LumioBriefingLiveActivity.swift */,
+				E21A27F0F71C04B344C2DF61 /* LumioDynamicIslandBundle.swift */,
+			);
+			path = LumioDynamicIsland;
 			sourceTree = "<group>";
 		};
 		B4D2A2C33241633C8E5088BC /* Extensions */ = {
@@ -343,16 +414,53 @@
 			productReference = 4062E261C739FCC2CE301214 /* LumioUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		3D3764E3EE5CB2E569D76E98 /* LumioWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 83350F58A70A5D451F70086E /* Build configuration list for PBXNativeTarget "LumioWidgetExtension" */;
+			buildPhases = (
+				9FE973AF4E78B213B52D5B41 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LumioWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = LumioWidgetExtension;
+			productReference = 380413F29FFBA82FBEB1A691 /* LumioWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		4BB43C88A25E0A3FE24A4089 /* LumioDynamicIsland */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 51D8F0988066352780BE8665 /* Build configuration list for PBXNativeTarget "LumioDynamicIsland" */;
+			buildPhases = (
+				75723B9A0D1951A9D5C2EADF /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LumioDynamicIsland;
+			packageProductDependencies = (
+			);
+			productName = LumioDynamicIsland;
+			productReference = AB271E6CFE2390F85F248AD6 /* LumioDynamicIsland.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		8ED5C6987C83F9077B7E2D5C /* Lumio */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 94142BBBE914D24C154410D9 /* Build configuration list for PBXNativeTarget "Lumio" */;
 			buildPhases = (
 				788C7AD43E85AA00E44024FA /* Sources */,
 				EB52CA6C6AC4222E71F81801 /* Resources */,
+				7A9BEDE594D5B012482EFF67 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				06A43EF9C853BA321D4E7ACA /* PBXTargetDependency */,
+				61C1AC892A47BEA912688282 /* PBXTargetDependency */,
 			);
 			name = Lumio;
 			packageProductDependencies = (
@@ -377,6 +485,12 @@
 						DevelopmentTeam = "";
 						TestTargetID = 8ED5C6987C83F9077B7E2D5C;
 					};
+					3D3764E3EE5CB2E569D76E98 = {
+						DevelopmentTeam = "";
+					};
+					4BB43C88A25E0A3FE24A4089 = {
+						DevelopmentTeam = "";
+					};
 					8ED5C6987C83F9077B7E2D5C = {
 						DevelopmentTeam = "";
 					};
@@ -398,8 +512,10 @@
 			projectRoot = "";
 			targets = (
 				8ED5C6987C83F9077B7E2D5C /* Lumio */,
+				4BB43C88A25E0A3FE24A4089 /* LumioDynamicIsland */,
 				1B5E4CCA927D683167D09729 /* LumioTests */,
 				28E39E55BF402496B15DB833 /* LumioUITests */,
+				3D3764E3EE5CB2E569D76E98 /* LumioWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -425,6 +541,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		75723B9A0D1951A9D5C2EADF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDD7F96CEF9782DE5282A14D /* LiveActivityService.swift in Sources */,
+				0696EDE41E26930623EE8551 /* LumioBriefingLiveActivity.swift in Sources */,
+				48B07B0AB5B7B29D3880DDFD /* LumioDynamicIslandBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		788C7AD43E85AA00E44024FA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -436,6 +562,7 @@
 				19AA7BDF6C8205F32CC99065 /* ChatViewModel.swift in Sources */,
 				01F0B902FB6D029D67264D48 /* DeveloperModeView.swift in Sources */,
 				E12B7266A0D754032F026DDD /* LibraryView.swift in Sources */,
+				26360EF072B317DE3B210D30 /* LiveActivityService.swift in Sources */,
 				D4439ACB75E9A7C91247785F /* LumioApp.swift in Sources */,
 				D7C4F48393B73DCD0D3349FF /* MainTabView.swift in Sources */,
 				F0742BBF8550C5AA76D9DB56 /* NotificationService.swift in Sources */,
@@ -455,6 +582,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9FE973AF4E78B213B52D5B41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D4FA407877AC120DFED0A9C /* LumioTodayWidget.swift in Sources */,
+				DCD62B118819502687C10D11 /* LumioWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F0A7CFE43C12A524633399ED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -466,10 +602,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		06A43EF9C853BA321D4E7ACA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4BB43C88A25E0A3FE24A4089 /* LumioDynamicIsland */;
+			targetProxy = ADBD7BBE5E50FCD04ADD5F60 /* PBXContainerItemProxy */;
+		};
 		5E5E3939AF6C42CD1CEDE0AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8ED5C6987C83F9077B7E2D5C /* Lumio */;
 			targetProxy = 7280D6FA9475278FCB715C52 /* PBXContainerItemProxy */;
+		};
+		61C1AC892A47BEA912688282 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D3764E3EE5CB2E569D76E98 /* LumioWidgetExtension */;
+			targetProxy = 8FF8B6ABA5C5994C2BE9D09C /* PBXContainerItemProxy */;
 		};
 		A54026C86AE271D54FC98C03 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -653,6 +799,24 @@
 			};
 			name = Release;
 		};
+		7FFF6F89A791F32F8C464BE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				INFOPLIST_FILE = LumioWidgetExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.lumio.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		86A808EA4CAC6369460023C8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -673,6 +837,24 @@
 			};
 			name = Debug;
 		};
+		8CFD99DA6048BF7C0EF2BC18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				INFOPLIST_FILE = LumioDynamicIsland/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.lumio.dynamicisland;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		96DD988A92AAB889D01A441E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -687,6 +869,42 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lumio.app/Lumio";
+			};
+			name = Release;
+		};
+		AC67DE41DA7D064D07B0FF36 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				INFOPLIST_FILE = LumioWidgetExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.lumio.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BDCC8E32C56048F11069829B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				INFOPLIST_FILE = LumioDynamicIsland/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.lumio.dynamicisland;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -727,11 +945,29 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		51D8F0988066352780BE8665 /* Build configuration list for PBXNativeTarget "LumioDynamicIsland" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8CFD99DA6048BF7C0EF2BC18 /* Debug */,
+				BDCC8E32C56048F11069829B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		7030E22A2E338CA980D39F7B /* Build configuration list for PBXNativeTarget "LumioUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F276A9E11E8F7D8504C0E2B5 /* Debug */,
 				4D14B95C02752130B7EAEBFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		83350F58A70A5D451F70086E /* Build configuration list for PBXNativeTarget "LumioWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC67DE41DA7D064D07B0FF36 /* Debug */,
+				7FFF6F89A791F32F8C464BE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

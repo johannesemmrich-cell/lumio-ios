@@ -23,6 +23,20 @@
          </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4BB43C88A25E0A3FE24A4089"
+               BuildableName = "LumioDynamicIsland.appex"
+               BlueprintName = "LumioDynamicIsland"
+               ReferencedContainer = "container:Lumio.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
             buildForRunning = "NO"
             buildForProfiling = "NO"
             buildForArchiving = "NO"
@@ -46,6 +60,20 @@
                BlueprintIdentifier = "28E39E55BF402496B15DB833"
                BuildableName = "LumioUITests.xctest"
                BlueprintName = "LumioUITests"
+               ReferencedContainer = "container:Lumio.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "3D3764E3EE5CB2E569D76E98"
+               BuildableName = "LumioWidgetExtension.appex"
+               BlueprintName = "LumioWidgetExtension"
                ReferencedContainer = "container:Lumio.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

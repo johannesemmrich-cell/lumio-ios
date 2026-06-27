@@ -46,15 +46,17 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        NSCalendarsUsageDescription: "Lumio reads your calendar to prepare your morning briefing."
-        NSCalendarsWriteOnlyAccessUsageDescription: "Lumio can add events to your calendar via the AI assistant."
-        NSRemindersUsageDescription: "Lumio can read your reminders as part of your daily briefing."
+        NSCalendarsUsageDescription: "Lumio liest deinen Kalender für dein persönliches Morgen-Briefing."
+        NSCalendarsWriteOnlyAccessUsageDescription: "Lumio kann per KI-Assistent Termine in deinen Kalender eintragen."
+        NSRemindersUsageDescription: "Lumio kann deine Erinnerungen ins Briefing einbeziehen."
         UIBackgroundModes:
           - audio
           - fetch
           - remote-notification
         NSUserActivityTypes:
           - com.johannesemmrich.lumio.briefing
+        NSSupportsLiveActivities: true
+        NSSupportsLiveActivitiesFrequentUpdates: true
     entitlements:
       path: Lumio/Supporting Files/Lumio.entitlements
       properties:
@@ -63,6 +65,11 @@ targets:
         com.apple.developer.icloud-container-identifiers:
           - iCloud.com.johannesemmrich.lumio
         aps-environment: development
+    dependencies:
+      - target: LumioDynamicIsland
+        embed: true
+      - target: LumioWidgetExtension
+        embed: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio
@@ -71,6 +78,50 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ENABLE_HARDENED_RUNTIME: YES
+
+  # Dynamic Island / Live Activity extension
+  LumioDynamicIsland:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: LumioDynamicIsland
+      # Share the ActivityAttributes model with the main app
+      - path: Lumio/Core/Services/LiveActivityService.swift
+    info:
+      path: LumioDynamicIsland/Info.plist
+      properties:
+        CFBundleDisplayName: LumioDynamicIsland
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio.dynamicisland
+        SKIP_INSTALL: YES
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: NO
+
+  # Home Screen Widget extension
+  LumioWidgetExtension:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: LumioWidgetExtension
+    info:
+      path: LumioWidgetExtension/Info.plist
+      properties:
+        CFBundleDisplayName: LumioWidget
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio.widget
+        SKIP_INSTALL: YES
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: NO
 
   LumioTests:
     type: bundle.unit-test
@@ -101,6 +152,8 @@ schemes:
     build:
       targets:
         Lumio: all
+        LumioDynamicIsland: all
+        LumioWidgetExtension: all
         LumioTests: [test]
         LumioUITests: [test]
     run:

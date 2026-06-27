@@ -21,11 +21,15 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Lumio reads your calendar to prepare your morning briefing.</string>
+	<string>Lumio liest deinen Kalender für dein persönliches Morgen-Briefing.</string>
 	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
-	<string>Lumio can add events to your calendar via the AI assistant.</string>
+	<string>Lumio kann per KI-Assistent Termine in deinen Kalender eintragen.</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>Lumio can read your reminders as part of your daily briefing.</string>
+	<string>Lumio kann deine Erinnerungen ins Briefing einbeziehen.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
+	<true/>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>com.johannesemmrich.lumio.briefing</string>

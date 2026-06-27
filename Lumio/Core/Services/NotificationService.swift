@@ -1,7 +1,7 @@
 import UserNotifications
 import Foundation
 
-final class NotificationService {
+final class NotificationService: @unchecked Sendable {
     static let shared = NotificationService()
     private init() {}
 

@@ -1,6 +1,7 @@
 import AVFoundation
 import MediaPlayer
 import SwiftUI
+import ActivityKit
 
 @MainActor
 final class SpeechService: NSObject, ObservableObject {
@@ -13,6 +14,7 @@ final class SpeechService: NSObject, ObservableObject {
 
     private let synthesizer = AVSpeechSynthesizer()
     private var currentUtterance: AVSpeechUtterance?
+    private let liveActivityService = LiveActivityService()
 
     override init() {
         super.init()
@@ -26,6 +28,12 @@ final class SpeechService: NSObject, ObservableObject {
         queue = items
         currentIndex = 0
         speakCurrent()
+        // Start Dynamic Island
+        liveActivityService.startActivity(
+            totalEvents: items.count,
+            firstEvent: items[0].title,
+            firstTime: ""
+        )
     }
 
     func pause() {
@@ -50,6 +58,7 @@ final class SpeechService: NSObject, ObservableObject {
         isPaused = false
         currentItemTitle = ""
         progress = 0
+        Task { await liveActivityService.stop() }
     }
 
     func skipForward() {
@@ -142,9 +151,20 @@ extension SpeechService: AVSpeechSynthesizerDelegate {
             if self.currentIndex + 1 < self.queue.count {
                 self.currentIndex += 1
                 self.speakCurrent()
+                let next = self.currentIndex + 1 < self.queue.count ? self.queue[self.currentIndex + 1].title : nil
+                await self.liveActivityService.update(
+                    currentTitle: self.queue[self.currentIndex].title,
+                    currentTime: "",
+                    nextTitle: next,
+                    nextTime: nil,
+                    isPlaying: true,
+                    progress: Double(self.currentIndex) / Double(self.queue.count),
+                    index: self.currentIndex
+                )
             } else {
                 self.isPlaying = false
                 self.currentItemTitle = ""
+                await self.liveActivityService.stop()
             }
         }
     }
