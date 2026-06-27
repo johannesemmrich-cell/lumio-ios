@@ -94,8 +94,8 @@ final class SpeechService: NSObject, ObservableObject {
         try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
 
         let utterance = AVSpeechUtterance(string: item.text)
-        utterance.voice = AVSpeechSynthesisVoice(language: item.language)
-        utterance.rate = 0.52
+        utterance.voice = bestVoice(for: item.language)
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
         utterance.pitchMultiplier = 1.0
         utterance.volume = 1.0
         currentUtterance = utterance
@@ -103,6 +103,27 @@ final class SpeechService: NSObject, ObservableObject {
         isPlaying = true
         isPaused = false
         updateNowPlayingInfo()
+    }
+
+    // Picks the best natural-sounding downloaded voice for the given language code.
+    // Excludes Siri voices (they're tuned for commands, not narration) and novelty voices.
+    private func bestVoice(for languageCode: String) -> AVSpeechSynthesisVoice? {
+        let prefix = languageCode.prefix(2).lowercased()
+        let voices = AVSpeechSynthesisVoice.speechVoices()
+        let matching = voices.filter { voice in
+            voice.language.lowercased().hasPrefix(prefix) &&
+            !voice.identifier.lowercased().contains("siri") &&
+            !voice.identifier.lowercased().contains("novelty") &&
+            voice.gender != .unspecified
+        }
+        // Sort: premium (3) > enhanced (2) > default (1), then prefer female voices for narration
+        let sorted = matching.sorted { lhs, rhs in
+            if lhs.quality.rawValue != rhs.quality.rawValue {
+                return lhs.quality.rawValue > rhs.quality.rawValue
+            }
+            return lhs.gender == .female && rhs.gender != .female
+        }
+        return sorted.first ?? AVSpeechSynthesisVoice(language: languageCode)
     }
 
     private func setupAudioSession() {

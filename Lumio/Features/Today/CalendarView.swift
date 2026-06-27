@@ -9,6 +9,7 @@ struct LumioCalendarView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
     @State private var selectedEvent: CalendarEvent?
+    @State private var showAddEvent = false
 
     var body: some View {
         NavigationStack {
@@ -82,10 +83,17 @@ struct LumioCalendarView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Heute") {
-                        withAnimation(.spring(duration: 0.3)) { viewModel.selectedDate = Date() }
+                    HStack(spacing: 4) {
+                        Button {
+                            showAddEvent = true
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                        Button("Heute") {
+                            withAnimation(.spring(duration: 0.3)) { viewModel.selectedDate = Date() }
+                        }
+                        .disabled(viewModel.selectedDate.isToday)
                     }
-                    .disabled(viewModel.selectedDate.isToday)
                 }
                 if appState.isDeveloperModeActive {
                     ToolbarItem(placement: .topBarLeading) {
@@ -99,6 +107,11 @@ struct LumioCalendarView: View {
             .sheet(item: $selectedEvent) { event in
                 EventDetailSheet(event: event)
                     .environmentObject(subscriptionManager)
+            }
+            .sheet(isPresented: $showAddEvent) {
+                AddEventSheet(defaultDate: viewModel.selectedDate) {
+                    Task { await viewModel.fetchEvents() }
+                }
             }
         }
     }
@@ -881,6 +894,106 @@ extension CalendarProvider {
         case .google:  return Color(red: 0.26, green: 0.52, blue: 0.96)
         case .outlook: return Color(red: 0.0,  green: 0.47, blue: 0.84)
         case .other:   return .secondary
+        }
+    }
+}
+
+// MARK: — Add Event Sheet
+
+struct AddEventSheet: View {
+    let defaultDate: Date
+    let onSave: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var title = ""
+    @State private var isAllDay = false
+    @State private var startTime: Date
+    @State private var endTime: Date
+    @State private var errorMessage: String?
+    @State private var isSaving = false
+
+    private let calendarService = CalendarService()
+
+    init(defaultDate: Date, onSave: @escaping () -> Void) {
+        self.defaultDate = defaultDate
+        self.onSave = onSave
+        let cal = Calendar.current
+        let dayStart = cal.startOfDay(for: defaultDate)
+        let hour = cal.component(.hour, from: Date())
+        let roundedHour = max(hour, cal.component(.hour, from: dayStart))
+        var startComps = cal.dateComponents([.year, .month, .day], from: defaultDate)
+        startComps.hour = roundedHour + 1
+        startComps.minute = 0
+        let start = cal.date(from: startComps) ?? defaultDate
+        _startTime = State(initialValue: start)
+        _endTime = State(initialValue: cal.date(byAdding: .hour, value: 1, to: start) ?? start)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Titel", text: $title)
+                        .autocorrectionDisabled()
+                }
+                Section {
+                    Toggle("Ganztägig", isOn: $isAllDay)
+                    if !isAllDay {
+                        DatePicker("Start", selection: $startTime, displayedComponents: [.date, .hourAndMinute])
+                        DatePicker("Ende", selection: $endTime, in: startTime..., displayedComponents: [.date, .hourAndMinute])
+                    } else {
+                        DatePicker("Datum", selection: $startTime, displayedComponents: .date)
+                    }
+                }
+                if let error = errorMessage {
+                    Section {
+                        Text(error)
+                            .font(LumioTypography.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .navigationTitle("Neuer Termin")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Abbrechen") { dismiss() }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Hinzufügen") {
+                        Task { await save() }
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty || isSaving)
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+
+    private func save() async {
+        isSaving = true
+        errorMessage = nil
+        let trimmed = title.trimmingCharacters(in: .whitespaces)
+        let cal = Calendar.current
+
+        let start: Date
+        let end: Date
+        if isAllDay {
+            start = cal.startOfDay(for: startTime)
+            end = cal.date(byAdding: .day, value: 1, to: start)!
+        } else {
+            start = startTime
+            end = endTime > startTime ? endTime : cal.date(byAdding: .hour, value: 1, to: startTime)!
+        }
+
+        do {
+            try await calendarService.addEvent(title: trimmed, startDate: start, endDate: end)
+            onSave()
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+            isSaving = false
         }
     }
 }

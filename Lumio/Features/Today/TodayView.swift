@@ -41,7 +41,7 @@ struct TodayView: View {
                     await viewModel.refresh()
                 }
 
-                PlayBarView(speechService: speechService, events: viewModel.events)
+                PlayBarView(speechService: speechService, events: viewModel.events, language: appState.selectedLanguage)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 20)
                     .shadow(color: .black.opacity(0.08), radius: 20, y: -4)
@@ -260,6 +260,7 @@ struct EventCard: View {
 struct PlayBarView: View {
     @ObservedObject var speechService: SpeechService
     let events: [CalendarEvent]
+    let language: String
 
     var body: some View {
         HStack(spacing: 16) {
@@ -300,7 +301,7 @@ struct PlayBarView: View {
                             SpeechItem(
                                 title: event.title,
                                 text: buildSpeechText(for: event),
-                                language: Locale.current.language.languageCode?.identifier == "de" ? "de-DE" : "en-US"
+                                language: language == "de" ? "de-DE" : "en-US"
                             )
                         }
                         speechService.speak(items)

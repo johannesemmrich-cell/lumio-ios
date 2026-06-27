@@ -283,6 +283,9 @@ struct CalendarSettingsView: View {
         }
         .navigationTitle("Kalender")
         .listStyle(.insetGrouped)
+        .onAppear {
+            excludedIDs = BriefingExclusionStore.excludedIDs
+        }
         .task {
             let store = EKEventStore()
             if EKEventStore.authorizationStatus(for: .event) == .fullAccess {

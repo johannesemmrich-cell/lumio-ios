@@ -13,7 +13,7 @@ struct DeveloperUnlockSheet: View {
     @FocusState private var focused: Bool
 
     // SHA-256 of the developer password — password itself is never stored.
-    private static let passwordHash = "686eb743564a96739741fd413b93b1a610fab0b2355248d8740a96c8032f5f11"
+    private static let passwordHash = "bcee53b7fd30f757bd7e3ca7978860a2244aae751ca51c9196ce85f8b46903a7"
 
     var body: some View {
         NavigationStack {
@@ -82,6 +82,16 @@ struct DeveloperModeView: View {
     @Query(sort: \DevTodoItem.createdAt, order: .forward) private var todoItems: [DevTodoItem]
 
     @State private var showAddTodo = false
+    @State private var showExitConfirm = false
+    @State private var priorityFilter: FeedbackPriority? = nil
+    @State private var showOnlyOpen = true
+
+    private var filteredFeedback: [FeedbackEntry] {
+        feedbackEntries.filter { entry in
+            (priorityFilter == nil || entry.priority == priorityFilter) &&
+            (showOnlyOpen ? !entry.isResolved : entry.isResolved)
+        }
+    }
 
     var body: some View {
         List {
@@ -129,23 +139,93 @@ struct DeveloperModeView: View {
                 }
             }
 
-            Section("Feedback Log (\(feedbackEntries.count))") {
-                if feedbackEntries.isEmpty {
-                    Text("No feedback entries yet. Tap 👎 on any element while Developer Mode is active.")
+            // Feedback filter controls
+            Section {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        FeedbackFilterChip(
+                            label: "Alle",
+                            color: .secondary,
+                            isSelected: priorityFilter == nil
+                        ) { priorityFilter = nil }
+
+                        ForEach(FeedbackPriority.allCases, id: \.self) { p in
+                            FeedbackFilterChip(
+                                label: "\(p.emoji) \(p.rawValue)",
+                                color: p.swiftUIColor,
+                                isSelected: priorityFilter == p
+                            ) {
+                                priorityFilter = priorityFilter == p ? nil : p
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+
+                HStack {
+                    Button {
+                        withAnimation(.spring(duration: 0.2)) { showOnlyOpen = true }
+                    } label: {
+                        Label("Offen (\(feedbackEntries.filter { !$0.isResolved }.count))", systemImage: "circle")
+                            .font(LumioTypography.caption.weight(showOnlyOpen ? .semibold : .regular))
+                            .foregroundStyle(showOnlyOpen ? Color.lumioAccent : .secondary)
+                    }
+                    .buttonStyle(.plain)
+
+                    Spacer()
+
+                    Button {
+                        withAnimation(.spring(duration: 0.2)) { showOnlyOpen = false }
+                    } label: {
+                        Label("Erledigt (\(feedbackEntries.filter { $0.isResolved }.count))", systemImage: "checkmark.circle.fill")
+                            .font(LumioTypography.caption.weight(!showOnlyOpen ? .semibold : .regular))
+                            .foregroundStyle(!showOnlyOpen ? .green : .secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            Section("Feedback (\(filteredFeedback.count))") {
+                if filteredFeedback.isEmpty {
+                    Text(feedbackEntries.isEmpty
+                         ? "Noch kein Feedback. Tippe auf 👎 während der Dev Mode aktiv ist."
+                         : "Kein Feedback für diesen Filter.")
                         .font(LumioTypography.caption)
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(feedbackEntries) { entry in
-                        NavigationLink(destination: FeedbackEntryDetailView(entry: entry)) {
-                            FeedbackEntryRow(entry: entry)
+                    ForEach(filteredFeedback) { entry in
+                        HStack(spacing: 12) {
+                            Button {
+                                withAnimation { entry.isResolved.toggle() }
+                            } label: {
+                                Image(systemName: entry.isResolved ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(entry.isResolved ? .green : .secondary)
+                                    .font(.title3)
+                            }
+                            .buttonStyle(.plain)
+
+                            NavigationLink(destination: FeedbackEntryDetailView(entry: entry)) {
+                                FeedbackEntryRow(entry: entry)
+                            }
                         }
                     }
                     .onDelete { offsets in
-                        for index in offsets {
-                            modelContext.delete(feedbackEntries[index])
-                        }
+                        let toDelete = offsets.map { filteredFeedback[$0] }
+                        toDelete.forEach { modelContext.delete($0) }
                     }
                 }
+            }
+
+            Section {
+                Button(role: .destructive) {
+                    showExitConfirm = true
+                } label: {
+                    Label("Entwicklermodus beenden", systemImage: "xmark.shield")
+                }
+            } footer: {
+                Text("Feedback, To-Dos und alle anderen Daten bleiben erhalten.")
+                    .font(LumioTypography.caption)
             }
         }
         .navigationTitle("Developer Mode")
@@ -160,6 +240,43 @@ struct DeveloperModeView: View {
         .sheet(isPresented: $showAddTodo) {
             AddDevTodoSheet(isPresented: $showAddTodo)
         }
+        .confirmationDialog(
+            "Entwicklermodus beenden?",
+            isPresented: $showExitConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Beenden", role: .destructive) {
+                appState.isDeveloperModeActive = false
+                UserDefaults.standard.set(false, forKey: UserDefaultsKey.developerModeActive)
+            }
+            Button("Abbrechen", role: .cancel) {}
+        } message: {
+            Text("Alle Feedback-Einträge, To-Dos und Einstellungen bleiben erhalten.")
+        }
+    }
+}
+
+private struct FeedbackFilterChip: View {
+    let label: String
+    let color: Color
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(
+                    Capsule()
+                        .fill(isSelected ? color.opacity(0.15) : Color(uiColor: .secondarySystemBackground))
+                        .overlay(Capsule().strokeBorder(isSelected ? color.opacity(0.4) : Color.clear, lineWidth: 1))
+                )
+                .foregroundStyle(isSelected ? color : .secondary)
+        }
+        .buttonStyle(.plain)
+        .animation(.spring(duration: 0.18), value: isSelected)
     }
 }
 

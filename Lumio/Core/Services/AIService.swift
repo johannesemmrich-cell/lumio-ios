@@ -53,24 +53,22 @@ final class AIService: ObservableObject {
 
     @available(iOS 26.0, *)
     private func detectFoundationModels() async -> AICapabilityStatus {
-        // Apple Foundation Models framework (FoundationModels.framework, iOS 26+)
-        // Available on: iPhone 15 Pro / Pro Max, any iPhone 16 / 16 Plus / 16 Pro / 16 Pro Max / 17 series
-        // Uses SystemLanguageModel.default to check availability
+        // FoundationModels.framework — iOS 26+, available on A17 Pro / M-chip devices
+        // NSClassFromString fails for Swift types due to name mangling; we try multiple paths.
 
-        // Dynamic framework check — avoids hard import so the app runs on older chips
-        guard let modelClass = NSClassFromString("FoundationModels.SystemLanguageModel") else {
-            // Framework not present on this device (older chip, no Apple Neural Engine 3rd gen+)
-            return .deviceNotSupported
+        // Try bridged ObjC name first, then Swift mangled name patterns
+        let classNames = [
+            "FoundationModels.SystemLanguageModel",
+            "_TtC15FoundationModels18SystemLanguageModel",
+        ]
+        let found = classNames.contains { NSClassFromString($0) != nil }
+        guard found else {
+            // On iOS 26+ the framework exists but NSClassFromString is unreliable for Swift types.
+            // Treat as modelNotReady so the user sees a friendlier message than "device not supported".
+            return .modelNotReady
         }
 
-        // Check if the model is ready
-        // `SystemLanguageModel.default.availability` returns .available, .downloading, .unavailable
-        let selectorName = "default"
-        let sel = NSSelectorFromString(selectorName)
-        guard (modelClass as AnyObject).responds(to: sel) else {
-            return .deviceNotSupported
-        }
-
+        // Framework present — assume available; full capability check deferred until actual generation
         return .available
     }
 

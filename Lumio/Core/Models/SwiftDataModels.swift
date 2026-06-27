@@ -67,6 +67,7 @@ final class FeedbackEntry {
 }
 
 enum FeedbackPriority: String, Codable, CaseIterable {
+    case urgent = "Urgent"
     case high = "High"
     case medium = "Medium"
     case low = "Low"
@@ -74,6 +75,7 @@ enum FeedbackPriority: String, Codable, CaseIterable {
 
     var color: String {
         switch self {
+        case .urgent: return "black"
         case .high: return "red"
         case .medium: return "orange"
         case .low: return "blue"
@@ -81,8 +83,19 @@ enum FeedbackPriority: String, Codable, CaseIterable {
         }
     }
 
+    var swiftUIColor: Color {
+        switch self {
+        case .urgent: return Color(red: 0.6, green: 0, blue: 0)
+        case .high: return .red
+        case .medium: return .orange
+        case .low: return .blue
+        case .testing: return .purple
+        }
+    }
+
     var emoji: String {
         switch self {
+        case .urgent: return "⛔"
         case .high: return "🔴"
         case .medium: return "🟠"
         case .low: return "🔵"

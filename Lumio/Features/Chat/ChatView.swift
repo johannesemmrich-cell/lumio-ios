@@ -28,7 +28,7 @@ struct ChatView: View {
                                     isActive: appState.isDeveloperModeActive,
                                     screen: "Chat",
                                     feature: "AI Chatbot",
-                                    element: "Message bubble"
+                                    element: String(message.text.prefix(100))
                                 )
                         }
                         if viewModel.isThinking {
@@ -38,6 +38,7 @@ struct ChatView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                 }
+                .scrollDismissesKeyboard(.interactively)
                 .onChange(of: viewModel.messages.count) {
                     if let last = viewModel.messages.last {
                         withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
