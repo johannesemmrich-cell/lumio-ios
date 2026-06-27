@@ -47,8 +47,39 @@ final class ThemeManager: ObservableObject {
 
 // MARK: — Design tokens
 
+// Preset accent colors for the App Layout configurator
+let lumioAccentPalette: [(label: String, hex: String)] = [
+    ("Orange",  "FF9500"),
+    ("Blau",    "007AFF"),
+    ("Indigo",  "5856D6"),
+    ("Pink",    "FF2D55"),
+    ("Grün",    "34C759"),
+    ("Teal",    "5AC8FA"),
+    ("Rot",     "FF3B30"),
+    ("Gelb",    "FFCC00"),
+    ("Braun",   "A2845E"),
+    ("Grau",    "636366"),
+]
+
 extension Color {
     static let lumioAccent = Color("AccentColor")
+
+    init(hex hexString: String) {
+        let hex = UInt32(hexString.trimmingCharacters(in: .init(charactersIn: "#")), radix: 16) ?? 0xFF9500
+        self.init(
+            red:   Double((hex >> 16) & 0xFF) / 255,
+            green: Double((hex >> 8)  & 0xFF) / 255,
+            blue:  Double(hex         & 0xFF) / 255
+        )
+    }
+
+    var hexString: String {
+        let resolved = UIColor(self)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        resolved.getRed(&r, green: &g, blue: &b, alpha: &a)
+        return String(format: "%02X%02X%02X",
+                      Int(r * 255), Int(g * 255), Int(b * 255))
+    }
 
     // Semantic surface colors that adapt to theme
     static let lumioBackground = Color("Background")

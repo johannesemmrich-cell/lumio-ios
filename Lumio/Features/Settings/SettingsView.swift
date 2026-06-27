@@ -67,11 +67,11 @@ struct SettingsView: View {
                         NavigationLink(destination: BriefingSettingsView()) {
                             Label("Briefing einstellen", systemImage: "waveform.and.sparkles")
                         }
-                        NavigationLink(destination: TabOrderView()) {
-                            Label("Tab-Reihenfolge", systemImage: "rectangle.grid.1x2")
+                        NavigationLink(destination: AppLayoutConfigView()) {
+                            Label("App-Layout & Farben", systemImage: "paintpalette.fill")
                         }
                         NavigationLink(destination: AppIconPickerView()) {
-                            Label("App-Icon", systemImage: "paintpalette.fill")
+                            Label("App-Icon", systemImage: "app.badge")
                         }
                     }
                 }

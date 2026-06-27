@@ -7,6 +7,7 @@ struct LumioApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var themeManager = ThemeManager()
     @StateObject private var subscriptionManager = SubscriptionManager()
+    @Environment(\.scenePhase) private var scenePhase
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -40,7 +41,13 @@ struct LumioApp: App {
                 .modelContainer(sharedModelContainer)
                 .preferredColorScheme(themeManager.preferredColorScheme)
                 .environment(\.locale, appState.locale)
+                .tint(appState.accentColor)
                 .task { await endStaleLiveActivities() }
+                .onChange(of: scenePhase) { _, newPhase in
+                    if newPhase == .active {
+                        Task { await endStaleLiveActivities() }
+                    }
+                }
         }
     }
 

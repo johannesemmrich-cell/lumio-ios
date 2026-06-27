@@ -9,10 +9,10 @@ struct MainTabView: View {
             ForEach(appState.tabOrder, id: \.self) { tab in
                 Tab(tab.title, systemImage: tab.icon, value: tab) {
                     tabContent(for: tab)
+                        .tint(appState.iconColor(for: tab))
                 }
             }
         }
-        .tint(Color.lumioAccent)
     }
 
     @ViewBuilder

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01F0B902FB6D029D67264D48 /* DeveloperModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46838FB7998E4CAC71C736F7 /* DeveloperModeView.swift */; };
 		020EED98A2108FD26B033649 /* TabOrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA63585379E106A69703C587 /* TabOrderView.swift */; };
+		1E3B67C03A9E4B7995D6AE8F /* AppLayoutConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D7BD3D3369461ABA756409 /* AppLayoutConfigView.swift */; };
 		02748FC6637A459980811809 /* OnboardingStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553280A34E5E26BE6065CB9F /* OnboardingStepView.swift */; };
 		0588BC6D02A7C54F9268F755 /* PDFService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2C3A29D048FF2DD55E1593 /* PDFService.swift */; };
 		0696EDE41E26930623EE8551 /* LumioBriefingLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B65688E0CFA32239F74AAB /* LumioBriefingLiveActivity.swift */; };
@@ -131,6 +132,7 @@
 		BD2C3A29D048FF2DD55E1593 /* PDFService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFService.swift; sourceTree = "<group>"; };
 		CA3FAC10EA8C3626D182A377 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		CA63585379E106A69703C587 /* TabOrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabOrderView.swift; sourceTree = "<group>"; };
+		03D7BD3D3369461ABA756409 /* AppLayoutConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLayoutConfigView.swift; sourceTree = "<group>"; };
 		CBA787B7689086AF4BFC7109 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		CF54D8AFFE1A01AC1558973A /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		D1262592F932571451E303AB /* LumioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioApp.swift; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 				6A1F09B386C51B86A03E8AD6 /* PaywallView.swift */,
 				EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */,
 				CA63585379E106A69703C587 /* TabOrderView.swift */,
+				03D7BD3D3369461ABA756409 /* AppLayoutConfigView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -592,6 +595,7 @@
 				3C4C53337872A841C38107B8 /* SubscriptionManager.swift in Sources */,
 				E4F1886B11951808865FC9F3 /* SwiftDataModels.swift in Sources */,
 				020EED98A2108FD26B033649 /* TabOrderView.swift in Sources */,
+				1E3B67C03A9E4B7995D6AE8F /* AppLayoutConfigView.swift in Sources */,
 				D073C9F212E527063EC6CEF6 /* ThemeManager.swift in Sources */,
 				A8BF8F3D6AEE8D665CF761CE /* TodayView.swift in Sources */,
 				F067AB1DFFFADDC50881D449 /* TodayViewModel.swift in Sources */,
