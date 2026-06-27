@@ -11,6 +11,7 @@ struct CalendarEvent: Identifiable, Equatable {
     let notes: String?
     let calendarColor: CGColor
     let calendarTitle: String
+    let calendarIdentifier: String
     let source: CalendarSource
 }
 
@@ -106,6 +107,7 @@ private extension CalendarEvent {
         self.notes = event.notes
         self.calendarColor = event.calendar.cgColor
         self.calendarTitle = event.calendar.title
+        self.calendarIdentifier = event.calendar.calendarIdentifier
         self.source = .apple
     }
 }

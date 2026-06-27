@@ -166,3 +166,18 @@ final class DevTodoItem {
         self.createdAt = Date()
     }
 }
+
+@Model
+final class CalendarEventNote {
+    var id: UUID
+    var eventIdentifier: String
+    var customNotes: String
+    var updatedAt: Date
+
+    init(eventIdentifier: String, customNotes: String = "") {
+        self.id = UUID()
+        self.eventIdentifier = eventIdentifier
+        self.customNotes = customNotes
+        self.updatedAt = Date()
+    }
+}

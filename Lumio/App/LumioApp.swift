@@ -15,6 +15,7 @@ struct LumioApp: App {
             UserPreferences.self,
             BriefingCache.self,
             DevTodoItem.self,
+            CalendarEventNote.self,
         ])
         // Try CloudKit sync first; fall back to local-only (e.g. Simulator without entitlements)
         let cloudConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, cloudKitDatabase: .automatic)
