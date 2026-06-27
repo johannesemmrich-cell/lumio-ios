@@ -26,6 +26,8 @@ struct DeveloperUnlockSheet: View {
                         .foregroundStyle(.secondary)
                     SecureField("Passwort", text: $password)
                         .focused($focused)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
                 }
                 if !error.isEmpty {
                     Section {
@@ -64,7 +66,8 @@ struct DeveloperUnlockSheet: View {
     }
 
     private func checkPassword(_ input: String) -> Bool {
-        let hash = SHA256.hash(data: Data(input.utf8))
+        let trimmed = input.trimmingCharacters(in: .whitespaces)
+        let hash = SHA256.hash(data: Data(trimmed.utf8))
         let hex = hash.compactMap { String(format: "%02x", $0) }.joined()
         return hex == Self.passwordHash
     }
