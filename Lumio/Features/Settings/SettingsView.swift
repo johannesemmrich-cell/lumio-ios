@@ -60,6 +60,15 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
                 }
 
+                // Premium design customization
+                if subscriptionManager.effectivelyPremium {
+                    Section("Premium") {
+                        NavigationLink(destination: AppIconPickerView()) {
+                            Label("App design anpassen", systemImage: "paintpalette.fill")
+                        }
+                    }
+                }
+
                 // About
                 Section("About") {
                     NavigationLink(destination: AboutView()) {

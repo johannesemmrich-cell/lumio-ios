@@ -23,6 +23,7 @@
 		7896BB8BFE165062C8141DE2 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1F09B386C51B86A03E8AD6 /* PaywallView.swift */; };
 		81FB4BB83169AF6006D8837D /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EB7BEF0A1A348E30B0C0E8F /* AIService.swift */; };
 		8DDDDF417373D782C6EAA739 /* LumioWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 380413F29FFBA82FBEB1A691 /* LumioWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		93D244780900F5CF50BB15FE /* AppIconPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C097AA9094F740D4614C78 /* AppIconPickerView.swift */; };
 		9526AD58F745FCA65D3A15C2 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8BD392039AC572C861EFDE /* AppState.swift */; };
 		96893A54167533CF228F34A1 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA787B7689086AF4BFC7109 /* ChatView.swift */; };
 		9F1F8D36FF21A002106BC95C /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3FAC10EA8C3626D182A377 /* CalendarView.swift */; };
@@ -99,6 +100,7 @@
 		14FA7110BBFBC6448A26C840 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1AA48C8AF90AC73A83391B04 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
 		22880EC8D849EB2BB1C4CF97 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		29C097AA9094F740D4614C78 /* AppIconPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPickerView.swift; sourceTree = "<group>"; };
 		2C64E3D180D9C05CE91BB795 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		34D698E53BE485BF711A70FC /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		380413F29FFBA82FBEB1A691 /* LumioWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = LumioWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -339,6 +341,7 @@
 		D4E85FE607D570A75CB1CC5F /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				29C097AA9094F740D4614C78 /* AppIconPickerView.swift */,
 				46838FB7998E4CAC71C736F7 /* DeveloperModeView.swift */,
 				6A1F09B386C51B86A03E8AD6 /* PaywallView.swift */,
 				EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */,
@@ -559,6 +562,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81FB4BB83169AF6006D8837D /* AIService.swift in Sources */,
+				93D244780900F5CF50BB15FE /* AppIconPickerView.swift in Sources */,
 				9526AD58F745FCA65D3A15C2 /* AppState.swift in Sources */,
 				AB667F5E5453F047F5DE2589 /* CalendarService.swift in Sources */,
 				9F1F8D36FF21A002106BC95C /* CalendarView.swift in Sources */,
@@ -712,6 +716,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Lumio/Supporting Files/Lumio.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -826,6 +831,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Lumio/Supporting Files/Lumio.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_HARDENED_RUNTIME = YES;
