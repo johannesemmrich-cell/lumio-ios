@@ -25,6 +25,7 @@
 		8DDDDF417373D782C6EAA739 /* LumioWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 380413F29FFBA82FBEB1A691 /* LumioWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9526AD58F745FCA65D3A15C2 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8BD392039AC572C861EFDE /* AppState.swift */; };
 		96893A54167533CF228F34A1 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA787B7689086AF4BFC7109 /* ChatView.swift */; };
+		9F1F8D36FF21A002106BC95C /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3FAC10EA8C3626D182A377 /* CalendarView.swift */; };
 		A8BF8F3D6AEE8D665CF761CE /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C80803545FB80EE408D7EDD /* TodayView.swift */; };
 		AA849029D816F7A602DA2CC5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */; };
 		AB667F5E5453F047F5DE2589 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22880EC8D849EB2BB1C4CF97 /* CalendarService.swift */; };
@@ -123,6 +124,7 @@
 		B05349DD390F5584FEFF1ADE /* LumioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioTests.swift; sourceTree = "<group>"; };
 		B96EA9B375A0C43D916A8270 /* OnboardingContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerView.swift; sourceTree = "<group>"; };
 		BD2C3A29D048FF2DD55E1593 /* PDFService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFService.swift; sourceTree = "<group>"; };
+		CA3FAC10EA8C3626D182A377 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		CBA787B7689086AF4BFC7109 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		CF54D8AFFE1A01AC1558973A /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		D1262592F932571451E303AB /* LumioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioApp.swift; sourceTree = "<group>"; };
@@ -283,6 +285,7 @@
 		A5D1611788D5BB36A95CD9D7 /* Today */ = {
 			isa = PBXGroup;
 			children = (
+				CA3FAC10EA8C3626D182A377 /* CalendarView.swift */,
 				4C80803545FB80EE408D7EDD /* TodayView.swift */,
 				613B3708C238B582338CCDC7 /* TodayViewModel.swift */,
 			);
@@ -558,6 +561,7 @@
 				81FB4BB83169AF6006D8837D /* AIService.swift in Sources */,
 				9526AD58F745FCA65D3A15C2 /* AppState.swift in Sources */,
 				AB667F5E5453F047F5DE2589 /* CalendarService.swift in Sources */,
+				9F1F8D36FF21A002106BC95C /* CalendarView.swift in Sources */,
 				96893A54167533CF228F34A1 /* ChatView.swift in Sources */,
 				19AA7BDF6C8205F32CC99065 /* ChatViewModel.swift in Sources */,
 				01F0B902FB6D029D67264D48 /* DeveloperModeView.swift in Sources */,

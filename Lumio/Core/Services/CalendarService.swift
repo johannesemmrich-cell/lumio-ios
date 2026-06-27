@@ -41,12 +41,16 @@ final class CalendarService: ObservableObject {
     }
 
     func fetchTodayEvents() async {
+        await fetchEvents(for: Date())
+    }
+
+    func fetchEvents(for date: Date) async {
         guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else { return }
         isLoading = true
         defer { isLoading = false }
 
         let calendar = Calendar.current
-        let start = calendar.startOfDay(for: Date())
+        let start = calendar.startOfDay(for: date)
         let end = calendar.date(byAdding: .day, value: 1, to: start) ?? start
 
         let predicate = store.predicateForEvents(withStart: start, end: end, calendars: nil)

@@ -15,13 +15,14 @@ struct LumioApp: App {
             UserPreferences.self,
             BriefingCache.self,
         ])
-        let config = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: false,
-            cloudKitDatabase: .automatic
-        )
+        // Try CloudKit sync first; fall back to local-only (e.g. Simulator without entitlements)
+        let cloudConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, cloudKitDatabase: .automatic)
+        if let container = try? ModelContainer(for: schema, configurations: [cloudConfig]) {
+            return container
+        }
+        let localConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, cloudKitDatabase: .none)
         do {
-            return try ModelContainer(for: schema, configurations: [config])
+            return try ModelContainer(for: schema, configurations: [localConfig])
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
@@ -35,6 +36,7 @@ struct LumioApp: App {
                 .environmentObject(subscriptionManager)
                 .modelContainer(sharedModelContainer)
                 .preferredColorScheme(themeManager.preferredColorScheme)
+                .environment(\.locale, appState.locale)
         }
     }
 }

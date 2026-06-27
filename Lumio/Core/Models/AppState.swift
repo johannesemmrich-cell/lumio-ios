@@ -6,10 +6,17 @@ final class AppState: ObservableObject {
     @Published var hasCompletedOnboarding: Bool
     @Published var selectedTab: AppTab = .today
     @Published var isDeveloperModeActive: Bool
+    @Published var selectedLanguage: String {
+        didSet { UserDefaults.standard.set(selectedLanguage, forKey: UserDefaultsKey.selectedLanguage) }
+    }
+
+    var locale: Locale { Locale(identifier: selectedLanguage) }
 
     init() {
         self.hasCompletedOnboarding = UserDefaults.standard.bool(forKey: UserDefaultsKey.hasCompletedOnboarding)
         self.isDeveloperModeActive = UserDefaults.standard.bool(forKey: UserDefaultsKey.developerModeActive)
+        let saved = UserDefaults.standard.string(forKey: UserDefaultsKey.selectedLanguage)
+        self.selectedLanguage = saved ?? (Locale.current.language.languageCode?.identifier == "de" ? "de" : "en")
     }
 
     func completeOnboarding() {

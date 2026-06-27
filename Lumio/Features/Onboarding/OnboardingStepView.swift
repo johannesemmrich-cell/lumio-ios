@@ -23,7 +23,11 @@ struct OnboardingStepView: View {
         case .welcome:
             WelcomeStepView { viewModel.advance() }
         case .language:
-            LanguageStepView(selected: $viewModel.selectedLanguage) { viewModel.advance() }
+            LanguageStepView(
+                selected: $viewModel.selectedLanguage,
+                onLanguageSelected: { code in viewModel.setLanguage(code, appState: appState) },
+                onContinue: { viewModel.advance() }
+            )
         case .calendar:
             CalendarStepView(viewModel: viewModel)
         case .notifications:
@@ -77,23 +81,34 @@ struct WelcomeStepView: View {
 
 struct LanguageStepView: View {
     @Binding var selected: String
+    let onLanguageSelected: (String) -> Void
     let onContinue: () -> Void
 
     var body: some View {
         VStack(spacing: 32) {
-            StepHeader(
-                icon: "globe",
-                iconColor: .blue,
-                title: "Choose your language",
-                subtitle: "Lumio speaks both German and English fluently."
-            )
-
+            // Header stays bilingual intentionally — user hasn't picked yet
             VStack(spacing: 12) {
-                LanguageOption(code: "en", name: "English", flag: "🇬🇧", selected: $selected)
-                LanguageOption(code: "de", name: "Deutsch", flag: "🇩🇪", selected: $selected)
+                Image(systemName: "globe")
+                    .font(.system(size: 52))
+                    .foregroundStyle(.blue)
+                Text("Sprache / Language")
+                    .font(LumioTypography.title2)
+                Text("Lumio spricht Deutsch und English.")
+                    .font(LumioTypography.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
             }
 
-            LumioButton(title: "Continue", style: .primary, action: onContinue)
+            VStack(spacing: 12) {
+                LanguageOption(code: "de", name: "Deutsch", flag: "🇩🇪", selected: $selected) {
+                    onLanguageSelected("de")
+                }
+                LanguageOption(code: "en", name: "English", flag: "🇬🇧", selected: $selected) {
+                    onLanguageSelected("en")
+                }
+            }
+
+            LumioButton(title: "Weiter / Continue", style: .primary, action: onContinue)
         }
     }
 }
@@ -103,12 +118,14 @@ struct LanguageOption: View {
     let name: String
     let flag: String
     @Binding var selected: String
+    var onSelect: (() -> Void)? = nil
 
     var isSelected: Bool { selected == code }
 
     var body: some View {
         Button {
             withAnimation(.spring(duration: 0.25)) { selected = code }
+            onSelect?()
         } label: {
             HStack(spacing: 16) {
                 Text(flag).font(.title2)
@@ -252,14 +269,14 @@ struct NotificationsStepView: View {
             NotificationPreviewCard()
 
             LumioButton(
-                title: viewModel.isLoading ? "Requesting..." : "Enable notifications",
+                title: viewModel.isLoading ? "notification.requesting" : "notification.enable",
                 style: .primary
             ) {
                 Task { await viewModel.requestNotifications() }
             }
             .disabled(viewModel.isLoading)
 
-            Button("Maybe later") { viewModel.advance() }
+            Button(LocalizedStringKey("notification.skip")) { viewModel.advance() }
                 .font(LumioTypography.callout)
                 .foregroundStyle(.secondary)
         }
@@ -338,56 +355,81 @@ struct PremiumIntroStepView: View {
     let onComplete: () -> Void
 
     var body: some View {
-        VStack(spacing: 32) {
-            StepHeader(
-                icon: "star.fill",
-                iconColor: .yellow,
-                title: "Free & Premium",
-                subtitle: "Lumio is free to use. Premium unlocks the full experience."
-            )
+        VStack(spacing: 24) {
+            VStack(spacing: 10) {
+                Image(systemName: "star.fill")
+                    .font(.system(size: 48))
+                    .foregroundStyle(.yellow)
+                Text("premium.title", tableName: nil)
+                    .font(LumioTypography.title2)
+                Text("premium.subtitle", tableName: nil)
+                    .font(LumioTypography.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            HStack(alignment: .top, spacing: 12) {
+                PremiumTierCard(
+                    title: LocalizedStringKey("premium.free"),
+                    color: .secondary,
+                    features: ["premium.free.1", "premium.free.2", "premium.free.3", "premium.free.4"]
+                )
+                PremiumTierCard(
+                    title: LocalizedStringKey("premium.paid"),
+                    color: Color.lumioAccent,
+                    features: ["premium.paid.1", "premium.paid.2", "premium.paid.3", "premium.paid.4", "premium.paid.5"],
+                    highlighted: true
+                )
+            }
 
             VStack(spacing: 8) {
-                PremiumComparisonRow(feature: "Calendar integration", freeValue: "1 calendar", premiumValue: "Unlimited")
-                PremiumComparisonRow(feature: "PDF library", freeValue: "5 per folder · 20 pages", premiumValue: "Unlimited")
-                PremiumComparisonRow(feature: "Text-to-speech", freeValue: "Events only", premiumValue: "Events + PDFs")
-                PremiumComparisonRow(feature: "AI Chatbot", freeValue: "—", premiumValue: "✓ Included")
-                PremiumComparisonRow(feature: "Widget", freeValue: "—", premiumValue: "✓ Included")
-            }
-            .padding(16)
-            .background(RoundedRectangle(cornerRadius: 16).fill(Color(uiColor: .secondarySystemBackground)))
-
-            VStack(spacing: 10) {
-                LumioButton(title: "Start for free", style: .primary, action: onComplete)
-                Text("Premium from €2.00/month · Upgrade anytime")
+                LumioButton(title: "premium.cta", style: .primary, action: onComplete)
+                Text("premium.price.hint", tableName: nil)
                     .font(LumioTypography.caption)
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
             }
         }
     }
 }
 
-struct PremiumComparisonRow: View {
-    let feature: String
-    let freeValue: String
-    let premiumValue: String
+struct PremiumTierCard: View {
+    let title: LocalizedStringKey
+    let color: Color
+    let features: [String]
+    var highlighted: Bool = false
 
     var body: some View {
-        HStack {
-            Text(feature)
-                .font(LumioTypography.caption)
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(LumioTypography.callout.weight(.bold))
+                .foregroundStyle(highlighted ? color : .primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text(freeValue)
-                .font(LumioTypography.caption)
-                .foregroundStyle(.secondary)
-                .frame(width: 100, alignment: .center)
+            Divider()
 
-            Text(premiumValue)
-                .font(LumioTypography.caption.weight(.medium))
-                .foregroundStyle(Color.lumioAccent)
-                .frame(width: 100, alignment: .center)
+            VStack(alignment: .leading, spacing: 7) {
+                ForEach(features, id: \.self) { key in
+                    HStack(spacing: 7) {
+                        Image(systemName: "checkmark")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(color)
+                        Text(LocalizedStringKey(key))
+                            .font(LumioTypography.caption)
+                    }
+                }
+            }
         }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(highlighted ? color.opacity(0.07) : Color(uiColor: .secondarySystemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .strokeBorder(highlighted ? color.opacity(0.4) : Color.clear, lineWidth: 1.5)
+                )
+        )
     }
 }
 

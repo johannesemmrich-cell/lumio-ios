@@ -45,8 +45,13 @@ final class OnboardingViewModel: ObservableObject {
         advance()
     }
 
+    func setLanguage(_ code: String, appState: AppState) {
+        selectedLanguage = code
+        appState.selectedLanguage = code
+    }
+
     func completeOnboarding(appState: AppState) {
-        UserDefaults.standard.set(selectedLanguage, forKey: UserDefaultsKey.selectedLanguage)
+        appState.selectedLanguage = selectedLanguage
         appState.completeOnboarding()
     }
 }

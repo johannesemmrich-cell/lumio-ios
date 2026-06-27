@@ -13,24 +13,46 @@
 "Save" = "Save";
 "Delete" = "Delete";
 "Edit" = "Edit";
+"Calendar" = "Calendar";
 
-/* Onboarding */
-"Get Started" = "Get Started";
-"Your intelligent morning briefing" = "Your intelligent morning briefing";
-"Choose your language" = "Choose your language";
-"Connect your calendar" = "Connect your calendar";
-"Wake up to your day" = "Wake up to your day";
-"Upload your lecture slides" = "Upload your lecture slides";
-"Free & Premium" = "Free & Premium";
+/* Onboarding — Notifications */
+"notification.enable" = "Enable notifications";
+"notification.requesting" = "Requesting…";
+"notification.skip" = "Maybe later";
+
+/* Onboarding — Premium */
+"premium.title" = "Start for free";
+"premium.subtitle" = "Lumio is free to use. Premium unlocks more.";
+"premium.free" = "Free";
+"premium.paid" = "Premium";
+"premium.free.1" = "1 calendar";
+"premium.free.2" = "5 PDFs per folder";
+"premium.free.3" = "Read aloud: events";
+"premium.free.4" = "Light & dark theme";
+"premium.paid.1" = "Multiple calendars";
+"premium.paid.2" = "Unlimited PDFs";
+"premium.paid.3" = "Read aloud: everything";
+"premium.paid.4" = "AI chatbot";
+"premium.paid.5" = "Widget & more";
+"premium.cta" = "Start for free";
+"premium.price.hint" = "Premium from €2.00/month · Upgrade anytime";
 
 /* Today */
 "Today's Events" = "Today's Events";
 "Clear day ahead" = "Clear day ahead";
-"No events scheduled for today. Enjoy the open time." = "No events scheduled for today. Enjoy the open time.";
+"No events scheduled for today. Enjoy the open time." = "No events today. Enjoy the open time.";
 "All day" = "All day";
 "Now" = "Now";
 "Play briefing" = "Play briefing";
+"Tap to hear your day read aloud" = "Tap to hear your day";
 "Preparing your briefing…" = "Preparing your briefing…";
+
+/* Calendar View */
+"calendar.title" = "Calendar";
+"calendar.noEvents" = "No events";
+"calendar.allCalendars" = "All Calendars";
+"calendar.selectCalendars" = "Select calendars";
+"calendar.today" = "Today";
 
 /* Library */
 "No Folders Yet" = "No Folders Yet";
@@ -39,6 +61,7 @@
 
 /* Chat */
 "AI Chat is Premium" = "AI Chat is Premium";
+"Ask about your day…" = "Ask about your day…";
 
 /* Settings */
 "Connected Calendars" = "Connected Calendars";
@@ -51,8 +74,9 @@
 "Privacy" = "Privacy";
 "Developer Mode" = "Developer Mode";
 
-/* Premium */
+/* Premium Paywall */
 "Lumio Premium" = "Lumio Premium";
 "Unlock the full morning briefing experience" = "Unlock the full morning briefing experience";
 "Get Premium" = "Get Premium";
 "Best value" = "Best value";
+"Close" = "Close";

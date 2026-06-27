@@ -8,6 +8,7 @@ struct TodayView: View {
     @StateObject private var speechService = SpeechService()
 
     @State private var showPaywall = false
+    @State private var showCalendar = false
     @State private var headerOffset: CGFloat = 0
 
     var body: some View {
@@ -44,18 +45,29 @@ struct TodayView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        Task { await viewModel.refresh() }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
+                    HStack(spacing: 4) {
+                        Button {
+                            showCalendar = true
+                        } label: {
+                            Image(systemName: "calendar")
+                        }
+                        Button {
+                            Task { await viewModel.refresh() }
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
+                        }
+                        .disabled(viewModel.isLoadingEvents)
                     }
-                    .disabled(viewModel.isLoadingEvents)
                 }
                 if appState.isDeveloperModeActive {
                     ToolbarItem(placement: .topBarLeading) {
                         DeveloperFeedbackButton(screen: "Today", feature: "Daily Briefing", element: "Toolbar")
                     }
                 }
+            }
+            .sheet(isPresented: $showCalendar) {
+                LumioCalendarView()
+                    .environmentObject(appState)
             }
             .task { await viewModel.loadInitialData() }
         }
