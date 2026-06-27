@@ -29,7 +29,8 @@ final class TodayViewModel: ObservableObject {
         let status = await calendarService.requestAccess()
         if status {
             await calendarService.fetchTodayEvents()
-            events = calendarService.todayEvents
+            let excluded = BriefingExclusionStore.excludedIDs
+            events = calendarService.todayEvents.filter { !excluded.contains($0.calendarIdentifier) }
         }
     }
 

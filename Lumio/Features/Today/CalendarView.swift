@@ -20,18 +20,39 @@ struct LumioCalendarView: View {
                 if !viewModel.availableCalendars.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 6) {
+                            // Provider filter
                             CalendarFilterPill(title: "Alle", color: .accentColor,
-                                isSelected: viewModel.selectedCalendarIDs.isEmpty) {
-                                withAnimation(.spring(duration: 0.2)) { viewModel.selectedCalendarIDs = [] }
+                                isSelected: viewModel.selectedProvider == nil && viewModel.selectedCalendarIDs.isEmpty) {
+                                withAnimation(.spring(duration: 0.2)) {
+                                    viewModel.selectedProvider = nil
+                                    viewModel.selectedCalendarIDs = []
+                                }
                             }
-                            ForEach(viewModel.availableCalendars, id: \.calendarIdentifier) { cal in
+                            ForEach(viewModel.availableProviders) { provider in
                                 CalendarFilterPill(
-                                    title: cal.title,
-                                    color: Color(cgColor: cal.cgColor),
-                                    isSelected: viewModel.selectedCalendarIDs.contains(cal.calendarIdentifier)
+                                    title: provider.rawValue,
+                                    color: provider.pillColor,
+                                    isSelected: viewModel.selectedProvider == provider
                                 ) {
                                     withAnimation(.spring(duration: 0.2)) {
-                                        viewModel.toggleCalendar(cal.calendarIdentifier)
+                                        viewModel.selectedProvider = viewModel.selectedProvider == provider ? nil : provider
+                                        viewModel.selectedCalendarIDs = []
+                                    }
+                                }
+                            }
+                            if !viewModel.visibleCalendars.isEmpty {
+                                Rectangle()
+                                    .fill(Color.secondary.opacity(0.25))
+                                    .frame(width: 1, height: 20)
+                                ForEach(viewModel.visibleCalendars, id: \.calendarIdentifier) { cal in
+                                    CalendarFilterPill(
+                                        title: cal.title,
+                                        color: Color(cgColor: cal.cgColor),
+                                        isSelected: viewModel.selectedCalendarIDs.contains(cal.calendarIdentifier)
+                                    ) {
+                                        withAnimation(.spring(duration: 0.2)) {
+                                            viewModel.toggleCalendar(cal.calendarIdentifier)
+                                        }
                                     }
                                 }
                             }
@@ -396,6 +417,7 @@ struct EventDetailSheet: View {
 
     @Query private var matchingNotes: [CalendarEventNote]
     @State private var draftNotes: String = ""
+    @State private var draftKeywords: String = ""
     @State private var showAIChat = false
 
     init(event: CalendarEvent) {
@@ -405,7 +427,10 @@ struct EventDetailSheet: View {
     }
 
     private var existingNote: CalendarEventNote? { matchingNotes.first }
-    private var hasChanges: Bool { draftNotes != (existingNote?.customNotes ?? "") }
+    private var hasChanges: Bool {
+        draftNotes != (existingNote?.customNotes ?? "") ||
+        draftKeywords != (existingNote?.linkedKeywords ?? "")
+    }
 
     private var timeString: String {
         if event.isAllDay { return "Ganztägig" }
@@ -498,6 +523,42 @@ struct EventDetailSheet: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 14)
 
+                    // Keywords / file links
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("Stichwörter & Dateien", systemImage: "link")
+                            .font(LumioTypography.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        TextField("z.B. App-Idee, Projekt Alpha, Rechnung", text: $draftKeywords)
+                            .font(LumioTypography.body)
+                            .padding(10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(uiColor: .tertiarySystemBackground))
+                            )
+                        if !draftKeywords.isEmpty {
+                            let tags = draftKeywords.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+                            if !tags.isEmpty {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 6) {
+                                        ForEach(tags, id: \.self) { tag in
+                                            Text(tag)
+                                                .font(LumioTypography.caption2.weight(.medium))
+                                                .padding(.horizontal, 9)
+                                                .padding(.vertical, 4)
+                                                .background(Capsule().fill(Color.accentColor.opacity(0.12)))
+                                                .foregroundStyle(Color.accentColor)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Text("Komma-getrennte Stichworte. Der KI-Chat findet passende Dateien automatisch.")
+                            .font(LumioTypography.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 14)
+
                     // AI Chat (Premium)
                     if subscriptionManager.effectivelyPremium {
                         Button {
@@ -573,9 +634,10 @@ struct EventDetailSheet: View {
             }
             .onAppear {
                 draftNotes = existingNote?.customNotes ?? ""
+                draftKeywords = existingNote?.linkedKeywords ?? ""
             }
             .sheet(isPresented: $showAIChat) {
-                EventAIChatSheet(event: event, userNotes: draftNotes)
+                EventAIChatSheet(event: event, userNotes: draftNotes, keywords: draftKeywords)
             }
         }
     }
@@ -596,9 +658,14 @@ struct EventDetailSheet: View {
     private func saveNotes() {
         if let existing = existingNote {
             existing.customNotes = draftNotes
+            existing.linkedKeywords = draftKeywords
             existing.updatedAt = Date()
         } else {
-            let note = CalendarEventNote(eventIdentifier: event.id, customNotes: draftNotes)
+            let note = CalendarEventNote(
+                eventIdentifier: event.id,
+                customNotes: draftNotes,
+                linkedKeywords: draftKeywords
+            )
             modelContext.insert(note)
         }
         dismiss()
@@ -616,14 +683,16 @@ private extension CalendarEvent {
 struct EventAIChatSheet: View {
     let event: CalendarEvent
     let userNotes: String
+    let keywords: String
     @StateObject private var viewModel: EventChatViewModel
     @FocusState private var inputFocused: Bool
     @Environment(\.dismiss) private var dismiss
 
-    init(event: CalendarEvent, userNotes: String) {
+    init(event: CalendarEvent, userNotes: String, keywords: String = "") {
         self.event = event
         self.userNotes = userNotes
-        _viewModel = StateObject(wrappedValue: EventChatViewModel(event: event, userNotes: userNotes))
+        self.keywords = keywords
+        _viewModel = StateObject(wrappedValue: EventChatViewModel(event: event, userNotes: userNotes, keywords: keywords))
     }
 
     var body: some View {
@@ -700,10 +769,12 @@ final class EventChatViewModel: ObservableObject {
     private let aiService = AIService()
     private let event: CalendarEvent
     private let userNotes: String
+    private let keywords: String
 
-    init(event: CalendarEvent, userNotes: String) {
+    init(event: CalendarEvent, userNotes: String, keywords: String = "") {
         self.event = event
         self.userNotes = userNotes
+        self.keywords = keywords
     }
 
     func setup() {
@@ -711,8 +782,8 @@ final class EventChatViewModel: ObservableObject {
         var parts: [String] = []
         if let notes = event.notes, !notes.isEmpty { parts.append("Kalender-Notiz: \"\(notes)\"") }
         if !userNotes.isEmpty { parts.append("Meine Notiz: \"\(userNotes)\"") }
+        if !keywords.isEmpty { parts.append("Verknüpfte Stichworte: \(keywords)") }
         let context = parts.isEmpty ? "" : " Kontext: \(parts.joined(separator: " | "))"
-
         let greeting = "Hallo! Ich kenne deinen Termin **\(event.title)**.\(context) Was möchtest du wissen oder besprechen?"
         messages = [ChatMessage(role: .assistant, text: greeting, timestamp: Date())]
     }
@@ -733,6 +804,7 @@ final class EventChatViewModel: ObservableObject {
         if let loc = event.location, !loc.isEmpty { contextParts.append("Ort: \(loc)") }
         if let notes = event.notes, !notes.isEmpty { contextParts.append("Kalender-Notiz: \(notes)") }
         if !userNotes.isEmpty { contextParts.append("Meine Notiz: \(userNotes)") }
+        if !keywords.isEmpty { contextParts.append("Verknüpfte Stichworte/Dateien: \(keywords)") }
 
         let fullQuestion = "[\(contextParts.joined(separator: " | "))] \(text)"
         let ctx = BriefingContext(todayEvents: [], pdfSummaries: [], date: Date())
@@ -749,13 +821,33 @@ final class CalendarViewModel: ObservableObject {
     @Published var events: [CalendarEvent] = []
     @Published var availableCalendars: [EKCalendar] = []
     @Published var selectedCalendarIDs: Set<String> = []
+    @Published var selectedProvider: CalendarProvider? = nil
     @Published var isLoading: Bool = false
 
     private let calendarService = CalendarService()
 
+    var availableProviders: [CalendarProvider] {
+        let providers = Set(availableCalendars.map { $0.provider })
+        return CalendarProvider.allCases.filter { providers.contains($0) }
+    }
+
+    // Calendars shown in second-level filter (depends on selected provider)
+    var visibleCalendars: [EKCalendar] {
+        guard let provider = selectedProvider else { return [] }
+        return availableCalendars.filter { $0.provider == provider }
+    }
+
     var filteredEvents: [CalendarEvent] {
-        guard !selectedCalendarIDs.isEmpty else { return events }
-        return events.filter { selectedCalendarIDs.contains($0.calendarIdentifier) }
+        var result = events
+        if let provider = selectedProvider {
+            result = result.filter { event in
+                availableCalendars.first { $0.calendarIdentifier == event.calendarIdentifier }?.provider == provider
+            }
+        }
+        if !selectedCalendarIDs.isEmpty {
+            result = result.filter { selectedCalendarIDs.contains($0.calendarIdentifier) }
+        }
+        return result
     }
 
     func setup() async {
@@ -776,6 +868,19 @@ final class CalendarViewModel: ObservableObject {
             selectedCalendarIDs.remove(id)
         } else {
             selectedCalendarIDs.insert(id)
+        }
+    }
+}
+
+// MARK: — CalendarProvider UI helpers
+
+extension CalendarProvider {
+    var pillColor: Color {
+        switch self {
+        case .apple:   return .primary
+        case .google:  return Color(red: 0.26, green: 0.52, blue: 0.96)
+        case .outlook: return Color(red: 0.0,  green: 0.47, blue: 0.84)
+        case .other:   return .secondary
         }
     }
 }

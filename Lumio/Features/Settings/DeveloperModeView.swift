@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import CryptoKit
 
 // MARK: — Unlock Sheet
 
@@ -8,34 +9,24 @@ struct DeveloperUnlockSheet: View {
     @EnvironmentObject private var appState: AppState
 
     @State private var password = ""
-    @State private var confirmPassword = ""
     @State private var error = ""
     @FocusState private var focused: Bool
 
-    private var hasPassword: Bool {
-        UserDefaults.standard.bool(forKey: UserDefaultsKey.hasSetDeveloperPassword)
-    }
+    // SHA-256 of the developer password — password itself is never stored.
+    private static let passwordHash = "686eb743564a96739741fd413b93b1a610fab0b2355248d8740a96c8032f5f11"
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    if !hasPassword {
-                        Text("Set a Developer Mode password. You'll need this to activate or deactivate Developer Mode in the future.")
-                            .font(LumioTypography.callout)
-                            .foregroundStyle(.secondary)
-                        SecureField("New password", text: $password)
-                            .focused($focused)
-                        SecureField("Confirm password", text: $confirmPassword)
-                    } else {
-                        Text(appState.isDeveloperModeActive ? "Enter your password to deactivate Developer Mode." : "Enter your password to activate Developer Mode.")
-                            .font(LumioTypography.callout)
-                            .foregroundStyle(.secondary)
-                        SecureField("Password", text: $password)
-                            .focused($focused)
-                    }
+                    Text(appState.isDeveloperModeActive
+                         ? "Passwort eingeben um den Entwicklermodus zu deaktivieren."
+                         : "Passwort eingeben um den Entwicklermodus zu aktivieren.")
+                        .font(LumioTypography.callout)
+                        .foregroundStyle(.secondary)
+                    SecureField("Passwort", text: $password)
+                        .focused($focused)
                 }
-
                 if !error.isEmpty {
                     Section {
                         Text(error)
@@ -44,50 +35,38 @@ struct DeveloperUnlockSheet: View {
                     }
                 }
             }
-            .navigationTitle("Developer Mode")
+            .navigationTitle("Entwicklermodus")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") { isPresented = false }
+                    Button("Abbrechen") { isPresented = false }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(hasPassword ? "Confirm" : "Set Password") {
-                        handleSubmit()
-                    }
-                    .fontWeight(.semibold)
+                    Button("Bestätigen") { handleSubmit() }
+                        .fontWeight(.semibold)
                 }
             }
             .onAppear { focused = true }
         }
-        .presentationDetents([.fraction(0.45)])
+        .presentationDetents([.fraction(0.4)])
     }
 
     private func handleSubmit() {
-        if !hasPassword {
-            guard password == confirmPassword else {
-                error = "Passwords don't match."
-                return
-            }
-            guard password.count >= 4 else {
-                error = "Password must be at least 4 characters."
-                return
-            }
-            UserDefaults.standard.set(password, forKey: UserDefaultsKey.developerModePassword)
-            UserDefaults.standard.set(true, forKey: UserDefaultsKey.hasSetDeveloperPassword)
-            appState.isDeveloperModeActive = true
-            UserDefaults.standard.set(true, forKey: UserDefaultsKey.developerModeActive)
-            isPresented = false
-        } else {
-            let stored = UserDefaults.standard.string(forKey: UserDefaultsKey.developerModePassword) ?? ""
-            guard password == stored else {
-                error = "Incorrect password."
-                return
-            }
-            let newState = !appState.isDeveloperModeActive
-            appState.isDeveloperModeActive = newState
-            UserDefaults.standard.set(newState, forKey: UserDefaultsKey.developerModeActive)
-            isPresented = false
+        guard checkPassword(password) else {
+            error = "Falsches Passwort."
+            password = ""
+            return
         }
+        let newState = !appState.isDeveloperModeActive
+        appState.isDeveloperModeActive = newState
+        UserDefaults.standard.set(newState, forKey: UserDefaultsKey.developerModeActive)
+        isPresented = false
+    }
+
+    private func checkPassword(_ input: String) -> Bool {
+        let hash = SHA256.hash(data: Data(input.utf8))
+        let hex = hash.compactMap { String(format: "%02x", $0) }.joined()
+        return hex == Self.passwordHash
     }
 }
 

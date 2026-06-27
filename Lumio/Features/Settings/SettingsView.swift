@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import EventKit
 
 struct SettingsView: View {
     @EnvironmentObject private var appState: AppState
@@ -213,22 +214,75 @@ struct NotificationTimePicker: View {
 
 struct CalendarSettingsView: View {
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
+    @State private var availableCalendars: [EKCalendar] = []
+    @State private var excludedIDs: Set<String> = BriefingExclusionStore.excludedIDs
+
+    private var calendarsByProvider: [(CalendarProvider, [EKCalendar])] {
+        CalendarProvider.allCases.compactMap { provider in
+            let cals = availableCalendars.filter { $0.provider == provider }
+            return cals.isEmpty ? nil : (provider, cals)
+        }
+    }
 
     var body: some View {
         List {
+            // Connected providers
             Section {
                 CalendarProviderButton(name: "Apple Calendar", icon: "applelogo", color: .primary, isLoading: false) {}
                 CalendarProviderButton(name: "Google Calendar", icon: "globe", color: .blue, isLoading: false, badge: "Coming soon") {}
                 CalendarProviderButton(name: "Outlook", icon: "envelope.fill", color: .blue, isLoading: false, badge: "Coming soon") {}
+            } header: {
+                Text("Verbundene Anbieter")
             } footer: {
                 if !subscriptionManager.effectivelyPremium {
-                    Text("Free plan: 1 calendar. Upgrade to Premium to connect multiple calendars.")
+                    Text("Free plan: 1 Kalender. Mit Premium mehrere Anbieter verbinden.")
                         .font(LumioTypography.caption)
                 }
             }
+
+            // Briefing inclusion per calendar
+            if !availableCalendars.isEmpty {
+                ForEach(calendarsByProvider, id: \.0.id) { provider, cals in
+                    Section {
+                        ForEach(cals, id: \.calendarIdentifier) { cal in
+                            HStack(spacing: 12) {
+                                Circle()
+                                    .fill(Color(cgColor: cal.cgColor))
+                                    .frame(width: 10, height: 10)
+                                Text(cal.title)
+                                    .font(LumioTypography.callout)
+                                Spacer()
+                                Toggle("", isOn: Binding(
+                                    get: { !excludedIDs.contains(cal.calendarIdentifier) },
+                                    set: { include in
+                                        if include {
+                                            excludedIDs.remove(cal.calendarIdentifier)
+                                        } else {
+                                            excludedIDs.insert(cal.calendarIdentifier)
+                                        }
+                                        BriefingExclusionStore.excludedIDs = excludedIDs
+                                    }
+                                ))
+                                .labelsHidden()
+                            }
+                        }
+                    } header: {
+                        Label(provider.rawValue, systemImage: provider.systemImage)
+                    } footer: {
+                        Text("Deaktivierte Kalender erscheinen nicht im Briefing.")
+                            .font(LumioTypography.caption)
+                    }
+                }
+            }
         }
-        .navigationTitle("Calendars")
+        .navigationTitle("Kalender")
         .listStyle(.insetGrouped)
+        .task {
+            let store = EKEventStore()
+            if EKEventStore.authorizationStatus(for: .event) == .fullAccess {
+                availableCalendars = store.calendars(for: .event)
+            }
+        }
     }
 }
 

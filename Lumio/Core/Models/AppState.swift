@@ -57,8 +57,6 @@ enum UserDefaultsKey {
     static let selectedLanguage = "selectedLanguage"
     static let notificationTime = "notificationTime"
     static let developerModeActive = "developerModeActive"
-    static let developerModePassword = "developerModePassword"
-    static let hasSetDeveloperPassword = "hasSetDeveloperPassword"
     static let selectedTheme = "selectedTheme"
     static let connectedCalendars = "connectedCalendars"
 }

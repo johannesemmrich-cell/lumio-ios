@@ -1,6 +1,65 @@
 import EventKit
 import Foundation
 
+// MARK: — Calendar Provider
+
+enum CalendarProvider: String, CaseIterable, Identifiable {
+    case apple   = "Apple"
+    case google  = "Google"
+    case outlook = "Outlook"
+    case other   = "Andere"
+
+    var id: String { rawValue }
+
+    var systemImage: String {
+        switch self {
+        case .apple:   return "applelogo"
+        case .google:  return "globe"
+        case .outlook: return "envelope.fill"
+        case .other:   return "calendar"
+        }
+    }
+}
+
+extension EKCalendar {
+    var provider: CalendarProvider {
+        switch source.sourceType {
+        case .local, .mobileMe:
+            return .apple
+        case .calDAV:
+            let t = source.title.lowercased()
+            if t.contains("icloud") || t.contains("apple") { return .apple }
+            if t.contains("google") || t.contains("gmail") { return .google }
+            return .other
+        case .exchange:
+            return .outlook
+        default:
+            return .other
+        }
+    }
+}
+
+// MARK: — Briefing Exclusion Store
+
+struct BriefingExclusionStore {
+    private static let key = "briefingExcludedCalendarIDs"
+
+    static var excludedIDs: Set<String> {
+        get { Set(UserDefaults.standard.stringArray(forKey: key) ?? []) }
+        set { UserDefaults.standard.set(Array(newValue), forKey: key) }
+    }
+
+    static func toggle(_ calendarID: String) {
+        var ids = excludedIDs
+        if ids.contains(calendarID) { ids.remove(calendarID) } else { ids.insert(calendarID) }
+        excludedIDs = ids
+    }
+
+    static func isExcluded(_ calendarID: String) -> Bool {
+        excludedIDs.contains(calendarID)
+    }
+}
+
 struct CalendarEvent: Identifiable, Equatable {
     let id: String
     let title: String

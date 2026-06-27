@@ -172,12 +172,21 @@ final class CalendarEventNote {
     var id: UUID
     var eventIdentifier: String
     var customNotes: String
+    var linkedKeywords: String   // comma-separated keywords linking to Library PDFs
     var updatedAt: Date
 
-    init(eventIdentifier: String, customNotes: String = "") {
+    init(eventIdentifier: String, customNotes: String = "", linkedKeywords: String = "") {
         self.id = UUID()
         self.eventIdentifier = eventIdentifier
         self.customNotes = customNotes
+        self.linkedKeywords = linkedKeywords
         self.updatedAt = Date()
+    }
+
+    var keywordList: [String] {
+        linkedKeywords
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
     }
 }
