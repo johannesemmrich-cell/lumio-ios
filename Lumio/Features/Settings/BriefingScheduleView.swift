@@ -1,86 +1,78 @@
 import SwiftUI
 
+private struct WeekdayEntry: Identifiable {
+    let id: Int        // Calendar weekday (1=Sun, 2=Mon … 7=Sat)
+    let short: String
+    let long: String
+}
+
+private let weekdays: [WeekdayEntry] = [
+    .init(id: 2, short: "Mo", long: "Montag"),
+    .init(id: 3, short: "Di", long: "Dienstag"),
+    .init(id: 4, short: "Mi", long: "Mittwoch"),
+    .init(id: 5, short: "Do", long: "Donnerstag"),
+    .init(id: 6, short: "Fr", long: "Freitag"),
+    .init(id: 7, short: "Sa", long: "Samstag"),
+    .init(id: 1, short: "So", long: "Sonntag"),
+]
+
 struct BriefingScheduleView: View {
-    // Calendar weekday: 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri, 7=Sat
-    @State private var selectedDays: Set<Int> = {
+    @State private var enabledDays: Set<Int>
+    @State private var dayTimes: [Int: Date]
+    @State private var expandedDay: Int?
+
+    init() {
         let saved = UserDefaults.standard.array(forKey: UserDefaultsKey.briefingScheduleDays) as? [Int]
-        return Set(saved ?? [2, 3, 4, 5, 6])
-    }()
+        _enabledDays = State(initialValue: Set(saved ?? [2, 3, 4, 5, 6]))
 
-    @State private var scheduleTime: Date = {
-        var comps = DateComponents()
-        let savedHour = UserDefaults.standard.integer(forKey: UserDefaultsKey.briefingScheduleHour)
-        let savedMinute = UserDefaults.standard.integer(forKey: UserDefaultsKey.briefingScheduleMinute)
-        comps.hour = savedHour == 0 ? 7 : savedHour
-        comps.minute = savedMinute
-        return Calendar.current.date(from: comps) ?? Date()
-    }()
-
-    private let weekdayNames: [(Int, String)] = [
-        (2, "Mo"), (3, "Di"), (4, "Mi"), (5, "Do"), (6, "Fr"), (7, "Sa"), (1, "So")
-    ]
+        var times: [Int: Date] = [:]
+        for w in 1...7 {
+            let h = UserDefaults.standard.integer(forKey: UserDefaultsKey.briefingHourKey(w))
+            let m = UserDefaults.standard.integer(forKey: UserDefaultsKey.briefingMinuteKey(w))
+            var comps = DateComponents()
+            comps.hour = h == 0 ? 7 : h
+            comps.minute = m
+            times[w] = Calendar.current.date(from: comps) ?? Date()
+        }
+        _dayTimes = State(initialValue: times)
+    }
 
     var body: some View {
         List {
             Section {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Tage")
-                        .font(LumioTypography.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-
-                    HStack(spacing: 8) {
-                        ForEach(weekdayNames, id: \.0) { weekday, label in
-                            DayToggleButton(
-                                label: label,
-                                isSelected: selectedDays.contains(weekday)
-                            ) {
-                                if selectedDays.contains(weekday) {
-                                    selectedDays.remove(weekday)
-                                } else {
-                                    selectedDays.insert(weekday)
-                                }
-                                saveAndSchedule()
-                            }
-                        }
-                    }
+                ForEach(weekdays) { entry in
+                    weekdayRow(entry)
                 }
-                .padding(.vertical, 4)
-
-                DatePicker("Uhrzeit", selection: $scheduleTime, displayedComponents: .hourAndMinute)
-                    .onChange(of: scheduleTime) { _, _ in
-                        saveAndSchedule()
-                    }
             } header: {
-                Text("Briefing-Zeitplan")
+                Text("Zeitplan")
             } footer: {
-                if selectedDays.isEmpty {
-                    Text("Kein Tag ausgewählt — du erhältst keine Briefing-Benachrichtigungen.")
+                if enabledDays.isEmpty {
+                    Text("Kein Tag aktiv — du erhältst keine Briefing-Benachrichtigungen.")
                         .font(LumioTypography.caption)
                 } else {
-                    Text("Du erhältst dein Briefing an den markierten Tagen um \(formattedTime).")
+                    Text(footerText)
                         .font(LumioTypography.caption)
                 }
             }
 
             Section {
                 Button {
-                    selectedDays = Set(2...6)
+                    enabledDays = Set(2...6)
                     saveAndSchedule()
                 } label: {
-                    Label("Mo–Fr auswählen", systemImage: "briefcase")
+                    Label("Mo–Fr aktivieren", systemImage: "briefcase")
                         .foregroundStyle(.primary)
                 }
-
                 Button {
-                    selectedDays = Set(1...7)
+                    enabledDays = Set(1...7)
                     saveAndSchedule()
                 } label: {
-                    Label("Alle Tage", systemImage: "calendar")
+                    Label("Alle Tage aktivieren", systemImage: "calendar")
                         .foregroundStyle(.primary)
                 }
-
                 Button(role: .destructive) {
-                    selectedDays = []
+                    enabledDays = []
+                    expandedDay = nil
                     saveAndSchedule()
                 } label: {
                     Label("Benachrichtigungen deaktivieren", systemImage: "bell.slash")
@@ -93,54 +85,109 @@ struct BriefingScheduleView: View {
         .listStyle(.insetGrouped)
     }
 
-    private var formattedTime: String {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "HH:mm"
-        return fmt.string(from: scheduleTime)
+    @ViewBuilder
+    private func weekdayRow(_ entry: WeekdayEntry) -> some View {
+        let isEnabled = enabledDays.contains(entry.id)
+        let isExpanded = expandedDay == entry.id
+
+        VStack(spacing: 0) {
+            HStack {
+                Toggle(isOn: Binding(
+                    get: { isEnabled },
+                    set: { on in
+                        if on { enabledDays.insert(entry.id) } else {
+                            enabledDays.remove(entry.id)
+                            if expandedDay == entry.id { expandedDay = nil }
+                        }
+                        saveAndSchedule()
+                    }
+                )) {
+                    Text(entry.long)
+                        .font(LumioTypography.body)
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                guard isEnabled else { return }
+                withAnimation(.spring(duration: 0.25)) {
+                    expandedDay = isExpanded ? nil : entry.id
+                }
+            }
+
+            if isEnabled {
+                HStack {
+                    Spacer()
+                    Text(formattedTime(for: entry.id))
+                        .font(LumioTypography.caption.monospacedDigit())
+                        .foregroundStyle(isExpanded ? Color.lumioAccent : .secondary)
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(isExpanded ? Color.lumioAccent : .secondary)
+                }
+                .padding(.bottom, isExpanded ? 0 : 4)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation(.spring(duration: 0.25)) {
+                        expandedDay = isExpanded ? nil : entry.id
+                    }
+                }
+            }
+
+            if isEnabled && isExpanded {
+                DatePicker(
+                    "",
+                    selection: Binding(
+                        get: { dayTimes[entry.id] ?? defaultTime() },
+                        set: { newDate in
+                            dayTimes[entry.id] = newDate
+                            saveAndSchedule()
+                        }
+                    ),
+                    displayedComponents: .hourAndMinute
+                )
+                .datePickerStyle(.wheel)
+                .labelsHidden()
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+    }
+
+    private func defaultTime() -> Date {
+        var c = DateComponents(); c.hour = 7; c.minute = 0
+        return Calendar.current.date(from: c) ?? Date()
+    }
+
+    private func formattedTime(for weekday: Int) -> String {
+        guard let date = dayTimes[weekday] else { return "07:00" }
+        let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
+        return String(format: "%02d:%02d", comps.hour ?? 7, comps.minute ?? 0)
+    }
+
+    private var footerText: String {
+        let sorted = weekdays.filter { enabledDays.contains($0.id) }
+        let parts = sorted.map { "\($0.short) \(formattedTime(for: $0.id))" }
+        return "Briefing-Benachrichtigungen: " + parts.joined(separator: ", ")
     }
 
     private func saveAndSchedule() {
-        let comps = Calendar.current.dateComponents([.hour, .minute], from: scheduleTime)
-        let hour = comps.hour ?? 7
-        let minute = comps.minute ?? 0
+        UserDefaults.standard.set(Array(enabledDays), forKey: UserDefaultsKey.briefingScheduleDays)
 
-        UserDefaults.standard.set(Array(selectedDays), forKey: UserDefaultsKey.briefingScheduleDays)
-        UserDefaults.standard.set(hour, forKey: UserDefaultsKey.briefingScheduleHour)
-        UserDefaults.standard.set(minute, forKey: UserDefaultsKey.briefingScheduleMinute)
+        var dayTimePairs: [Int: (hour: Int, minute: Int)] = [:]
+        for weekday in enabledDays {
+            let date = dayTimes[weekday] ?? defaultTime()
+            let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
+            let h = comps.hour ?? 7
+            let m = comps.minute ?? 0
+            UserDefaults.standard.set(h, forKey: UserDefaultsKey.briefingHourKey(weekday))
+            UserDefaults.standard.set(m, forKey: UserDefaultsKey.briefingMinuteKey(weekday))
+            dayTimePairs[weekday] = (hour: h, minute: m)
+        }
 
         Task {
             await NotificationService.shared.scheduleBriefings(
-                days: selectedDays,
-                hour: hour,
-                minute: minute,
+                dayTimes: dayTimePairs,
                 previewText: String(localized: "Tap to see your morning briefing.")
             )
         }
-    }
-}
-
-private struct DayToggleButton: View {
-    let label: String
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(label)
-                .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(isSelected ? Color.lumioAccent.opacity(0.15) : Color(uiColor: .tertiarySystemBackground))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .strokeBorder(isSelected ? Color.lumioAccent.opacity(0.5) : Color.clear, lineWidth: 1.5)
-                        )
-                )
-                .foregroundStyle(isSelected ? Color.lumioAccent : .secondary)
-        }
-        .buttonStyle(.plain)
-        .animation(.spring(duration: 0.18), value: isSelected)
     }
 }

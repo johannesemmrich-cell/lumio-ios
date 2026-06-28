@@ -16,15 +16,13 @@ final class NotificationService: @unchecked Sendable {
         }
     }
 
-    // Schedule notifications for selected weekdays (Calendar weekday: 1=Sun…7=Sat)
-    func scheduleBriefings(days: Set<Int>, hour: Int, minute: Int, previewText: String) async {
+    // Schedule notifications — each weekday can have its own time.
+    // dayTimes: [weekday: (hour, minute)], Calendar weekday: 1=Sun…7=Sat
+    func scheduleBriefings(dayTimes: [Int: (hour: Int, minute: Int)], previewText: String) async {
         let center = UNUserNotificationCenter.current()
-
-        // Remove all existing briefing notifications
         let allIDs = (1...7).map { "\(Self.identifierPrefix)\($0)" }
         center.removePendingNotificationRequests(withIdentifiers: allIDs)
-
-        guard !days.isEmpty else { return }
+        guard !dayTimes.isEmpty else { return }
 
         let content = UNMutableNotificationContent()
         content.title = String(localized: "Good morning ☀️")
@@ -32,27 +30,29 @@ final class NotificationService: @unchecked Sendable {
         content.sound = .default
         content.categoryIdentifier = "DAILY_BRIEFING"
 
-        for weekday in days {
+        for (weekday, time) in dayTimes {
             var components = DateComponents()
             components.weekday = weekday
-            components.hour = hour
-            components.minute = minute
-
+            components.hour = time.hour
+            components.minute = time.minute
             let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
             let request = UNNotificationRequest(
                 identifier: "\(Self.identifierPrefix)\(weekday)",
                 content: content,
                 trigger: trigger
             )
-            do {
-                try await center.add(request)
-            } catch {
+            do { try await center.add(request) } catch {
                 print("Failed to schedule notification for weekday \(weekday): \(error)")
             }
         }
     }
 
-    // Legacy single-time scheduling (kept for backward compat)
+    // Legacy — kept for callers that haven't migrated yet
+    func scheduleBriefings(days: Set<Int>, hour: Int, minute: Int, previewText: String) async {
+        let times = Dictionary(uniqueKeysWithValues: days.map { ($0, (hour: hour, minute: minute)) })
+        await scheduleBriefings(dayTimes: times, previewText: previewText)
+    }
+
     func scheduleDailyBriefing(at hour: Int, minute: Int, previewText: String) async {
         await scheduleBriefings(days: Set(2...6), hour: hour, minute: minute, previewText: previewText)
     }

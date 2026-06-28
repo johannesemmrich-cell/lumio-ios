@@ -97,6 +97,9 @@ enum UserDefaultsKey {
     static let briefingScheduleDays = "briefingScheduleDays"
     static let briefingScheduleHour = "briefingScheduleHour"
     static let briefingScheduleMinute = "briefingScheduleMinute"
+    // Per-day times: "briefingHour_<weekday>" / "briefingMinute_<weekday>"
+    static func briefingHourKey(_ weekday: Int) -> String { "briefingHour_\(weekday)" }
+    static func briefingMinuteKey(_ weekday: Int) -> String { "briefingMinute_\(weekday)" }
 }
 
 // MARK: — Briefing Settings
