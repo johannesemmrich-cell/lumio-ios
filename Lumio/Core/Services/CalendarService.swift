@@ -3,7 +3,7 @@ import Foundation
 
 // MARK: — Reminder Item
 
-struct ReminderItem: Identifiable {
+struct ReminderItem: Identifiable, Sendable {
     let id: String
     let title: String
     let dueDate: Date?
@@ -139,21 +139,14 @@ final class CalendarService: ObservableObject {
 
         let calendar = Calendar.current
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date())) ?? Date()
-
         let predicate = store.predicateForIncompleteReminders(withDueDateStarting: nil, ending: endOfDay, calendars: nil)
 
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            store.fetchReminders(matching: predicate) { [weak self] ekReminders in
-                guard let self else {
-                    continuation.resume()
-                    return
-                }
-                let items = (ekReminders ?? [])
-                    .sorted { lhs, rhs in
-                        let lDate = lhs.dueDateComponents?.date ?? Date.distantFuture
-                        let rDate = rhs.dueDateComponents?.date ?? Date.distantFuture
-                        return lDate < rDate
-                    }
+        // Convert EKReminder → ReminderItem inside the callback (on callback thread),
+        // then pass the Sendable [ReminderItem] array through the continuation.
+        let items: [ReminderItem] = await withCheckedContinuation { continuation in
+            store.fetchReminders(matching: predicate) { ekReminders in
+                let mapped = (ekReminders ?? [])
+                    .sorted { ($0.dueDateComponents?.date ?? .distantFuture) < ($1.dueDateComponents?.date ?? .distantFuture) }
                     .map { r in
                         ReminderItem(
                             id: r.calendarItemIdentifier,
@@ -163,12 +156,11 @@ final class CalendarService: ObservableObject {
                             notes: r.notes
                         )
                     }
-                Task { @MainActor in
-                    self.todayReminders = items
-                    continuation.resume()
-                }
+                continuation.resume(returning: mapped)
             }
         }
+
+        todayReminders = items
     }
 
     func fetchTodayEvents() async {
