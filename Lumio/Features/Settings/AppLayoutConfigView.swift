@@ -308,6 +308,7 @@ struct AppLayoutConfigView: View {
 
 private struct TabPickerSheet: View {
     @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var subscriptionManager: SubscriptionManager
     let currentTab: AppTab
     let onSelect: (AppTab) -> Void
 
@@ -320,7 +321,9 @@ private struct TabPickerSheet: View {
 
             VStack(spacing: 1) {
                 ForEach(AppTab.allCases, id: \.self) { tab in
+                    let isPremiumLocked = tab == .calendar && !subscriptionManager.effectivelyPremium
                     Button {
+                        guard !isPremiumLocked else { return }
                         HapticFeedback.selection()
                         onSelect(tab)
                     } label: {
@@ -333,16 +336,23 @@ private struct TabPickerSheet: View {
                                     .frame(width: 34, height: 34)
                                 Image(systemName: tab.icon)
                                     .font(.body.weight(.medium))
-                                    .foregroundStyle(tab == currentTab ? .white : .primary)
+                                    .foregroundStyle(tab == currentTab ? .white : (isPremiumLocked ? .secondary : .primary))
                             }
 
                             Text(tab.fullLabel)
                                 .font(LumioTypography.body)
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(isPremiumLocked ? .secondary : .primary)
 
                             Spacer()
 
-                            if tab == currentTab {
+                            if isPremiumLocked {
+                                Text("Premium")
+                                    .font(LumioTypography.caption2.weight(.bold))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 3)
+                                    .background(Capsule().fill(Color.lumioAccent))
+                            } else if tab == currentTab {
                                 Image(systemName: "checkmark")
                                     .font(.body.weight(.semibold))
                                     .foregroundStyle(appState.accentColor)

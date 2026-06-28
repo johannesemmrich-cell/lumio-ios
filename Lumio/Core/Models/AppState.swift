@@ -37,10 +37,9 @@ final class AppState: ObservableObject {
 
         if let savedOrder = UserDefaults.standard.stringArray(forKey: UserDefaultsKey.tabOrder) {
             let ordered = savedOrder.compactMap { AppTab(rawValue: $0) }
-            let missing = AppTab.allCases.filter { !ordered.contains($0) }
-            self.tabOrder = ordered + missing
+            self.tabOrder = Array(ordered.prefix(4))
         } else {
-            self.tabOrder = AppTab.allCases
+            self.tabOrder = [.today, .library, .chat, .settings]
         }
 
         self.briefingLength = BriefingLength(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.briefingLength) ?? "") ?? .medium

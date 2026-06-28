@@ -6,7 +6,7 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $appState.selectedTab) {
-            ForEach(appState.tabOrder, id: \.self) { tab in
+            ForEach(appState.tabOrder.prefix(4), id: \.self) { tab in
                 Tab(tab.title, systemImage: tab.icon, value: tab) {
                     tabContent(for: tab)
                         .tint(appState.accentColor)

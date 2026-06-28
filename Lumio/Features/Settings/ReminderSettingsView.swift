@@ -4,6 +4,7 @@ import EventKit
 struct ReminderSettingsView: View {
     @State private var calendars: [EKCalendar] = []
     @State private var authStatus: EKAuthorizationStatus = EKEventStore.authorizationStatus(for: .reminder)
+    @State private var excludedIDs: Set<String> = ReminderExclusionStore.excludedIDs
 
     private let service = CalendarService()
 
@@ -42,7 +43,7 @@ struct ReminderSettingsView: View {
                             Text(cal.title)
                                 .font(LumioTypography.body)
                             Spacer()
-                            if !ReminderExclusionStore.isExcluded(cal.calendarIdentifier) {
+                            if !excludedIDs.contains(cal.calendarIdentifier) {
                                 Image(systemName: "checkmark")
                                     .foregroundStyle(Color.accentColor)
                                     .font(.system(size: 14, weight: .semibold))
@@ -51,6 +52,7 @@ struct ReminderSettingsView: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             ReminderExclusionStore.toggle(cal.calendarIdentifier)
+                            excludedIDs = ReminderExclusionStore.excludedIDs
                         }
                     }
                 } header: {
@@ -62,11 +64,8 @@ struct ReminderSettingsView: View {
 
                 Section {
                     Button {
-                        for cal in calendars {
-                            var ids = ReminderExclusionStore.excludedIDs
-                            ids.remove(cal.calendarIdentifier)
-                            ReminderExclusionStore.excludedIDs = ids
-                        }
+                        ReminderExclusionStore.excludedIDs = []
+                        excludedIDs = []
                     } label: {
                         Label("Alle aktivieren", systemImage: "checkmark.circle")
                             .foregroundStyle(.primary)
