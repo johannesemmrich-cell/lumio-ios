@@ -236,6 +236,19 @@ final class CalendarService: ObservableObject {
         await fetchTodayEvents()
     }
 
+    func updateEvent(identifier: String, newStartDate: Date, newEndDate: Date) async throws {
+        guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else {
+            throw CalendarError.accessDenied
+        }
+        guard let event = store.event(withIdentifier: identifier) else {
+            throw CalendarError.eventNotFound
+        }
+        event.startDate = newStartDate
+        event.endDate = newEndDate
+        try store.save(event, span: .thisEvent)
+        await fetchTodayEvents()
+    }
+
     func availableCalendars() -> [EKCalendar] {
         store.calendars(for: .event)
     }

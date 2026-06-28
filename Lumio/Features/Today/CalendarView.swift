@@ -436,6 +436,7 @@ struct EventDetailSheet: View {
     @State private var draftKeywords: String = ""
     @State private var showAIChat = false
     @State private var showDeleteConfirm = false
+    @State private var showReschedule = false
 
     private let calendarService = CalendarService()
 
@@ -651,6 +652,13 @@ struct EventDetailSheet: View {
                             Button("Speichern") { saveNotes() }
                                 .fontWeight(.semibold)
                         }
+                        if !event.isAllDay {
+                            Button {
+                                showReschedule = true
+                            } label: {
+                                Image(systemName: "clock.arrow.2.circlepath")
+                            }
+                        }
                         Button(role: .destructive) {
                             showDeleteConfirm = true
                         } label: {
@@ -675,6 +683,14 @@ struct EventDetailSheet: View {
             .onAppear {
                 draftNotes = existingNote?.customNotes ?? ""
                 draftKeywords = existingNote?.linkedKeywords ?? ""
+            }
+            .sheet(isPresented: $showReschedule) {
+                RescheduleSheet(event: event, calendarService: calendarService) {
+                    dismiss()
+                }
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(24)
             }
             .sheet(isPresented: $showAIChat) {
                 EventAIChatSheet(event: event, userNotes: draftNotes, keywords: draftKeywords)
@@ -709,6 +725,83 @@ struct EventDetailSheet: View {
             modelContext.insert(note)
         }
         dismiss()
+    }
+}
+
+// MARK: — Reschedule Sheet
+
+private struct RescheduleSheet: View {
+    let event: CalendarEvent
+    let calendarService: CalendarService
+    let onDone: () -> Void
+
+    @State private var newStart: Date
+    @State private var newEnd: Date
+    @State private var isSaving = false
+    @State private var errorMessage: String?
+    @Environment(\.dismiss) private var dismiss
+
+    init(event: CalendarEvent, calendarService: CalendarService, onDone: @escaping () -> Void) {
+        self.event = event
+        self.calendarService = calendarService
+        self.onDone = onDone
+        _newStart = State(initialValue: event.startDate)
+        _newEnd   = State(initialValue: event.endDate)
+    }
+
+    private var duration: TimeInterval { event.endDate.timeIntervalSince(event.startDate) }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Startzeit") {
+                    DatePicker("", selection: $newStart, displayedComponents: [.date, .hourAndMinute])
+                        .datePickerStyle(.graphical)
+                        .labelsHidden()
+                        .onChange(of: newStart) { _, val in
+                            newEnd = val.addingTimeInterval(duration)
+                        }
+                }
+                Section("Endzeit") {
+                    DatePicker("", selection: $newEnd, in: newStart..., displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+                }
+                if let err = errorMessage {
+                    Section { Text(err).foregroundStyle(.red).font(LumioTypography.caption) }
+                }
+            }
+            .navigationTitle("Termin verschieben")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Abbrechen") { dismiss() }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Speichern") {
+                        Task {
+                            isSaving = true
+                            do {
+                                try await calendarService.updateEvent(
+                                    identifier: event.id,
+                                    newStartDate: newStart,
+                                    newEndDate: newEnd
+                                )
+                                HapticFeedback.success()
+                                dismiss()
+                                onDone()
+                            } catch {
+                                errorMessage = error.localizedDescription
+                                HapticFeedback.error()
+                            }
+                            isSaving = false
+                        }
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(isSaving)
+                }
+            }
+        }
     }
 }
 
@@ -970,11 +1063,23 @@ struct AddEventSheet: View {
                 }
                 Section {
                     Toggle("Ganztägig", isOn: $isAllDay)
-                    if !isAllDay {
-                        DatePicker("Start", selection: $startTime, displayedComponents: [.date, .hourAndMinute])
-                        DatePicker("Ende", selection: $endTime, in: startTime..., displayedComponents: [.date, .hourAndMinute])
-                    } else {
-                        DatePicker("Datum", selection: $startTime, displayedComponents: .date)
+                }
+                if !isAllDay {
+                    Section("Start") {
+                        DatePicker("", selection: $startTime, displayedComponents: [.date, .hourAndMinute])
+                            .datePickerStyle(.graphical)
+                            .labelsHidden()
+                    }
+                    Section("Ende") {
+                        DatePicker("", selection: $endTime, in: startTime..., displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.wheel)
+                            .labelsHidden()
+                    }
+                } else {
+                    Section("Datum") {
+                        DatePicker("", selection: $startTime, displayedComponents: .date)
+                            .datePickerStyle(.graphical)
+                            .labelsHidden()
                     }
                 }
                 if !availableCalendars.isEmpty {

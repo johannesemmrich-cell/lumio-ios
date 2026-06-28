@@ -469,6 +469,7 @@ private extension AppTab {
     var shortLabel: String {
         switch self {
         case .today:    return "Heute"
+        case .calendar: return "Kalender"
         case .library:  return "Mediathek"
         case .chat:     return "Chat"
         case .settings: return "Einst."
@@ -478,6 +479,7 @@ private extension AppTab {
     var fullLabel: String {
         switch self {
         case .today:    return "Heute"
+        case .calendar: return "Kalender"
         case .library:  return "Mediathek"
         case .chat:     return "Chat"
         case .settings: return "Einstellungen"

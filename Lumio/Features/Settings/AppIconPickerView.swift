@@ -10,11 +10,14 @@ struct AppIconOption: Identifiable {
 }
 
 private let iconOptions: [AppIconOption] = [
-    AppIconOption(id: "default",   name: nil,                label: "Lumio",    symbol: "sun.max.fill",      colors: [Color(hex: 0xFF9500), Color(hex: 0xFF3B30)]),
-    AppIconOption(id: "dawn",      name: "AppIcon-Dawn",     label: "Dawn",     symbol: "sunrise.fill",      colors: [Color(hex: 0xFF2D78), Color(hex: 0xFF9A3C)]),
-    AppIconOption(id: "midnight",  name: "AppIcon-Midnight", label: "Midnight", symbol: "moon.stars.fill",   colors: [Color(hex: 0x0D1B2A), Color(hex: 0x1A237E)]),
-    AppIconOption(id: "forest",    name: "AppIcon-Forest",   label: "Forest",   symbol: "leaf.fill",         colors: [Color(hex: 0x1B5E20), Color(hex: 0x43A047)]),
-    AppIconOption(id: "ocean",     name: "AppIcon-Ocean",    label: "Ocean",    symbol: "water.waves",       colors: [Color(hex: 0x01579B), Color(hex: 0x039BE5)]),
+    AppIconOption(id: "default",   name: nil,                  label: "Lumio",    symbol: "sun.max.fill",      colors: [Color(hex: 0xFF9500), Color(hex: 0xFF3B30)]),
+    AppIconOption(id: "dawn",      name: "AppIcon-Dawn",       label: "Dawn",     symbol: "sunrise.fill",      colors: [Color(hex: 0xFF2D78), Color(hex: 0xFF9A3C)]),
+    AppIconOption(id: "midnight",  name: "AppIcon-Midnight",   label: "Midnight", symbol: "moon.stars.fill",   colors: [Color(hex: 0x0D1B2A), Color(hex: 0x1A237E)]),
+    AppIconOption(id: "forest",    name: "AppIcon-Forest",     label: "Forest",   symbol: "leaf.fill",         colors: [Color(hex: 0x1B5E20), Color(hex: 0x43A047)]),
+    AppIconOption(id: "ocean",     name: "AppIcon-Ocean",      label: "Ocean",    symbol: "water.waves",       colors: [Color(hex: 0x01579B), Color(hex: 0x039BE5)]),
+    // Neutral icons
+    AppIconOption(id: "slate",     name: "AppIcon-Slate",      label: "Slate",    symbol: "square.fill",       colors: [Color(hex: 0x3A3A3C), Color(hex: 0x1C1C1E)]),
+    AppIconOption(id: "minimal",   name: "AppIcon-Minimal",    label: "Minimal",  symbol: "circle.fill",       colors: [Color(hex: 0xE5E5EA), Color(hex: 0xC7C7CC)]),
 ]
 
 struct AppIconPickerView: View {
@@ -90,7 +93,14 @@ private struct IconCell: View {
     let action: () -> Void
 
     private var iconImage: UIImage? {
-        UIImage(named: option.name ?? "AppIcon")
+        let name = option.name ?? "AppIcon"
+        // Try asset catalog name first (works for default icon and often for alternates)
+        if let img = UIImage(named: name) { return img }
+        // Alternate icons may be referenced by their raw PNG filename in the bundle
+        let filename = "\(name)-1024"
+        if let url = Bundle.main.url(forResource: filename, withExtension: "png"),
+           let img = UIImage(contentsOfFile: url.path) { return img }
+        return nil
     }
 
     var body: some View {

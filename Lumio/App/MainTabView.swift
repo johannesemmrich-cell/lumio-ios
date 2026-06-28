@@ -23,6 +23,8 @@ struct MainTabView: View {
         switch tab {
         case .today:
             TodayView()
+        case .calendar:
+            NavigationStack { LumioCalendarView() }
         case .library:
             LibraryView()
         case .chat:

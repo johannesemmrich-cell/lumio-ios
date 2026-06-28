@@ -59,27 +59,31 @@ final class AppState: ObservableObject {
 
 enum AppTab: String, CaseIterable {
     case today = "today"
+    case calendar = "calendar"
     case library = "library"
     case chat = "chat"
     case settings = "settings"
 
     var title: LocalizedStringKey {
         switch self {
-        case .today: return "Today"
-        case .library: return "Library"
-        case .chat: return "Chat"
+        case .today:    return "Today"
+        case .calendar: return "Kalender"
+        case .library:  return "Library"
+        case .chat:     return "Chat"
         case .settings: return "Settings"
         }
     }
 
     var icon: String {
         switch self {
-        case .today: return "sun.horizon.fill"
-        case .library: return "books.vertical.fill"
-        case .chat: return "bubble.left.and.bubble.right.fill"
+        case .today:    return "sun.horizon.fill"
+        case .calendar: return "calendar"
+        case .library:  return "books.vertical.fill"
+        case .chat:     return "bubble.left.and.bubble.right.fill"
         case .settings: return "gearshape.fill"
         }
     }
+
 }
 
 enum UserDefaultsKey {
