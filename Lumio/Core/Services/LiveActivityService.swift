@@ -27,6 +27,15 @@ final class LiveActivityService: ObservableObject, @unchecked Sendable {
 
     private var currentActivity: Activity<LumioBriefingAttributes>?
 
+    init() {
+        // Terminate any orphaned activities left from a previous app session
+        Task {
+            for activity in Activity<LumioBriefingAttributes>.activities {
+                await activity.end(nil, dismissalPolicy: .immediate)
+            }
+        }
+    }
+
     @MainActor func startActivity(totalEvents: Int, firstEvent: String, firstTime: String, accentColorHex: String) {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
 

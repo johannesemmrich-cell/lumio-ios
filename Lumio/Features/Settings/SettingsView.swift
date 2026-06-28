@@ -136,6 +136,7 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
         }
+        .tint(appState.accentColor)
         .sheet(isPresented: $showDeveloperUnlock) {
             DeveloperUnlockSheet(isPresented: $showDeveloperUnlock)
         }

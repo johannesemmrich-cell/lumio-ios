@@ -19,7 +19,6 @@ private let weekdays: [WeekdayEntry] = [
 struct BriefingScheduleView: View {
     @State private var enabledDays: Set<Int>
     @State private var dayTimes: [Int: Date]
-    @State private var expandedDay: Int?
 
     init() {
         let saved = UserDefaults.standard.array(forKey: UserDefaultsKey.briefingScheduleDays) as? [Int]
@@ -72,7 +71,6 @@ struct BriefingScheduleView: View {
                 }
                 Button(role: .destructive) {
                     enabledDays = []
-                    expandedDay = nil
                     saveAndSchedule()
                 } label: {
                     Label("Benachrichtigungen deaktivieren", systemImage: "bell.slash")
@@ -88,52 +86,12 @@ struct BriefingScheduleView: View {
     @ViewBuilder
     private func weekdayRow(_ entry: WeekdayEntry) -> some View {
         let isEnabled = enabledDays.contains(entry.id)
-        let isExpanded = expandedDay == entry.id
 
-        VStack(spacing: 0) {
-            HStack {
-                Toggle(isOn: Binding(
-                    get: { isEnabled },
-                    set: { on in
-                        if on { enabledDays.insert(entry.id) } else {
-                            enabledDays.remove(entry.id)
-                            if expandedDay == entry.id { expandedDay = nil }
-                        }
-                        saveAndSchedule()
-                    }
-                )) {
-                    Text(entry.long)
-                        .font(LumioTypography.body)
-                }
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                guard isEnabled else { return }
-                withAnimation(.spring(duration: 0.25)) {
-                    expandedDay = isExpanded ? nil : entry.id
-                }
-            }
-
+        HStack {
+            Text(entry.long)
+                .font(LumioTypography.body)
+            Spacer()
             if isEnabled {
-                HStack {
-                    Spacer()
-                    Text(formattedTime(for: entry.id))
-                        .font(LumioTypography.caption.monospacedDigit())
-                        .foregroundStyle(isExpanded ? Color.lumioAccent : .secondary)
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(isExpanded ? Color.lumioAccent : .secondary)
-                }
-                .padding(.bottom, isExpanded ? 0 : 4)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    withAnimation(.spring(duration: 0.25)) {
-                        expandedDay = isExpanded ? nil : entry.id
-                    }
-                }
-            }
-
-            if isEnabled && isExpanded {
                 DatePicker(
                     "",
                     selection: Binding(
@@ -145,10 +103,20 @@ struct BriefingScheduleView: View {
                     ),
                     displayedComponents: .hourAndMinute
                 )
-                .datePickerStyle(.wheel)
+                .datePickerStyle(.compact)
                 .labelsHidden()
-                .transition(.opacity.combined(with: .move(edge: .top)))
+                .fixedSize()
+                .padding(.trailing, 8)
             }
+            Toggle("", isOn: Binding(
+                get: { isEnabled },
+                set: { on in
+                    if on { enabledDays.insert(entry.id) } else { enabledDays.remove(entry.id) }
+                    saveAndSchedule()
+                }
+            ))
+            .labelsHidden()
+            .fixedSize()
         }
     }
 
@@ -157,15 +125,13 @@ struct BriefingScheduleView: View {
         return Calendar.current.date(from: c) ?? Date()
     }
 
-    private func formattedTime(for weekday: Int) -> String {
-        guard let date = dayTimes[weekday] else { return "07:00" }
-        let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
-        return String(format: "%02d:%02d", comps.hour ?? 7, comps.minute ?? 0)
-    }
-
     private var footerText: String {
         let sorted = weekdays.filter { enabledDays.contains($0.id) }
-        let parts = sorted.map { "\($0.short) \(formattedTime(for: $0.id))" }
+        let fmt = DateFormatter(); fmt.dateFormat = "HH:mm"
+        let parts = sorted.map { entry -> String in
+            let time = dayTimes[entry.id].map { fmt.string(from: $0) } ?? "07:00"
+            return "\(entry.short) \(time)"
+        }
         return "Briefing-Benachrichtigungen: " + parts.joined(separator: ", ")
     }
 

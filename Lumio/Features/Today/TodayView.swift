@@ -10,6 +10,7 @@ struct TodayView: View {
     @State private var showPaywall = false
     @State private var showCalendar = false
     @State private var showBriefingDetail = false
+    @State private var selectedEvent: CalendarEvent? = nil
     @State private var headerOffset: CGFloat = 0
 
     var body: some View {
@@ -90,6 +91,10 @@ struct TodayView: View {
                 LumioCalendarView()
                     .environmentObject(appState)
             }
+            .sheet(item: $selectedEvent) { event in
+                EventDetailSheet(event: event)
+                    .environmentObject(subscriptionManager)
+            }
             .sheet(isPresented: $showBriefingDetail) {
                 NavigationStack {
                     BriefingDetailView(
@@ -128,8 +133,11 @@ struct TodayView: View {
                     .padding(.bottom, 4)
 
                 ForEach(viewModel.events) { event in
-                    EventCard(event: event)
-                        .developerFeedbackOverlay(
+                    Button { HapticFeedback.selection(); selectedEvent = event } label: {
+                        EventCard(event: event)
+                    }
+                    .buttonStyle(.plain)
+                    .developerFeedbackOverlay(
                             isActive: appState.isDeveloperModeActive,
                             screen: "Today",
                             feature: "Events",
