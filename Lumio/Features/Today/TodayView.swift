@@ -9,6 +9,7 @@ struct TodayView: View {
 
     @State private var showPaywall = false
     @State private var showCalendar = false
+    @State private var showBriefingDetail = false
     @State private var headerOffset: CGFloat = 0
 
     var body: some View {
@@ -18,7 +19,8 @@ struct TodayView: View {
                     VStack(spacing: 0) {
                         TodayHeaderView(
                             summary: viewModel.aiSummary,
-                            isGenerating: viewModel.isGeneratingAI
+                            isGenerating: viewModel.isGeneratingAI,
+                            onSummaryTap: { showBriefingDetail = true }
                         )
                         .padding(.horizontal, 20)
                         .padding(.bottom, 28)
@@ -88,6 +90,25 @@ struct TodayView: View {
                 LumioCalendarView()
                     .environmentObject(appState)
             }
+            .sheet(isPresented: $showBriefingDetail) {
+                NavigationStack {
+                    BriefingDetailView(
+                        fullSummary: viewModel.aiSummary,
+                        events: viewModel.events,
+                        reminders: viewModel.reminders,
+                        weather: viewModel.weather,
+                        language: appState.selectedLanguage,
+                        accentColor: appState.accentColor,
+                        accentColorHex: appState.accentColorHex,
+                        speechService: speechService
+                    )
+                }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(28)
+                .environmentObject(subscriptionManager)
+                .environmentObject(appState)
+            }
             .task {
                 viewModel.language = appState.selectedLanguage
                 viewModel.briefingLength = appState.briefingLength
@@ -137,6 +158,7 @@ struct TodayHeaderView: View {
     @EnvironmentObject private var appState: AppState
     let summary: String
     let isGenerating: Bool
+    var onSummaryTap: (() -> Void)? = nil
 
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
@@ -172,17 +194,29 @@ struct TodayHeaderView: View {
                         .foregroundStyle(.secondary)
                 }
             } else if !summary.isEmpty {
-                Text(summary)
-                    .font(LumioTypography.callout)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
+                Button {
+                    HapticFeedback.selection()
+                    onSummaryTap?()
+                } label: {
+                    HStack(alignment: .top, spacing: 10) {
+                        Text(summary)
+                            .font(LumioTypography.callout)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(3)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                            .padding(.top, 2)
+                    }
                     .padding(14)
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
                         RoundedRectangle(cornerRadius: 14)
                             .fill(.ultraThinMaterial)
                     )
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+                .buttonStyle(.plain)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .padding(.top, 8)

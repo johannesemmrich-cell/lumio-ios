@@ -32,6 +32,7 @@
 		9B8EF230AEE6C5783CB508F1 /* BriefingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E43379C270CA2D23F0F965C /* BriefingSettingsView.swift */; };
 		9F1F8D36FF21A002106BC95C /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3FAC10EA8C3626D182A377 /* CalendarView.swift */; };
 		A8BF8F3D6AEE8D665CF761CE /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C80803545FB80EE408D7EDD /* TodayView.swift */; };
+		A9C0D1E2F3040516273849AB /* BriefingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C1D2E3F404152637485960 /* BriefingDetailView.swift */; };
 		AA849029D816F7A602DA2CC5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */; };
 		AB667F5E5453F047F5DE2589 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22880EC8D849EB2BB1C4CF97 /* CalendarService.swift */; };
 		AC420AAA13E50A6BC7CCBD1C /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AFD9F0EC3B89E66BCECB09 /* OnboardingViewModel.swift */; };
@@ -118,6 +119,7 @@
 		44C8795AF6BC601EDFB1D878 /* LumioTodayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioTodayWidget.swift; sourceTree = "<group>"; };
 		46838FB7998E4CAC71C736F7 /* DeveloperModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperModeView.swift; sourceTree = "<group>"; };
 		4C80803545FB80EE408D7EDD /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		B0C1D2E3F404152637485960 /* BriefingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingDetailView.swift; sourceTree = "<group>"; };
 		553280A34E5E26BE6065CB9F /* OnboardingStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStepView.swift; sourceTree = "<group>"; };
 		613B3708C238B582338CCDC7 /* TodayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewModel.swift; sourceTree = "<group>"; };
 		6A1F09B386C51B86A03E8AD6 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 				CA3FAC10EA8C3626D182A377 /* CalendarView.swift */,
 				4C80803545FB80EE408D7EDD /* TodayView.swift */,
 				613B3708C238B582338CCDC7 /* TodayViewModel.swift */,
+				B0C1D2E3F404152637485960 /* BriefingDetailView.swift */,
 			);
 			path = Today;
 			sourceTree = "<group>";
@@ -612,6 +615,7 @@
 				D073C9F212E527063EC6CEF6 /* ThemeManager.swift in Sources */,
 				A8BF8F3D6AEE8D665CF761CE /* TodayView.swift in Sources */,
 				F067AB1DFFFADDC50881D449 /* TodayViewModel.swift in Sources */,
+				A9C0D1E2F3040516273849AB /* BriefingDetailView.swift in Sources */,
 				FF22AA33BB44CC55DD66EE11 /* WeatherService.swift in Sources */,
 				BB44CC55DD66EE11FF22AA33 /* BriefingScheduleView.swift in Sources */,
 				DD66EE11FF22AA33BB44CC55 /* HapticFeedback.swift in Sources */,
