@@ -102,8 +102,8 @@ struct DeveloperModeView: View {
                     .foregroundStyle(Color.lumioAccent)
             }
 
-            let inProgressItems = todoItems.filter { $0.inProgress && !$0.isCompleted }
-            let openItems = todoItems.filter { !$0.inProgress && !$0.isCompleted }
+            let inProgressItems = todoItems.filter { InProgressStore.isInProgress($0.id) && !$0.isCompleted }
+            let openItems = todoItems.filter { !InProgressStore.isInProgress($0.id) && !$0.isCompleted }
             let doneItems = todoItems.filter { $0.isCompleted }
 
             if !inProgressItems.isEmpty {
@@ -301,6 +301,12 @@ private struct FeedbackFilterChip: View {
 
 private struct DevTodoRow: View {
     @Bindable var item: DevTodoItem
+    @State private var inProgress: Bool
+
+    init(item: DevTodoItem) {
+        self.item = item
+        self._inProgress = State(initialValue: InProgressStore.isInProgress(item.id))
+    }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -309,11 +315,12 @@ private struct DevTodoRow: View {
                     item.isCompleted = false
                 } else {
                     item.isCompleted = true
-                    item.inProgress = false
+                    inProgress = false
+                    InProgressStore.setInProgress(item.id, false)
                 }
             } label: {
-                Image(systemName: item.isCompleted ? "checkmark.circle.fill" : (item.inProgress ? "arrow.triangle.2.circlepath.circle.fill" : "circle"))
-                    .foregroundStyle(item.isCompleted ? .green : (item.inProgress ? .orange : .secondary))
+                Image(systemName: item.isCompleted ? "checkmark.circle.fill" : (inProgress ? "arrow.triangle.2.circlepath.circle.fill" : "circle"))
+                    .foregroundStyle(item.isCompleted ? .green : (inProgress ? .orange : .secondary))
                     .font(.title3)
             }
             .buttonStyle(.plain)
@@ -324,7 +331,7 @@ private struct DevTodoRow: View {
                     .strikethrough(item.isCompleted, color: .secondary)
                     .foregroundStyle(item.isCompleted ? .secondary : .primary)
 
-                if item.inProgress && !item.isCompleted {
+                if inProgress && !item.isCompleted {
                     Text("In Arbeit")
                         .font(LumioTypography.caption2.weight(.semibold))
                         .foregroundStyle(.orange)
@@ -335,17 +342,18 @@ private struct DevTodoRow: View {
 
             if !item.isCompleted {
                 Button {
-                    item.inProgress.toggle()
+                    inProgress.toggle()
+                    InProgressStore.setInProgress(item.id, inProgress)
                 } label: {
-                    Text(item.inProgress ? "Pause" : "Testen")
+                    Text(inProgress ? "Pause" : "Testen")
                         .font(LumioTypography.caption.weight(.semibold))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
                         .background(
                             Capsule()
-                                .fill(item.inProgress ? Color.orange.opacity(0.15) : Color.blue.opacity(0.12))
+                                .fill(inProgress ? Color.orange.opacity(0.15) : Color.blue.opacity(0.12))
                         )
-                        .foregroundStyle(item.inProgress ? .orange : .blue)
+                        .foregroundStyle(inProgress ? .orange : .blue)
                 }
                 .buttonStyle(.plain)
             }

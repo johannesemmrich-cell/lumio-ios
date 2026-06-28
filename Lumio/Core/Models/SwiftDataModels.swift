@@ -170,15 +170,32 @@ final class DevTodoItem {
     var id: UUID
     var title: String
     var isCompleted: Bool
-    var inProgress: Bool
     var createdAt: Date
 
     init(title: String) {
         self.id = UUID()
         self.title = title
         self.isCompleted = false
-        self.inProgress = false
         self.createdAt = Date()
+    }
+}
+
+struct InProgressStore {
+    private static let key = "devTodoInProgressIDs"
+
+    static var inProgressIDs: Set<String> {
+        get { Set(UserDefaults.standard.stringArray(forKey: key) ?? []) }
+        set { UserDefaults.standard.set(Array(newValue), forKey: key) }
+    }
+
+    static func isInProgress(_ id: UUID) -> Bool {
+        inProgressIDs.contains(id.uuidString)
+    }
+
+    static func setInProgress(_ id: UUID, _ value: Bool) {
+        var ids = inProgressIDs
+        if value { ids.insert(id.uuidString) } else { ids.remove(id.uuidString) }
+        inProgressIDs = ids
     }
 }
 
