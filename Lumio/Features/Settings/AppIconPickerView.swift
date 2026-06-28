@@ -93,13 +93,13 @@ private struct IconCell: View {
     let action: () -> Void
 
     private var iconImage: UIImage? {
-        let name = option.name ?? "AppIcon"
-        // Try asset catalog name first (works for default icon and often for alternates)
-        if let img = UIImage(named: name) { return img }
-        // Alternate icons may be referenced by their raw PNG filename in the bundle
-        let filename = "\(name)-1024"
-        if let url = Bundle.main.url(forResource: filename, withExtension: "png"),
-           let img = UIImage(contentsOfFile: url.path) { return img }
+        // Use dedicated preview imagesets (reliable via UIImage(named:))
+        if let name = option.name {
+            let previewName = "\(name)-preview"
+            if let img = UIImage(named: previewName) { return img }
+        }
+        // Default icon: UIImage(named:) works for the primary AppIcon
+        if let img = UIImage(named: "AppIcon") { return img }
         return nil
     }
 
