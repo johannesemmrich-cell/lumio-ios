@@ -1,6 +1,25 @@
 import EventKit
 import Foundation
 
+// MARK: — Reminder Item
+
+struct ReminderItem: Identifiable {
+    let id: String
+    let title: String
+    let dueDate: Date?
+    let priority: Int
+    let notes: String?
+
+    var priorityLabel: String {
+        switch priority {
+        case 1: return "!!!"
+        case 5: return "!!"
+        case 9: return "!"
+        default: return ""
+        }
+    }
+}
+
 // MARK: — Calendar Provider
 
 enum CalendarProvider: String, CaseIterable, Identifiable {
@@ -84,6 +103,7 @@ enum CalendarSource: String, Codable {
 final class CalendarService: ObservableObject {
     @Published private(set) var authorizationStatus: EKAuthorizationStatus = .notDetermined
     @Published private(set) var todayEvents: [CalendarEvent] = []
+    @Published private(set) var todayReminders: [ReminderItem] = []
     @Published private(set) var isLoading: Bool = false
 
     private let store = EKEventStore()
@@ -97,6 +117,57 @@ final class CalendarService: ObservableObject {
         } catch {
             authorizationStatus = .denied
             return false
+        }
+    }
+
+    func requestRemindersAccess() async -> Bool {
+        guard EKEventStore.authorizationStatus(for: .reminder) != .fullAccess else {
+            await fetchTodayReminders()
+            return true
+        }
+        do {
+            let granted = try await store.requestFullAccessToReminders()
+            if granted { await fetchTodayReminders() }
+            return granted
+        } catch {
+            return false
+        }
+    }
+
+    func fetchTodayReminders() async {
+        guard EKEventStore.authorizationStatus(for: .reminder) == .fullAccess else { return }
+
+        let calendar = Calendar.current
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date())) ?? Date()
+
+        let predicate = store.predicateForIncompleteReminders(withDueDateStarting: nil, ending: endOfDay, calendars: nil)
+
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            store.fetchReminders(matching: predicate) { [weak self] ekReminders in
+                guard let self else {
+                    continuation.resume()
+                    return
+                }
+                let items = (ekReminders ?? [])
+                    .sorted { lhs, rhs in
+                        let lDate = lhs.dueDateComponents?.date ?? Date.distantFuture
+                        let rDate = rhs.dueDateComponents?.date ?? Date.distantFuture
+                        return lDate < rDate
+                    }
+                    .map { r in
+                        ReminderItem(
+                            id: r.calendarItemIdentifier,
+                            title: r.title ?? "Erinnerung",
+                            dueDate: r.dueDateComponents?.date,
+                            priority: r.priority,
+                            notes: r.notes
+                        )
+                    }
+                Task { @MainActor in
+                    self.todayReminders = items
+                    continuation.resume()
+                }
+            }
         }
     }
 

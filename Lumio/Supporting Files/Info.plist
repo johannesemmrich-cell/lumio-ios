@@ -75,6 +75,8 @@
 	<string>Lumio liest deinen Kalender für dein persönliches Morgen-Briefing.</string>
 	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
 	<string>Lumio kann per KI-Assistent Termine in deinen Kalender eintragen.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Lumio nutzt deinen Standort, um aktuelle Wetterdaten für dein Briefing abzurufen.</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Lumio kann deine Erinnerungen ins Briefing einbeziehen.</string>
 	<key>NSSupportsLiveActivities</key>

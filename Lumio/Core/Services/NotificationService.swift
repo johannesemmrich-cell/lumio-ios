@@ -5,6 +5,8 @@ final class NotificationService: @unchecked Sendable {
     static let shared = NotificationService()
     private init() {}
 
+    private static let identifierPrefix = "briefing-weekday-"
+
     func requestPermission() async -> Bool {
         let center = UNUserNotificationCenter.current()
         do {
@@ -14,9 +16,15 @@ final class NotificationService: @unchecked Sendable {
         }
     }
 
-    func scheduleDailyBriefing(at hour: Int, minute: Int, previewText: String) async {
+    // Schedule notifications for selected weekdays (Calendar weekday: 1=Sun…7=Sat)
+    func scheduleBriefings(days: Set<Int>, hour: Int, minute: Int, previewText: String) async {
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: ["daily-briefing"])
+
+        // Remove all existing briefing notifications
+        let allIDs = (1...7).map { "\(Self.identifierPrefix)\($0)" }
+        center.removePendingNotificationRequests(withIdentifiers: allIDs)
+
+        guard !days.isEmpty else { return }
 
         let content = UNMutableNotificationContent()
         content.title = String(localized: "Good morning ☀️")
@@ -24,22 +32,29 @@ final class NotificationService: @unchecked Sendable {
         content.sound = .default
         content.categoryIdentifier = "DAILY_BRIEFING"
 
-        var components = DateComponents()
-        components.hour = hour
-        components.minute = minute
-        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        for weekday in days {
+            var components = DateComponents()
+            components.weekday = weekday
+            components.hour = hour
+            components.minute = minute
 
-        let request = UNNotificationRequest(
-            identifier: "daily-briefing",
-            content: content,
-            trigger: trigger
-        )
-
-        do {
-            try await center.add(request)
-        } catch {
-            print("Failed to schedule notification: \(error)")
+            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+            let request = UNNotificationRequest(
+                identifier: "\(Self.identifierPrefix)\(weekday)",
+                content: content,
+                trigger: trigger
+            )
+            do {
+                try await center.add(request)
+            } catch {
+                print("Failed to schedule notification for weekday \(weekday): \(error)")
+            }
         }
+    }
+
+    // Legacy single-time scheduling (kept for backward compat)
+    func scheduleDailyBriefing(at hour: Int, minute: Int, previewText: String) async {
+        await scheduleBriefings(days: Set(2...6), hour: hour, minute: minute, previewText: previewText)
     }
 
     func buildPreviewText(from events: [CalendarEvent]) -> String {

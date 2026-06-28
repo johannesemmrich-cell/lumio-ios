@@ -11,8 +11,6 @@ struct SettingsView: View {
     @State private var showDeveloperUnlock = false
     @State private var showPaywall = false
     @State private var showResetOnboardingConfirm = false
-    @State private var notificationHour: Int = UserDefaults.standard.integer(forKey: "notificationHour") == 0 ? 7 : UserDefaults.standard.integer(forKey: "notificationHour")
-    @State private var notificationMinute: Int = UserDefaults.standard.integer(forKey: "notificationMinute")
 
     private let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
     private let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
@@ -29,7 +27,9 @@ struct SettingsView: View {
 
                 // Notifications
                 Section("Notifications") {
-                    NotificationTimePicker(hour: $notificationHour, minute: $notificationMinute)
+                    NavigationLink(destination: BriefingScheduleView()) {
+                        Label("Briefing-Zeitplan", systemImage: "bell.badge.clock")
+                    }
                 }
 
                 // Appearance
@@ -186,40 +186,6 @@ struct ThemePickerRow: View {
             .pickerStyle(.segmented)
             .frame(maxWidth: 180)
         }
-    }
-}
-
-// MARK: — Notification Time Picker
-
-struct NotificationTimePicker: View {
-    @Binding var hour: Int
-    @Binding var minute: Int
-
-    @State private var time: Date = {
-        var comps = DateComponents()
-        let h = UserDefaults.standard.integer(forKey: "notificationHour")
-        let m = UserDefaults.standard.integer(forKey: "notificationMinute")
-        comps.hour = h == 0 ? 7 : h
-        comps.minute = m
-        return Calendar.current.date(from: comps) ?? Date()
-    }()
-
-    var body: some View {
-        DatePicker("Morning briefing", selection: $time, displayedComponents: .hourAndMinute)
-            .onChange(of: time) { _, newTime in
-                let comps = Calendar.current.dateComponents([.hour, .minute], from: newTime)
-                hour = comps.hour ?? 7
-                minute = comps.minute ?? 30
-                UserDefaults.standard.set(hour, forKey: "notificationHour")
-                UserDefaults.standard.set(minute, forKey: "notificationMinute")
-                Task {
-                    await NotificationService.shared.scheduleDailyBriefing(
-                        at: hour,
-                        minute: minute,
-                        previewText: String(localized: "Tap to see your morning briefing.")
-                    )
-                }
-            }
     }
 }
 

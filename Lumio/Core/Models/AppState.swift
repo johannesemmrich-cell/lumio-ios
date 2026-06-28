@@ -94,6 +94,9 @@ enum UserDefaultsKey {
     static let briefingStyle = "briefingStyle"
     static let accentColorHex = "accentColorHex"
     static let topBarActions = "topBarActions"
+    static let briefingScheduleDays = "briefingScheduleDays"
+    static let briefingScheduleHour = "briefingScheduleHour"
+    static let briefingScheduleMinute = "briefingScheduleMinute"
 }
 
 // MARK: — Briefing Settings

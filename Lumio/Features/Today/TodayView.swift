@@ -23,12 +23,24 @@ struct TodayView: View {
                         .padding(.horizontal, 20)
                         .padding(.bottom, 28)
 
-                        if viewModel.events.isEmpty && !viewModel.isLoadingEvents {
+                        if let weather = viewModel.weather {
+                            WeatherCard(weather: weather, accentColor: appState.accentColor)
+                                .padding(.horizontal, 20)
+                                .padding(.bottom, 16)
+                        }
+
+                        if viewModel.events.isEmpty && viewModel.reminders.isEmpty && !viewModel.isLoadingEvents {
                             EmptyDayView(accentColor: appState.accentColor)
                                 .padding(.horizontal, 20)
                         } else {
                             eventsSection
                                 .padding(.horizontal, 20)
+
+                            if !viewModel.reminders.isEmpty {
+                                remindersSection
+                                    .padding(.horizontal, 20)
+                                    .padding(.top, 16)
+                            }
                         }
 
                         Spacer().frame(height: 120)
@@ -41,7 +53,7 @@ struct TodayView: View {
                     await viewModel.refresh()
                 }
 
-                PlayBarView(speechService: speechService, events: viewModel.events, language: appState.selectedLanguage, accentColor: appState.accentColor, accentColorHex: appState.accentColorHex)
+                PlayBarView(speechService: speechService, events: viewModel.events, reminders: viewModel.reminders, weather: viewModel.weather, language: appState.selectedLanguage, accentColor: appState.accentColor, accentColorHex: appState.accentColorHex)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 20)
                     .shadow(color: .black.opacity(0.08), radius: 20, y: -4)
@@ -90,17 +102,30 @@ struct TodayView: View {
 
     private var eventsSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            SectionHeader(title: "Today's Events", count: viewModel.events.count)
+            if !viewModel.events.isEmpty {
+                SectionHeader(title: "Today's Events", count: viewModel.events.count)
+                    .padding(.bottom, 4)
+
+                ForEach(viewModel.events) { event in
+                    EventCard(event: event)
+                        .developerFeedbackOverlay(
+                            isActive: appState.isDeveloperModeActive,
+                            screen: "Today",
+                            feature: "Events",
+                            element: "Event: \(event.title)"
+                        )
+                }
+            }
+        }
+    }
+
+    private var remindersSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionHeader(title: "Reminders", count: viewModel.reminders.count)
                 .padding(.bottom, 4)
 
-            ForEach(viewModel.events) { event in
-                EventCard(event: event)
-                    .developerFeedbackOverlay(
-                        isActive: appState.isDeveloperModeActive,
-                        screen: "Today",
-                        feature: "Events",
-                        element: "Event: \(event.title)"
-                    )
+            ForEach(viewModel.reminders) { reminder in
+                ReminderCard(reminder: reminder)
             }
         }
     }
@@ -265,6 +290,8 @@ struct EventCard: View {
 struct PlayBarView: View {
     @ObservedObject var speechService: SpeechService
     let events: [CalendarEvent]
+    let reminders: [ReminderItem]
+    let weather: WeatherData?
     let language: String
     let accentColor: Color
     let accentColorHex: String
@@ -306,7 +333,7 @@ struct PlayBarView: View {
                     } else if speechService.isPaused {
                         speechService.resume()
                     } else {
-                        let narrativeText = buildNarrativeBriefing(events: events, language: language)
+                        let narrativeText = buildNarrativeBriefing(events: events, reminders: reminders, weather: weather, language: language)
                         let item = SpeechItem(
                             title: "Briefing",
                             text: narrativeText,
@@ -344,16 +371,10 @@ struct PlayBarView: View {
         )
     }
 
-    private func buildNarrativeBriefing(events: [CalendarEvent], language: String) -> String {
+    private func buildNarrativeBriefing(events: [CalendarEvent], reminders: [ReminderItem], weather: WeatherData?, language: String) -> String {
         let isDE = language == "de"
         let fmt = DateFormatter()
         fmt.dateFormat = "HH:mm"
-
-        guard !events.isEmpty else {
-            return isDE
-                ? "Guten Morgen! Du hast heute keine Termine eingetragen. Genieße den freien Tag!"
-                : "Good morning! You have no events scheduled for today. Enjoy your free day!"
-        }
 
         let hour = Calendar.current.component(.hour, from: Date())
         let greeting: String
@@ -371,52 +392,73 @@ struct PlayBarView: View {
             }
         }
 
-        var parts: [String] = []
+        var parts: [String] = [greeting]
 
-        // Intro
-        if isDE {
-            parts.append("\(greeting) Heute hast du \(events.count == 1 ? "einen Termin" : "\(events.count) Termine").")
+        // Weather
+        if let w = weather {
+            let temp = Int(w.temperatureCurrent.rounded())
+            if isDE {
+                parts.append("Das Wetter heute: \(w.conditionLabel), \(temp) Grad.")
+            } else {
+                parts.append("Today's weather: \(w.conditionLabel), \(temp) degrees.")
+            }
+        }
+
+        // Events
+        if events.isEmpty && reminders.isEmpty {
+            parts.append(isDE
+                ? "Du hast heute keine Termine oder Erinnerungen. Genieße den freien Tag!"
+                : "You have no events or reminders today. Enjoy your free day!")
         } else {
-            parts.append("\(greeting) You have \(events.count == 1 ? "one event" : "\(events.count) events") today.")
-        }
+            if !events.isEmpty {
+                if isDE {
+                    parts.append("Du hast \(events.count == 1 ? "einen Termin" : "\(events.count) Termine") heute.")
+                } else {
+                    parts.append("You have \(events.count == 1 ? "one event" : "\(events.count) events") today.")
+                }
 
-        // Events with natural transitions
-        for (index, event) in events.enumerated() {
-            let timeStr = event.isAllDay
-                ? (isDE ? "den ganzen Tag" : "all day")
-                : (isDE ? "um \(fmt.string(from: event.startDate)) Uhr" : "at \(fmt.string(from: event.startDate))")
-
-            let locationPart: String
-            if let loc = event.location, !loc.isEmpty {
-                locationPart = isDE ? ", in \(loc)," : ", at \(loc),"
-            } else {
-                locationPart = ""
+                for (index, event) in events.enumerated() {
+                    let timeStr = event.isAllDay
+                        ? (isDE ? "den ganzen Tag" : "all day")
+                        : (isDE ? "um \(fmt.string(from: event.startDate)) Uhr" : "at \(fmt.string(from: event.startDate))")
+                    let locationPart: String
+                    if let loc = event.location, !loc.isEmpty {
+                        locationPart = isDE ? ", in \(loc)," : ", at \(loc),"
+                    } else {
+                        locationPart = ""
+                    }
+                    let sentence: String
+                    if index == 0 {
+                        sentence = isDE
+                            ? "Dein Tag startet \(timeStr) mit \(event.title)\(locationPart)."
+                            : "Your day starts \(timeStr) with \(event.title)\(locationPart)."
+                    } else if index == events.count - 1 {
+                        sentence = isDE
+                            ? "Und zum Abschluss hast du \(timeStr) \(event.title)\(locationPart)."
+                            : "And to wrap up, you have \(event.title) \(timeStr)\(locationPart)."
+                    } else {
+                        let transitions = isDE
+                            ? ["Danach", "Anschließend", "Im Anschluss"]
+                            : ["Then", "After that,", "Next up:"]
+                        let transition = transitions[index % transitions.count]
+                        sentence = isDE
+                            ? "\(transition) geht es \(timeStr) weiter mit \(event.title)\(locationPart)."
+                            : "\(transition) \(event.title) \(timeStr)\(locationPart)."
+                    }
+                    parts.append(sentence)
+                }
             }
 
-            let sentence: String
-            if index == 0 {
-                sentence = isDE
-                    ? "Dein Tag startet \(timeStr) mit \(event.title)\(locationPart)."
-                    : "Your day starts \(timeStr) with \(event.title)\(locationPart)."
-            } else if index == events.count - 1 {
-                sentence = isDE
-                    ? "Und zum Abschluss hast du \(timeStr) \(event.title)\(locationPart)."
-                    : "And to wrap up, you have \(event.title) \(timeStr)\(locationPart)."
-            } else {
-                let transitions = isDE
-                    ? ["Danach geht es", "Anschließend hast du", "Im Anschluss folgt"]
-                    : ["Then", "After that, you have", "Next up is"]
-                let transition = transitions[index % transitions.count]
-                sentence = isDE
-                    ? "\(transition) \(timeStr) weiter mit \(event.title)\(locationPart)."
-                    : "\(transition) \(event.title) \(timeStr)\(locationPart)."
+            if !reminders.isEmpty {
+                if isDE {
+                    parts.append("Deine Erinnerungen für heute: \(reminders.prefix(3).map(\.title).joined(separator: ", ")).")
+                } else {
+                    parts.append("Your reminders today: \(reminders.prefix(3).map(\.title).joined(separator: ", ")).")
+                }
             }
-            parts.append(sentence)
         }
 
-        // Outro
-        parts.append(isDE ? "Das war dein Briefing für heute — einen schönen Tag!" : "That's your briefing for today — have a great day!")
-
+        parts.append(isDE ? "Das war dein Briefing — einen schönen Tag!" : "That's your briefing — have a great day!")
         return parts.joined(separator: " ")
     }
 }
@@ -458,5 +500,101 @@ struct SectionHeader: View {
                 .padding(.vertical, 3)
                 .background(Capsule().fill(Color.secondary.opacity(0.15)))
         }
+    }
+}
+
+// MARK: — Weather Card
+
+struct WeatherCard: View {
+    let weather: WeatherData
+    let accentColor: Color
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: weather.sfSymbol)
+                .font(.title2)
+                .foregroundStyle(accentColor)
+                .frame(width: 36)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(weather.conditionLabel)
+                    .font(LumioTypography.callout.weight(.semibold))
+                HStack(spacing: 8) {
+                    Text("↑\(Int(weather.temperatureMax.rounded()))°")
+                        .font(LumioTypography.caption)
+                        .foregroundStyle(.secondary)
+                    Text("↓\(Int(weather.temperatureMin.rounded()))°")
+                        .font(LumioTypography.caption)
+                        .foregroundStyle(.secondary)
+                    if weather.windSpeed > 0 {
+                        Text("· \(Int(weather.windSpeed.rounded())) km/h")
+                            .font(LumioTypography.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
+            Spacer()
+
+            Text("\(Int(weather.temperatureCurrent.rounded()))°")
+                .font(.system(size: 32, weight: .light, design: .rounded))
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(uiColor: .secondarySystemBackground))
+        )
+    }
+}
+
+// MARK: — Reminder Card
+
+struct ReminderCard: View {
+    let reminder: ReminderItem
+
+    private var timeString: String? {
+        guard let due = reminder.dueDate else { return nil }
+        let fmt = DateFormatter()
+        fmt.dateFormat = "HH:mm"
+        return fmt.string(from: due)
+    }
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "circle")
+                .font(.body)
+                .foregroundStyle(.secondary)
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 4) {
+                    if !reminder.priorityLabel.isEmpty {
+                        Text(reminder.priorityLabel)
+                            .font(LumioTypography.caption2.weight(.bold))
+                            .foregroundStyle(.orange)
+                    }
+                    Text(reminder.title)
+                        .font(LumioTypography.callout)
+                        .lineLimit(2)
+                }
+
+                if let time = timeString {
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock")
+                            .font(.caption2)
+                        Text(time)
+                            .font(LumioTypography.caption)
+                    }
+                    .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(uiColor: .secondarySystemBackground))
+        )
     }
 }

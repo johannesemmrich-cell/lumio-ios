@@ -170,12 +170,14 @@ final class DevTodoItem {
     var id: UUID
     var title: String
     var isCompleted: Bool
+    var inProgress: Bool
     var createdAt: Date
 
     init(title: String) {
         self.id = UUID()
         self.title = title
         self.isCompleted = false
+        self.inProgress = false
         self.createdAt = Date()
     }
 }

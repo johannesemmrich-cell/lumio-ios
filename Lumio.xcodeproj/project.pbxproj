@@ -47,6 +47,8 @@
 		F0742BBF8550C5AA76D9DB56 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF77936F92758F5D3B8D83E0 /* NotificationService.swift */; };
 		F42AA6E55E13C1A390DBB316 /* OnboardingContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96EA9B375A0C43D916A8270 /* OnboardingContainerView.swift */; };
 		FC5943A1F06C3B86E8F82368 /* LumioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05349DD390F5584FEFF1ADE /* LumioTests.swift */; };
+		FF22AA33BB44CC55DD66EE11 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE11FF22AA33BB44CC55DD66 /* WeatherService.swift */; };
+		BB44CC55DD66EE11FF22AA33 /* BriefingScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA33BB44CC55DD66EE11FF22 /* BriefingScheduleView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,6 +145,8 @@
 		EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F54991DCB350A318338C10BB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F62F40A2BDD302AB2C96C200 /* LumioWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioWidgetBundle.swift; sourceTree = "<group>"; };
+		EE11FF22AA33BB44CC55DD66 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		AA33BB44CC55DD66EE11FF22 /* BriefingScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingScheduleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -241,6 +245,7 @@
 				BD2C3A29D048FF2DD55E1593 /* PDFService.swift */,
 				1AA48C8AF90AC73A83391B04 /* SpeechService.swift */,
 				CF54D8AFFE1A01AC1558973A /* SubscriptionManager.swift */,
+				EE11FF22AA33BB44CC55DD66 /* WeatherService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -349,6 +354,7 @@
 			children = (
 				29C097AA9094F740D4614C78 /* AppIconPickerView.swift */,
 				7E43379C270CA2D23F0F965C /* BriefingSettingsView.swift */,
+				AA33BB44CC55DD66EE11FF22 /* BriefingScheduleView.swift */,
 				46838FB7998E4CAC71C736F7 /* DeveloperModeView.swift */,
 				6A1F09B386C51B86A03E8AD6 /* PaywallView.swift */,
 				EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */,
@@ -599,6 +605,8 @@
 				D073C9F212E527063EC6CEF6 /* ThemeManager.swift in Sources */,
 				A8BF8F3D6AEE8D665CF761CE /* TodayView.swift in Sources */,
 				F067AB1DFFFADDC50881D449 /* TodayViewModel.swift in Sources */,
+				FF22AA33BB44CC55DD66EE11 /* WeatherService.swift in Sources */,
+				BB44CC55DD66EE11FF22AA33 /* BriefingScheduleView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

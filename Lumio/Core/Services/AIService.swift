@@ -74,14 +74,14 @@ final class AIService: ObservableObject {
 
     // MARK: — Briefing summary
 
-    func summarizeBriefing(events: [CalendarEvent], pdfTexts: [String], language: String = "en", length: BriefingLength = .medium, style: BriefingStyle = .friendly) async -> String {
+    func summarizeBriefing(events: [CalendarEvent], reminders: [ReminderItem] = [], weather: WeatherData? = nil, pdfTexts: [String], language: String = "en", length: BriefingLength = .medium, style: BriefingStyle = .friendly) async -> String {
         isGenerating = true
         defer { isGenerating = false }
 
         if capabilityStatus == .available, #available(iOS 26.0, *) {
-            return await generateWithFoundationModels(events: events, pdfTexts: pdfTexts, language: language, length: length, style: style)
+            return await generateWithFoundationModels(events: events, reminders: reminders, weather: weather, pdfTexts: pdfTexts, language: language, length: length, style: style)
         }
-        return buildFallbackSummary(events: events, language: language)
+        return buildFallbackSummary(events: events, reminders: reminders, weather: weather, language: language)
     }
 
     // MARK: — Chat answer
@@ -110,9 +110,9 @@ final class AIService: ObservableObject {
     // MARK: — Foundation Models integration (iOS 26+)
 
     @available(iOS 26.0, *)
-    private func generateWithFoundationModels(events: [CalendarEvent], pdfTexts: [String], language: String, length: BriefingLength, style: BriefingStyle) async -> String {
-        let prompt = buildBriefingPrompt(events: events, pdfTexts: pdfTexts, language: language, length: length, style: style)
-        return await runFoundationModelsPrompt(prompt) ?? buildFallbackSummary(events: events, language: language)
+    private func generateWithFoundationModels(events: [CalendarEvent], reminders: [ReminderItem], weather: WeatherData?, pdfTexts: [String], language: String, length: BriefingLength, style: BriefingStyle) async -> String {
+        let prompt = buildBriefingPrompt(events: events, reminders: reminders, weather: weather, pdfTexts: pdfTexts, language: language, length: length, style: style)
+        return await runFoundationModelsPrompt(prompt) ?? buildFallbackSummary(events: events, reminders: reminders, weather: weather, language: language)
     }
 
     @available(iOS 26.0, *)
@@ -156,27 +156,36 @@ final class AIService: ObservableObject {
 
     // MARK: — Prompt builders
 
-    private func buildBriefingPrompt(events: [CalendarEvent], pdfTexts: [String], language: String, length: BriefingLength, style: BriefingStyle) -> String {
+    private func buildBriefingPrompt(events: [CalendarEvent], reminders: [ReminderItem], weather: WeatherData?, pdfTexts: [String], language: String, length: BriefingLength, style: BriefingStyle) -> String {
         let fmt = DateFormatter()
         fmt.dateFormat = "HH:mm"
         let eventLines = events.map { "- \(fmt.string(from: $0.startDate)): \($0.title)" }.joined(separator: "\n")
+        let reminderLines = reminders.prefix(5).map { "- \($0.title)" }.joined(separator: "\n")
         let pdfSection = pdfTexts.isEmpty ? "" : "\n\nLecture content available:\n" + pdfTexts.prefix(3).joined(separator: "\n---\n")
 
         let langInstruction: String
         let noEventsText: String
+        let noRemindersText: String
         if language == "de" {
             langInstruction = "Antworte auf Deutsch. \(style == .formal ? "Sei sachlich und präzise." : style == .concise ? "Sei sehr knapp." : "Sei warm und motivierend.")"
             noEventsText = "(keine Termine)"
+            noRemindersText = "(keine Erinnerungen)"
         } else {
             langInstruction = "Respond in English. \(style == .formal ? "Be professional and precise." : style == .concise ? "Be very brief." : "Be warm and encouraging.")"
             noEventsText = "(no events)"
+            noRemindersText = "(no reminders)"
         }
 
+        let weatherSection = weather.map { "\n\nWeather: \($0.briefingSnippet)" } ?? ""
+
         return """
-        You are Lumio, a calm and intelligent morning briefing assistant. Summarize the user's day in \(length.maxSentences) sentence(s). Be concise.
+        You are Lumio, a calm and intelligent morning briefing assistant. Summarize the user's day in \(length.maxSentences) sentence(s). Be concise.\(weatherSection)
 
         Today's events:
-        \(eventLines.isEmpty ? noEventsText : eventLines)\(pdfSection)
+        \(eventLines.isEmpty ? noEventsText : eventLines)
+
+        Today's reminders:
+        \(reminderLines.isEmpty ? noRemindersText : reminderLines)\(pdfSection)
 
         \(langInstruction) Maximum \(length.maxSentences) sentence(s).
         """
@@ -205,29 +214,55 @@ final class AIService: ObservableObject {
 
     // MARK: — Fallbacks (always work, no AI needed)
 
-    func buildFallbackSummary(events: [CalendarEvent], language: String = "en") -> String {
+    func buildFallbackSummary(events: [CalendarEvent], reminders: [ReminderItem] = [], weather: WeatherData? = nil, language: String = "en") -> String {
         let fmt = DateFormatter()
         fmt.dateFormat = "HH:mm"
 
-        if language == "de" {
-            guard !events.isEmpty else {
-                return "Heute keine Termine – genieß die freie Zeit."
+        var parts: [String] = []
+
+        if let w = weather {
+            if language == "de" {
+                parts.append("\(w.conditionLabel), \(Int(w.temperatureCurrent.rounded()))°C.")
+            } else {
+                parts.append("\(w.conditionLabel), \(Int(w.temperatureCurrent.rounded()))°C.")
             }
-            let first = events[0]
-            if events.count == 1 {
-                return "\(first.title) um \(fmt.string(from: first.startDate)) – dein einziger Termin heute."
-            }
-            return "\(events.count) Termine heute. Erster: \(first.title) um \(fmt.string(from: first.startDate))."
         }
 
-        guard !events.isEmpty else {
-            return String(localized: "You have a clear day today. Enjoy the focus time.")
+        if language == "de" {
+            if events.isEmpty && reminders.isEmpty {
+                parts.append("Heute keine Termine oder Erinnerungen – genieß die freie Zeit.")
+            } else {
+                if !events.isEmpty {
+                    let first = events[0]
+                    parts.append(events.count == 1
+                        ? "\(first.title) um \(fmt.string(from: first.startDate)) – dein einziger Termin."
+                        : "\(events.count) Termine heute. Erster: \(first.title) um \(fmt.string(from: first.startDate)).")
+                }
+                if !reminders.isEmpty {
+                    parts.append(reminders.count == 1
+                        ? "Erinnerung: \(reminders[0].title)."
+                        : "\(reminders.count) Erinnerungen, z.B. \(reminders[0].title).")
+                }
+            }
+        } else {
+            if events.isEmpty && reminders.isEmpty {
+                parts.append(String(localized: "You have a clear day today. Enjoy the focus time."))
+            } else {
+                if !events.isEmpty {
+                    let first = events[0]
+                    parts.append(events.count == 1
+                        ? String(localized: "\(first.title) at \(fmt.string(from: first.startDate)) — that's your only event today.")
+                        : String(localized: "\(events.count) events today. First up: \(first.title) at \(fmt.string(from: first.startDate))."))
+                }
+                if !reminders.isEmpty {
+                    parts.append(reminders.count == 1
+                        ? "Reminder: \(reminders[0].title)."
+                        : "\(reminders.count) reminders, e.g. \(reminders[0].title).")
+                }
+            }
         }
-        let first = events[0]
-        if events.count == 1 {
-            return String(localized: "\(first.title) at \(fmt.string(from: first.startDate)) — that's your only event today.")
-        }
-        return String(localized: "\(events.count) events today. First up: \(first.title) at \(fmt.string(from: first.startDate)).")
+
+        return parts.joined(separator: " ")
     }
 
     func buildRuleBasedAnswer(question: String, context: BriefingContext, language: String = "en") -> String {
@@ -256,6 +291,16 @@ final class AIService: ObservableObject {
 
 struct BriefingContext {
     let todayEvents: [CalendarEvent]
+    let todayReminders: [ReminderItem]
+    let weather: WeatherData?
     let pdfSummaries: [String]
     let date: Date
+
+    init(todayEvents: [CalendarEvent], todayReminders: [ReminderItem] = [], weather: WeatherData? = nil, pdfSummaries: [String] = [], date: Date = Date()) {
+        self.todayEvents = todayEvents
+        self.todayReminders = todayReminders
+        self.weather = weather
+        self.pdfSummaries = pdfSummaries
+        self.date = date
+    }
 }

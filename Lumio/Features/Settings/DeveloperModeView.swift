@@ -102,33 +102,37 @@ struct DeveloperModeView: View {
                     .foregroundStyle(Color.lumioAccent)
             }
 
-            Section("To-Do (\(todoItems.count))") {
+            let inProgressItems = todoItems.filter { $0.inProgress && !$0.isCompleted }
+            let openItems = todoItems.filter { !$0.inProgress && !$0.isCompleted }
+            let doneItems = todoItems.filter { $0.isCompleted }
+
+            if !inProgressItems.isEmpty {
+                Section {
+                    ForEach(inProgressItems) { item in
+                        DevTodoRow(item: item)
+                    }
+                } header: {
+                    Label("In Arbeit", systemImage: "arrow.triangle.2.circlepath")
+                        .foregroundStyle(.orange)
+                }
+            }
+
+            Section("To-Do (\(openItems.count))") {
                 if todoItems.isEmpty {
                     Text("Noch keine Einträge.")
                         .font(LumioTypography.caption)
                         .foregroundStyle(.secondary)
+                } else if openItems.isEmpty {
+                    Text("Alles in Arbeit oder erledigt.")
+                        .font(LumioTypography.caption)
+                        .foregroundStyle(.secondary)
                 }
-                ForEach(todoItems) { item in
-                    HStack(spacing: 12) {
-                        Button {
-                            item.isCompleted.toggle()
-                        } label: {
-                            Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(item.isCompleted ? .green : .secondary)
-                                .font(.title3)
-                        }
-                        .buttonStyle(.plain)
-                        Text(item.title)
-                            .font(LumioTypography.callout)
-                            .strikethrough(item.isCompleted, color: .secondary)
-                            .foregroundStyle(item.isCompleted ? .secondary : .primary)
-                        Spacer()
-                    }
-                    .padding(.vertical, 2)
+                ForEach(openItems) { item in
+                    DevTodoRow(item: item)
                 }
                 .onDelete { offsets in
                     for index in offsets {
-                        modelContext.delete(todoItems[index])
+                        modelContext.delete(openItems[index])
                     }
                 }
                 Button {
@@ -136,6 +140,19 @@ struct DeveloperModeView: View {
                 } label: {
                     Label("Neues To-Do", systemImage: "plus.circle")
                         .foregroundStyle(Color.lumioAccent)
+                }
+            }
+
+            if !doneItems.isEmpty {
+                Section("Erledigt (\(doneItems.count))") {
+                    ForEach(doneItems) { item in
+                        DevTodoRow(item: item)
+                    }
+                    .onDelete { offsets in
+                        for index in offsets {
+                            modelContext.delete(doneItems[index])
+                        }
+                    }
                 }
             }
 
@@ -277,6 +294,63 @@ private struct FeedbackFilterChip: View {
         }
         .buttonStyle(.plain)
         .animation(.spring(duration: 0.18), value: isSelected)
+    }
+}
+
+// MARK: — Dev Todo Row
+
+private struct DevTodoRow: View {
+    @Bindable var item: DevTodoItem
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button {
+                if item.isCompleted {
+                    item.isCompleted = false
+                } else {
+                    item.isCompleted = true
+                    item.inProgress = false
+                }
+            } label: {
+                Image(systemName: item.isCompleted ? "checkmark.circle.fill" : (item.inProgress ? "arrow.triangle.2.circlepath.circle.fill" : "circle"))
+                    .foregroundStyle(item.isCompleted ? .green : (item.inProgress ? .orange : .secondary))
+                    .font(.title3)
+            }
+            .buttonStyle(.plain)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.title)
+                    .font(LumioTypography.callout)
+                    .strikethrough(item.isCompleted, color: .secondary)
+                    .foregroundStyle(item.isCompleted ? .secondary : .primary)
+
+                if item.inProgress && !item.isCompleted {
+                    Text("In Arbeit")
+                        .font(LumioTypography.caption2.weight(.semibold))
+                        .foregroundStyle(.orange)
+                }
+            }
+
+            Spacer()
+
+            if !item.isCompleted {
+                Button {
+                    item.inProgress.toggle()
+                } label: {
+                    Text(item.inProgress ? "Pause" : "Testen")
+                        .font(LumioTypography.caption.weight(.semibold))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(
+                            Capsule()
+                                .fill(item.inProgress ? Color.orange.opacity(0.15) : Color.blue.opacity(0.12))
+                        )
+                        .foregroundStyle(item.inProgress ? .orange : .blue)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.vertical, 2)
     }
 }
 
