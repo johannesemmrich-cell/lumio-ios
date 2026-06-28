@@ -49,6 +49,7 @@
 		FC5943A1F06C3B86E8F82368 /* LumioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05349DD390F5584FEFF1ADE /* LumioTests.swift */; };
 		FF22AA33BB44CC55DD66EE11 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE11FF22AA33BB44CC55DD66 /* WeatherService.swift */; };
 		BB44CC55DD66EE11FF22AA33 /* BriefingScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA33BB44CC55DD66EE11FF22 /* BriefingScheduleView.swift */; };
+		DD66EE11FF22AA33BB44CC55 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC55DD66EE11FF22AA33BB44 /* HapticFeedback.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +146,7 @@
 		EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F54991DCB350A318338C10BB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F62F40A2BDD302AB2C96C200 /* LumioWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioWidgetBundle.swift; sourceTree = "<group>"; };
+		CC55DD66EE11FF22AA33BB44 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		EE11FF22AA33BB44CC55DD66 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		AA33BB44CC55DD66EE11FF22 /* BriefingScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingScheduleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -383,6 +385,7 @@
 		FBC44AE75ADC6DB54487DDAE /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				CC55DD66EE11FF22AA33BB44 /* HapticFeedback.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -607,6 +610,7 @@
 				F067AB1DFFFADDC50881D449 /* TodayViewModel.swift in Sources */,
 				FF22AA33BB44CC55DD66EE11 /* WeatherService.swift in Sources */,
 				BB44CC55DD66EE11FF22AA33 /* BriefingScheduleView.swift in Sources */,
+				DD66EE11FF22AA33BB44CC55 /* HapticFeedback.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
