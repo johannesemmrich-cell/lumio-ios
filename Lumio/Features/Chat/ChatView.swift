@@ -49,6 +49,7 @@ struct ChatView: View {
             Divider()
             ChatInputBar(text: $viewModel.inputText, isThinking: viewModel.isThinking, focused: $inputFocused) {
                 HapticFeedback.impact(.light)
+                inputFocused = false
                 Task { await viewModel.sendMessage() }
             }
         }
@@ -66,6 +67,18 @@ struct ChatView: View {
             }
         }
         .task { await viewModel.setup(language: appState.selectedLanguage) }
+        .onAppear {
+            if let pending = appState.pendingBriefingForChat {
+                viewModel.injectBriefingContext(pending, language: appState.selectedLanguage)
+                appState.pendingBriefingForChat = nil
+            }
+        }
+        .onChange(of: appState.pendingBriefingForChat) { _, pending in
+            if let text = pending {
+                viewModel.injectBriefingContext(text, language: appState.selectedLanguage)
+                appState.pendingBriefingForChat = nil
+            }
+        }
     }
 }
 

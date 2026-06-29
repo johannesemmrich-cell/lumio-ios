@@ -63,6 +63,14 @@ final class ChatViewModel: ObservableObject {
         Task { await setup(language: lang) }
     }
 
+    func injectBriefingContext(_ text: String, language: String) {
+        self.language = language
+        let intro = language == "de"
+            ? "Hier ist dein heutiges Briefing:\n\n\(text)\n\nStell mir Fragen dazu oder ich helfe dir beim Planen des Tages."
+            : "Here's your today's briefing:\n\n\(text)\n\nAsk me questions or I can help you plan your day."
+        messages.append(ChatMessage(role: .assistant, text: intro, timestamp: Date()))
+    }
+
     // MARK: — Calendar Intent Parsing
 
     private func parseCalendarIntent(from text: String) -> CalendarIntent? {

@@ -20,8 +20,7 @@ final class NotificationService: @unchecked Sendable {
     // dayTimes: [weekday: (hour, minute)], Calendar weekday: 1=Sun…7=Sat
     func scheduleBriefings(dayTimes: [Int: (hour: Int, minute: Int)], previewText: String) async {
         let center = UNUserNotificationCenter.current()
-        let allIDs = (1...7).map { "\(Self.identifierPrefix)\($0)" }
-        center.removePendingNotificationRequests(withIdentifiers: allIDs)
+        center.removeAllPendingNotificationRequests()
         guard !dayTimes.isEmpty else { return }
 
         let content = UNMutableNotificationContent()

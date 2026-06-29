@@ -24,6 +24,7 @@ final class AppState: ObservableObject {
     @Published var topBarActions: [String] {
         didSet { UserDefaults.standard.set(topBarActions, forKey: UserDefaultsKey.topBarActions) }
     }
+    @Published var pendingBriefingForChat: String?
 
     var accentColor: Color { Color(hex: accentColorHex) }
 
@@ -39,19 +40,43 @@ final class AppState: ObservableObject {
             let ordered = savedOrder.compactMap { AppTab(rawValue: $0) }
             self.tabOrder = Array(ordered.prefix(4))
         } else {
-            self.tabOrder = [.today, .library, .chat, .settings]
+            self.tabOrder = [.today, .library, .calendar, .settings]
         }
 
         self.briefingLength = BriefingLength(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.briefingLength) ?? "") ?? .medium
         self.briefingStyle = BriefingStyle(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.briefingStyle) ?? "") ?? .friendly
         self.accentColorHex = UserDefaults.standard.string(forKey: UserDefaultsKey.accentColorHex) ?? "FF9500"
-        self.topBarActions = UserDefaults.standard.stringArray(forKey: UserDefaultsKey.topBarActions) ?? ["calendar", "refresh"]
+        self.topBarActions = UserDefaults.standard.stringArray(forKey: UserDefaultsKey.topBarActions) ?? ["chat_shortcut", "refresh"]
     }
 
     func completeOnboarding() {
         UserDefaults.standard.set(true, forKey: UserDefaultsKey.hasCompletedOnboarding)
         withAnimation(.easeInOut(duration: 0.5)) {
             hasCompletedOnboarding = true
+        }
+    }
+
+    // Called once when the user first becomes premium.
+    // Swaps chat (top bar) ↔ calendar (tab bar) to the premium arrangement.
+    func applyPremiumLayoutMigrationIfNeeded() {
+        guard !UserDefaults.standard.bool(forKey: UserDefaultsKey.hasMigratedPremiumLayout) else { return }
+        UserDefaults.standard.set(true, forKey: UserDefaultsKey.hasMigratedPremiumLayout)
+
+        let chatInTopBar = topBarActions.contains("chat_shortcut")
+        let chatInTab = tabOrder.contains(.chat)
+        let calendarInTab = tabOrder.contains(.calendar)
+
+        guard chatInTopBar && !chatInTab && calendarInTab else { return }
+
+        var newTabs = tabOrder
+        var newTop = topBarActions
+
+        if let calIdx = newTabs.firstIndex(of: .calendar) { newTabs[calIdx] = .chat }
+        if let topIdx = newTop.firstIndex(of: "chat_shortcut") { newTop[topIdx] = "calendar" }
+
+        withAnimation(.spring(duration: 0.3)) {
+            tabOrder = newTabs
+            topBarActions = newTop
         }
     }
 }
@@ -100,6 +125,7 @@ enum UserDefaultsKey {
     static let briefingScheduleDays = "briefingScheduleDays"
     static let briefingScheduleHour = "briefingScheduleHour"
     static let briefingScheduleMinute = "briefingScheduleMinute"
+    static let hasMigratedPremiumLayout = "hasMigratedPremiumLayout"
     // Per-day times: "briefingHour_<weekday>" / "briefingMinute_<weekday>"
     static func briefingHourKey(_ weekday: Int) -> String { "briefingHour_\(weekday)" }
     static func briefingMinuteKey(_ weekday: Int) -> String { "briefingMinute_\(weekday)" }

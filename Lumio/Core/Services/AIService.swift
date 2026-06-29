@@ -123,35 +123,73 @@ final class AIService: ObservableObject {
 
     @available(iOS 26.0, *)
     private func runFoundationModelsPrompt(_ prompt: String) async -> String? {
-        // Dynamic dispatch into FoundationModels.framework
-        // This avoids a hard import so the app doesn't crash on unsupported devices
-        // Replace with direct `import FoundationModels` import once framework is publicly distributed
+        // Run ObjC runtime dispatch off the main thread to avoid blocking the UI.
+        // Replace with direct FoundationModels import once the framework API is stable.
+        let promptCopy = prompt
+        return await Task.detached(priority: .userInitiated) {
+            guard
+                let modelClass = NSClassFromString("FoundationModels.SystemLanguageModel") as? NSObject.Type,
+                let sessionClass = NSClassFromString("FoundationModels.LanguageModelSession") as? NSObject.Type
+            else { return nil }
 
-        guard
-            let modelClass = NSClassFromString("FoundationModels.SystemLanguageModel") as? NSObject.Type,
-            let sessionClass = NSClassFromString("FoundationModels.LanguageModelSession") as? NSObject.Type
-        else { return nil }
+            let defaultSel = NSSelectorFromString("default")
+            guard modelClass.responds(to: defaultSel) else { return nil }
+            let model = modelClass.perform(defaultSel)?.takeUnretainedValue()
 
-        // SystemLanguageModel.default
-        let defaultSel = NSSelectorFromString("default")
-        guard modelClass.responds(to: defaultSel) else { return nil }
-        let model = modelClass.perform(defaultSel)?.takeUnretainedValue()
+            let initSel = NSSelectorFromString("initWithModel:")
+            guard let session = sessionClass.perform(initSel, with: model)?.takeRetainedValue() as? NSObject else { return nil }
 
-        // LanguageModelSession(model:)
-        let initSel = NSSelectorFromString("initWithModel:")
-        guard let session = sessionClass.perform(initSel, with: model)?.takeRetainedValue() as? NSObject else { return nil }
+            let respondSel = NSSelectorFromString("respondTo:")
+            guard session.responds(to: respondSel) else { return nil }
+            return session.perform(respondSel, with: promptCopy)?.takeUnretainedValue() as? String
+        }.value
+    }
 
-        // session.respond(to:) — async
-        // Since we can't easily bridge async via NSInvocation, we use the respond sync path
-        // In a real release build, replace this entire block with direct FoundationModels API calls
-        let respondSel = NSSelectorFromString("respondTo:")
-        if session.responds(to: respondSel) {
-            if let result = session.perform(respondSel, with: prompt)?.takeRetainedValue() as? String {
-                return result
-            }
+    // MARK: — Briefing transformations
+
+    func transformBriefing(_ text: String, into transformation: BriefingTransformation, language: String) async -> String {
+        if capabilityStatus == .available, #available(iOS 26.0, *) {
+            let prompt = buildTransformPrompt(text: text, transformation: transformation, language: language)
+            if let result = await runFoundationModelsPrompt(prompt) { return result }
         }
+        return fallbackTransform(text, transformation: transformation)
+    }
 
-        return nil
+    private func buildTransformPrompt(text: String, transformation: BriefingTransformation, language: String) -> String {
+        let isDE = language == "de"
+        let instruction: String
+        switch transformation {
+        case .condense:
+            instruction = isDE
+                ? "Fasse den folgenden Text auf maximal 2 Sätze zusammen. Nur das Wesentliche."
+                : "Condense the following text to at most 2 sentences. Keep only what's essential."
+        case .expand:
+            instruction = isDE
+                ? "Mache den folgenden Tagesplan detaillierter. Füge motivierende Details und praktische Hinweise hinzu."
+                : "Expand the following daily briefing with more details and motivating insights."
+        case .bulletPoints:
+            instruction = isDE
+                ? "Wandle den folgenden Text in eine Stichpunktliste um. Jeden Punkt mit '• ' beginnen."
+                : "Convert the following text into a bullet list. Start each point with '• '."
+        }
+        return "\(instruction)\n\nText:\n\(text)"
+    }
+
+    private func fallbackTransform(_ text: String, transformation: BriefingTransformation) -> String {
+        switch transformation {
+        case .condense:
+            let sentences = text.components(separatedBy: ". ")
+            let short = sentences.prefix(2).joined(separator: ". ")
+            return sentences.count > 2 ? short + "." : short
+        case .expand:
+            return text
+        case .bulletPoints:
+            return text.components(separatedBy: ". ")
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { !$0.isEmpty }
+                .map { "• \($0)" }
+                .joined(separator: "\n")
+        }
     }
 
     // MARK: — Prompt builders
@@ -178,15 +216,19 @@ final class AIService: ObservableObject {
 
         let weatherSection = weather.map { "\n\nWeather: \($0.briefingSnippet)" } ?? ""
 
+        let eventCount = events.count
+        let reminderCount = reminders.count
+
         return """
         You are Lumio, a calm and intelligent morning briefing assistant. Summarize the user's day in \(length.maxSentences) sentence(s). Be concise.\(weatherSection)
 
-        Today's events:
+        Today's events (\(eventCount) total):
         \(eventLines.isEmpty ? noEventsText : eventLines)
 
-        Today's reminders:
+        Today's reminders (\(reminderCount) total):
         \(reminderLines.isEmpty ? noRemindersText : reminderLines)\(pdfSection)
 
+        IMPORTANT: Only reference the exact events and reminders listed above. Do not invent or add any that are not listed.
         \(langInstruction) Maximum \(length.maxSentences) sentence(s).
         """
     }
@@ -287,6 +329,12 @@ final class AIService: ObservableObject {
         }
         return String(localized: "I can help you with questions about your calendar and lecture notes. For example: \"What do I have today?\" or \"Am I free at 3pm?\"")
     }
+}
+
+// MARK: — Briefing Transformation
+
+enum BriefingTransformation: Equatable {
+    case condense, expand, bulletPoints
 }
 
 struct BriefingContext {

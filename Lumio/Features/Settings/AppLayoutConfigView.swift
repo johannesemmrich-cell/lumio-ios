@@ -8,6 +8,8 @@ enum TopBarAction: String, CaseIterable {
     case calendar = "calendar"
     case chat = "chat_shortcut"
     case refresh = "refresh"
+    case library = "library"
+    case settings = "settings"
     case none = "none"
 
     var icon: String {
@@ -15,6 +17,8 @@ enum TopBarAction: String, CaseIterable {
         case .calendar: return "calendar"
         case .chat:     return "bubble.left.fill"
         case .refresh:  return "arrow.clockwise"
+        case .library:  return "books.vertical.fill"
+        case .settings: return "gearshape.fill"
         case .none:     return "minus"
         }
     }
@@ -24,6 +28,8 @@ enum TopBarAction: String, CaseIterable {
         case .calendar: return "Kalender"
         case .chat:     return "Chat"
         case .refresh:  return "Aktualisieren"
+        case .library:  return "Mediathek"
+        case .settings: return "Einstellungen"
         case .none:     return "Leer"
         }
     }

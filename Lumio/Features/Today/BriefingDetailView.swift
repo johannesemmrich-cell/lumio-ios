@@ -13,429 +13,361 @@ struct BriefingDetailView: View {
 
     @ObservedObject var speechService: SpeechService
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
+    @EnvironmentObject private var appState: AppState
 
-    @State private var condensedSummary: String?
-    @State private var isCondensing = false
+    @State private var transformedText: String?
+    @State private var isTransforming = false
+    @State private var activeTransformation: BriefingTransformation?
     @State private var selectedEvent: CalendarEvent?
+    @State private var selectedReminder: ReminderItem?
 
     @Environment(\.dismiss) private var dismiss
 
     private let ai = AIService()
 
-    private var displaySummary: String { condensedSummary ?? fullSummary }
+    private var displayText: String { transformedText ?? fullSummary }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
-                playCard
-                summaryCard
-                if !events.isEmpty { eventsSection }
-                if !reminders.isEmpty { remindersSection }
-                Spacer().frame(height: 16)
+            VStack(alignment: .leading, spacing: 0) {
+                briefingTextSection
+                    .padding(.horizontal, 20)
+                    .padding(.top, 20)
+
+                Divider()
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 20)
+
+                shortcutBar
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 32)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
         }
         .background(Color(uiColor: .systemGroupedBackground))
         .navigationTitle(dateTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Fertig") { dismiss() }
-                    .fontWeight(.semibold)
+                HStack(spacing: 16) {
+                    ttsButton
+                    Button("Fertig") { dismiss() }
+                        .fontWeight(.semibold)
+                }
+            }
+            if appState.isDeveloperModeActive {
+                ToolbarItem(placement: .topBarLeading) {
+                    DeveloperFeedbackButton(screen: "Today", feature: "Briefing Detail", element: "Full Briefing")
+                }
             }
         }
         .sheet(item: $selectedEvent) { event in
             EventDetailSheet(event: event)
                 .environmentObject(subscriptionManager)
         }
+        .sheet(item: $selectedReminder) { reminder in
+            ReminderDetailSheet(reminder: reminder, accentColor: accentColor)
+        }
     }
 
-    // MARK: — Play Card
+    // MARK: — Briefing Text
 
-    private var playCard: some View {
-        VStack(spacing: 14) {
-            // Controls
-            HStack(spacing: 28) {
-                if speechService.isPlaying || speechService.isPaused {
-                    Button {
-                        HapticFeedback.impact(.light)
-                        speechService.skipBackward()
-                    } label: {
-                        Image(systemName: "backward.fill")
-                            .font(.title3.weight(.medium))
-                            .foregroundStyle(.primary)
-                    }
-                    .transition(.scale.combined(with: .opacity))
-                }
-
-                Button {
-                    HapticFeedback.impact(.medium)
-                    if speechService.isPlaying {
-                        speechService.pause()
-                    } else if speechService.isPaused {
-                        speechService.resume()
-                    } else {
-                        startPlayback()
-                    }
-                } label: {
-                    ZStack {
-                        Circle()
-                            .fill(accentColor)
-                            .frame(width: 72, height: 72)
-                            .shadow(color: accentColor.opacity(0.35), radius: 12, y: 4)
-                        Image(systemName: speechService.isPlaying ? "pause.fill" : "play.fill")
-                            .font(.system(size: 26, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .offset(x: speechService.isPlaying ? 0 : 2)
-                    }
-                }
-
-                if speechService.isPlaying || speechService.isPaused {
-                    Button {
-                        HapticFeedback.impact(.light)
-                        speechService.skipForward()
-                    } label: {
-                        Image(systemName: "forward.fill")
-                            .font(.title3.weight(.medium))
-                            .foregroundStyle(.primary)
-                    }
-                    .transition(.scale.combined(with: .opacity))
-                }
-            }
-            .animation(.spring(duration: 0.25), value: speechService.isPlaying || speechService.isPaused)
-            .frame(maxWidth: .infinity)
-
-            // Progress / label
-            if speechService.isPlaying || speechService.isPaused {
-                VStack(spacing: 6) {
-                    ProgressView(value: max(0, min(1, speechService.progress)))
-                        .tint(accentColor)
-                    Text(speechService.currentItemTitle)
-                        .font(LumioTypography.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-                .transition(.opacity)
+    private var briefingTextSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if !displayText.isEmpty {
+                Text(buildAttributedBriefing())
+                    .font(.system(.body))
+                    .lineSpacing(7)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .animation(.easeInOut(duration: 0.3), value: displayText)
+                    .environment(\.openURL, OpenURLAction { url in
+                        handleLink(url)
+                        return .handled
+                    })
             } else {
-                Text("Briefing vorlesen")
-                    .font(LumioTypography.caption)
+                Text(language == "de" ? "Briefing wird geladen…" : "Loading briefing…")
                     .foregroundStyle(.secondary)
-                    .transition(.opacity)
+                    .font(.system(.body))
+            }
+
+            if transformedText != nil {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.25)) { transformedText = nil }
+                } label: {
+                    Label(language == "de" ? "Original" : "Original", systemImage: "arrow.uturn.left")
+                        .font(LumioTypography.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 4)
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 22)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color(uiColor: .secondarySystemBackground))
-        )
-        .animation(.easeInOut(duration: 0.2), value: speechService.isPlaying)
     }
 
-    // MARK: — Summary Card
+    // MARK: — TTS Button (compact)
 
-    private var summaryCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            // Header row
-            HStack(alignment: .center) {
-                HStack(spacing: 6) {
-                    Image(systemName: "sparkles")
-                        .font(.caption.weight(.semibold))
-                    Text("KI-Zusammenfassung")
-                        .font(LumioTypography.caption.weight(.semibold))
-                        .textCase(.uppercase)
-                        .kerning(0.5)
-                }
-                .foregroundStyle(accentColor)
-
-                Spacer()
-
-                if condensedSummary != nil {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.25)) { condensedSummary = nil }
-                    } label: {
-                        Text("Vollständig")
-                            .font(LumioTypography.caption.weight(.semibold))
-                            .foregroundStyle(accentColor)
-                    }
-                }
+    private var ttsButton: some View {
+        Button {
+            HapticFeedback.impact(.light)
+            if speechService.isPlaying {
+                speechService.pause()
+            } else if speechService.isPaused {
+                speechService.resume()
+            } else {
+                startPlayback()
             }
+        } label: {
+            Image(systemName: speechService.isPlaying ? "pause.fill" : (speechService.isPaused ? "play.fill" : "speaker.wave.2"))
+                .font(.callout.weight(.medium))
+                .foregroundStyle(accentColor)
+        }
+    }
 
-            // Summary text
-            Text(displaySummary)
-                .font(.system(.callout))
-                .lineSpacing(5)
-                .foregroundStyle(.primary)
-                .fixedSize(horizontal: false, vertical: true)
-                .animation(.easeInOut(duration: 0.3), value: displaySummary)
+    // MARK: — Shortcut Bar
 
-            Divider()
+    private var shortcutBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                shortcutButton(
+                    icon: "list.bullet",
+                    label: language == "de" ? "Stichpunkte" : "Bullet Points",
+                    transformation: .bulletPoints
+                )
+                shortcutButton(
+                    icon: "text.badge.minus",
+                    label: language == "de" ? "Kürzer" : "Shorter",
+                    transformation: .condense
+                )
+                shortcutButton(
+                    icon: "text.badge.plus",
+                    label: language == "de" ? "Ausführlicher" : "More Detail",
+                    transformation: .expand
+                )
 
-            // Condense button
-            HStack {
-                Spacer()
+                Rectangle()
+                    .fill(Color.secondary.opacity(0.25))
+                    .frame(width: 1, height: 28)
+                    .padding(.horizontal, 2)
+
                 Button {
-                    Task { await condense() }
+                    sendToChat()
                 } label: {
-                    HStack(spacing: 6) {
-                        if isCondensing {
-                            ProgressView().scaleEffect(0.7)
-                                .tint(accentColor)
-                        } else {
-                            Image(systemName: "text.badge.minus")
-                                .font(.caption.weight(.semibold))
-                        }
-                        Text(isCondensing ? "Wird kürzer gefasst…" : "Kürzer zusammenfassen")
-                            .font(LumioTypography.caption.weight(.semibold))
-                    }
-                    .foregroundStyle(condensedSummary == nil ? accentColor : Color.secondary)
+                    Label(
+                        language == "de" ? "An Chat" : "To Chat",
+                        systemImage: "bubble.left.fill"
+                    )
+                    .font(LumioTypography.caption.weight(.semibold))
+                    .foregroundStyle(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(
-                        Capsule()
-                            .fill((condensedSummary == nil ? accentColor : Color.secondary).opacity(0.1))
-                    )
+                    .background(Capsule().fill(accentColor))
                 }
-                .disabled(isCondensing || condensedSummary != nil)
                 .buttonStyle(.plain)
-                .animation(.easeInOut(duration: 0.2), value: condensedSummary != nil)
             }
-        }
-        .padding(18)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color(uiColor: .secondarySystemBackground))
-        )
-    }
-
-    // MARK: — Events Section
-
-    private var eventsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            sectionHeader(title: "Termine", icon: "calendar", count: events.count)
-
-            VStack(spacing: 8) {
-                ForEach(events) { event in
-                    Button {
-                        HapticFeedback.selection()
-                        selectedEvent = event
-                    } label: {
-                        BriefingEventRow(event: event)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
+            .padding(.vertical, 4)
         }
     }
-
-    // MARK: — Reminders Section
-
-    private var remindersSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            sectionHeader(title: "Erinnerungen", icon: "checklist", count: reminders.count)
-
-            VStack(spacing: 0) {
-                ForEach(Array(reminders.enumerated()), id: \.element.id) { i, reminder in
-                    VStack(spacing: 0) {
-                        BriefingReminderRow(reminder: reminder, accentColor: accentColor)
-                        if i < reminders.count - 1 {
-                            Divider().padding(.leading, 46)
-                        }
-                    }
-                }
-            }
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color(uiColor: .secondarySystemBackground))
-            )
-        }
-    }
-
-    // MARK: — Helpers
 
     @ViewBuilder
-    private func sectionHeader(title: String, icon: String, count: Int) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.caption.weight(.semibold))
-            Text(title)
-                .font(LumioTypography.caption.weight(.semibold))
-                .textCase(.uppercase)
-                .kerning(0.5)
-            Spacer()
-            Text("\(count)")
-                .font(LumioTypography.caption.weight(.semibold))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 7)
-                .padding(.vertical, 2)
-                .background(Capsule().fill(accentColor))
+    private func shortcutButton(icon: String, label: String, transformation: BriefingTransformation) -> some View {
+        let isActive = activeTransformation == transformation && isTransforming
+        Button {
+            guard !isTransforming else { return }
+            Task { await applyTransformation(transformation) }
+        } label: {
+            HStack(spacing: 6) {
+                if isActive {
+                    ProgressView()
+                        .scaleEffect(0.65)
+                        .tint(accentColor)
+                } else {
+                    Image(systemName: icon)
+                        .font(.caption.weight(.semibold))
+                }
+                Text(label)
+                    .font(LumioTypography.caption.weight(.semibold))
+            }
+            .foregroundStyle(accentColor)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Capsule().fill(accentColor.opacity(0.1)))
         }
-        .foregroundStyle(.secondary)
+        .buttonStyle(.plain)
+        .disabled(isTransforming)
+        .animation(.easeInOut(duration: 0.15), value: isActive)
+    }
+
+    // MARK: — Attributed Text Builder
+
+    private func buildAttributedBriefing() -> AttributedString {
+        let text = displayText
+        let mutable = NSMutableAttributedString(string: text)
+        let nsStr = text as NSString
+
+        for event in events {
+            guard !event.title.isEmpty else { continue }
+            var location = 0
+            while location < nsStr.length {
+                let range = nsStr.range(
+                    of: event.title,
+                    options: [.caseInsensitive, .diacriticInsensitive],
+                    range: NSRange(location: location, length: nsStr.length - location)
+                )
+                guard range.location != NSNotFound else { break }
+                mutable.addAttribute(.foregroundColor, value: UIColor(cgColor: event.calendarColor), range: range)
+                if let url = briefingURL(scheme: "event", id: event.id) {
+                    mutable.addAttribute(.link, value: url, range: range)
+                }
+                location = range.upperBound
+            }
+        }
+
+        for reminder in reminders {
+            guard !reminder.title.isEmpty else { continue }
+            var location = 0
+            while location < nsStr.length {
+                let range = nsStr.range(
+                    of: reminder.title,
+                    options: [.caseInsensitive, .diacriticInsensitive],
+                    range: NSRange(location: location, length: nsStr.length - location)
+                )
+                guard range.location != NSNotFound else { break }
+                mutable.addAttribute(.foregroundColor, value: UIColor(accentColor), range: range)
+                if let url = briefingURL(scheme: "reminder", id: reminder.id) {
+                    mutable.addAttribute(.link, value: url, range: range)
+                }
+                location = range.upperBound
+            }
+        }
+
+        return (try? AttributedString(mutable, including: \.uiKit)) ?? AttributedString(text)
+    }
+
+    // Use query parameters so EventKit IDs (which may contain '/') don't break path parsing.
+    private func briefingURL(scheme: String, id: String) -> URL? {
+        var comps = URLComponents()
+        comps.scheme = "lumio"
+        comps.host = scheme
+        comps.queryItems = [URLQueryItem(name: "id", value: id)]
+        return comps.url
+    }
+
+    private func handleLink(_ url: URL) {
+        guard url.scheme == "lumio" else { return }
+        let comps = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        let id = comps?.queryItems?.first(where: { $0.name == "id" })?.value ?? ""
+        guard !id.isEmpty else { return }
+        HapticFeedback.selection()
+        switch url.host {
+        case "event":
+            selectedEvent = events.first { $0.id == id }
+        case "reminder":
+            selectedReminder = reminders.first { $0.id == id }
+        default: break
+        }
+    }
+
+    // MARK: — Transformations
+
+    private func applyTransformation(_ t: BriefingTransformation) async {
+        guard !isTransforming else { return }
+        isTransforming = true
+        activeTransformation = t
+        defer { isTransforming = false; activeTransformation = nil }
+        let result = await ai.transformBriefing(displayText, into: t, language: language)
+        withAnimation(.easeInOut(duration: 0.3)) { transformedText = result }
+    }
+
+    private func sendToChat() {
+        appState.pendingBriefingForChat = displayText
+        dismiss()
+    }
+
+    // MARK: — TTS
+
+    private func startPlayback() {
+        var parts: [String] = []
+        if let w = weather {
+            let t = Int(w.temperatureCurrent.rounded())
+            parts.append(language == "de"
+                ? "Wetter: \(w.conditionLabel), \(t) Grad."
+                : "Weather: \(w.conditionLabel), \(t) degrees.")
+        }
+        parts.append(displayText)
+        speechService.speak(
+            [SpeechItem(title: language == "de" ? "Briefing" : "Briefing",
+                        text: parts.joined(separator: " "),
+                        language: language == "de" ? "de-DE" : "en-US")],
+            accentColorHex: accentColorHex
+        )
     }
 
     private var dateTitle: String {
         Date().formatted(.dateTime.weekday(.wide).day().month(.wide))
     }
-
-    private func startPlayback() {
-        let isDE = language == "de"
-        let fmt = DateFormatter(); fmt.dateFormat = "HH:mm"
-        var parts: [String] = []
-        if let w = weather {
-            let t = Int(w.temperatureCurrent.rounded())
-            parts.append(isDE ? "Wetter: \(w.conditionLabel), \(t) Grad." : "Weather: \(w.conditionLabel), \(t) degrees.")
-        }
-        for event in events {
-            let time = event.isAllDay
-                ? (isDE ? "ganztägig" : "all day")
-                : (isDE ? "um \(fmt.string(from: event.startDate)) Uhr" : "at \(fmt.string(from: event.startDate))")
-            parts.append(isDE ? "\(event.title) \(time)." : "\(event.title) \(time).")
-        }
-        if !reminders.isEmpty {
-            let titles = reminders.prefix(3).map(\.title).joined(separator: ", ")
-            parts.append(isDE ? "Erinnerungen: \(titles)." : "Reminders: \(titles).")
-        }
-        parts.append(isDE ? "Das war dein Briefing!" : "That's your briefing!")
-        let text = parts.joined(separator: " ")
-        speechService.speak(
-            [SpeechItem(title: "Briefing", text: text, language: language == "de" ? "de-DE" : "en-US")],
-            accentColorHex: accentColorHex
-        )
-    }
-
-    private func condense() async {
-        guard !isCondensing, condensedSummary == nil else { return }
-        isCondensing = true
-        let short = await ai.summarizeBriefing(
-            events: events, reminders: reminders, weather: weather,
-            pdfTexts: [], language: language, length: .short, style: .friendly
-        )
-        withAnimation(.easeInOut(duration: 0.3)) {
-            condensedSummary = short
-            isCondensing = false
-        }
-    }
 }
 
-// MARK: — Briefing Event Row
+// MARK: — Reminder Detail Sheet
 
-private struct BriefingEventRow: View {
-    let event: CalendarEvent
-
-    private var timeString: String {
-        if event.isAllDay { return "Ganztägig" }
-        let fmt = DateFormatter(); fmt.dateFormat = "HH:mm"
-        return "\(fmt.string(from: event.startDate)) – \(fmt.string(from: event.endDate))"
-    }
-
-    private var isNow: Bool {
-        let now = Date()
-        return !event.isAllDay && event.startDate <= now && event.endDate >= now
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                .fill(Color(cgColor: event.calendarColor))
-                .frame(width: 4, height: 46)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(event.title)
-                    .font(LumioTypography.callout.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
-
-                HStack(spacing: 6) {
-                    Image(systemName: "clock")
-                        .font(.caption2)
-                    Text(timeString)
-                        .font(LumioTypography.caption)
-
-                    if let loc = event.location, !loc.isEmpty {
-                        Text("·")
-                        Image(systemName: "mappin")
-                            .font(.caption2)
-                        Text(loc)
-                            .lineLimit(1)
-                            .font(LumioTypography.caption)
-                    }
-                }
-                .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            if isNow {
-                Text("Jetzt")
-                    .font(LumioTypography.caption2.weight(.bold))
-                    .foregroundStyle(.green)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Capsule().fill(Color.green.opacity(0.12)))
-            }
-
-            Image(systemName: "chevron.right")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.tertiary)
-        }
-        .padding(14)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color(uiColor: .secondarySystemBackground))
-        )
-    }
-}
-
-// MARK: — Briefing Reminder Row
-
-private struct BriefingReminderRow: View {
+struct ReminderDetailSheet: View {
     let reminder: ReminderItem
     let accentColor: Color
-
-    private var timeString: String? {
-        guard let d = reminder.dueDate else { return nil }
-        let fmt = DateFormatter(); fmt.dateFormat = "HH:mm"
-        return fmt.string(from: d)
-    }
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .stroke(Color.secondary.opacity(0.4), lineWidth: 1.5)
-                    .frame(width: 22, height: 22)
-                if !reminder.priorityLabel.isEmpty {
-                    Text(reminder.priorityLabel)
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(.orange)
+        NavigationStack {
+            List {
+                Section {
+                    HStack(spacing: 14) {
+                        ZStack {
+                            Circle()
+                                .stroke(Color.secondary.opacity(0.4), lineWidth: 1.5)
+                                .frame(width: 28, height: 28)
+                            if !reminder.priorityLabel.isEmpty {
+                                Text(reminder.priorityLabel)
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.orange)
+                            }
+                        }
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(reminder.title)
+                                .font(LumioTypography.body.weight(.semibold))
+                            if !reminder.priorityLabel.isEmpty {
+                                Text(reminder.priorityLabel + " Priorität")
+                                    .font(LumioTypography.caption)
+                                    .foregroundStyle(.orange)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
                 }
-            }
-            .padding(.leading, 14)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(reminder.title)
-                    .font(LumioTypography.callout)
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
+                if let due = reminder.dueDate {
+                    Section("Fälligkeit") {
+                        Label(due.formatted(.dateTime.day().month().hour().minute()),
+                              systemImage: "clock")
+                    }
+                }
 
                 if let notes = reminder.notes, !notes.isEmpty {
-                    Text(notes)
-                        .font(LumioTypography.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                    Section("Notizen") {
+                        Text(notes)
+                            .font(LumioTypography.body)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
-
-            Spacer()
-
-            if let t = timeString {
-                Text(t)
-                    .font(LumioTypography.caption.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .padding(.trailing, 14)
+            .listStyle(.insetGrouped)
+            .navigationTitle("Erinnerung")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fertig") { dismiss() }
+                        .fontWeight(.semibold)
+                }
             }
         }
-        .padding(.vertical, 12)
+        .presentationDetents([.fraction(0.45)])
+        .presentationDragIndicator(.visible)
+        .presentationCornerRadius(24)
     }
 }

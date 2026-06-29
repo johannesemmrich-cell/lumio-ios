@@ -10,6 +10,9 @@ struct TodayView: View {
     @State private var showPaywall = false
     @State private var showCalendar = false
     @State private var showBriefingDetail = false
+    @State private var showChatSheet = false
+    @State private var showSettingsSheet = false
+    @State private var showLibrarySheet = false
     @State private var selectedEvent: CalendarEvent? = nil
     @State private var headerOffset: CGFloat = 0
 
@@ -71,7 +74,29 @@ struct TodayView: View {
                             case "calendar":
                                 Button { showCalendar = true } label: { Image(systemName: "calendar") }
                             case "chat_shortcut":
-                                Button { appState.selectedTab = .chat } label: { Image(systemName: "bubble.left.fill") }
+                                Button {
+                                    if appState.tabOrder.contains(.chat) {
+                                        appState.selectedTab = .chat
+                                    } else {
+                                        showChatSheet = true
+                                    }
+                                } label: { Image(systemName: "bubble.left.fill") }
+                            case "library":
+                                Button {
+                                    if appState.tabOrder.contains(.library) {
+                                        appState.selectedTab = .library
+                                    } else {
+                                        showLibrarySheet = true
+                                    }
+                                } label: { Image(systemName: "books.vertical.fill") }
+                            case "settings":
+                                Button {
+                                    if appState.tabOrder.contains(.settings) {
+                                        appState.selectedTab = .settings
+                                    } else {
+                                        showSettingsSheet = true
+                                    }
+                                } label: { Image(systemName: "gearshape") }
                             case "refresh":
                                 Button { Task { await viewModel.refresh() } } label: { Image(systemName: "arrow.clockwise") }
                                     .disabled(viewModel.isLoadingEvents)
@@ -90,6 +115,21 @@ struct TodayView: View {
             .sheet(isPresented: $showCalendar) {
                 LumioCalendarView()
                     .environmentObject(appState)
+            }
+            .sheet(isPresented: $showChatSheet) {
+                NavigationStack { ChatView() }
+                    .environmentObject(appState)
+                    .environmentObject(subscriptionManager)
+            }
+            .sheet(isPresented: $showSettingsSheet) {
+                NavigationStack { SettingsView() }
+                    .environmentObject(appState)
+                    .environmentObject(subscriptionManager)
+            }
+            .sheet(isPresented: $showLibrarySheet) {
+                NavigationStack { LibraryView() }
+                    .environmentObject(appState)
+                    .environmentObject(subscriptionManager)
             }
             .sheet(item: $selectedEvent) { event in
                 EventDetailSheet(event: event)
@@ -119,6 +159,14 @@ struct TodayView: View {
                 viewModel.briefingLength = appState.briefingLength
                 viewModel.briefingStyle = appState.briefingStyle
                 await viewModel.loadInitialData()
+            }
+            .onChange(of: appState.pendingBriefingForChat) { _, pending in
+                guard pending != nil else { return }
+                if appState.tabOrder.contains(.chat) {
+                    appState.selectedTab = .chat
+                } else {
+                    showChatSheet = true
+                }
             }
         }
         .sheet(isPresented: $showPaywall) {

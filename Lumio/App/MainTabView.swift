@@ -16,6 +16,9 @@ struct MainTabView: View {
         .onChange(of: appState.selectedTab) {
             HapticFeedback.selection()
         }
+        .onChange(of: subscriptionManager.effectivelyPremium) { _, isPremium in
+            if isPremium { appState.applyPremiumLayoutMigrationIfNeeded() }
+        }
     }
 
     @ViewBuilder
