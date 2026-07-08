@@ -36,8 +36,16 @@ final class AppState: ObservableObject {
         let saved = UserDefaults.standard.string(forKey: UserDefaultsKey.selectedLanguage)
         self.selectedLanguage = saved ?? (Locale.current.language.languageCode?.identifier == "de" ? "de" : "en")
 
+        let savedTopBar = UserDefaults.standard.stringArray(forKey: UserDefaultsKey.topBarActions) ?? ["chat_shortcut", "refresh"]
+        self.topBarActions = savedTopBar
+
         if let savedOrder = UserDefaults.standard.stringArray(forKey: UserDefaultsKey.tabOrder) {
-            let ordered = savedOrder.compactMap { AppTab(rawValue: $0) }
+            var ordered = savedOrder.compactMap { AppTab(rawValue: $0) }
+            // Remove any tab that is already shown in the top bar to prevent duplicates
+            if savedTopBar.contains("calendar") { ordered.removeAll { $0 == .calendar } }
+            if savedTopBar.contains("chat_shortcut") { ordered.removeAll { $0 == .chat } }
+            // Settings must always be in the tab bar
+            if !ordered.contains(.settings) { ordered.append(.settings) }
             self.tabOrder = Array(ordered.prefix(4))
         } else {
             self.tabOrder = [.today, .library, .calendar, .settings]
@@ -46,7 +54,6 @@ final class AppState: ObservableObject {
         self.briefingLength = BriefingLength(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.briefingLength) ?? "") ?? .medium
         self.briefingStyle = BriefingStyle(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.briefingStyle) ?? "") ?? .friendly
         self.accentColorHex = UserDefaults.standard.string(forKey: UserDefaultsKey.accentColorHex) ?? "FF9500"
-        self.topBarActions = UserDefaults.standard.stringArray(forKey: UserDefaultsKey.topBarActions) ?? ["chat_shortcut", "refresh"]
     }
 
     func completeOnboarding() {

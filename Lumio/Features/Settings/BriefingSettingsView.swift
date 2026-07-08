@@ -53,6 +53,7 @@ struct BriefingSettingsView: View {
         }
         .navigationTitle("Briefing-Einstellungen")
         .listStyle(.insetGrouped)
+        .tint(appState.accentColor)
         .toolbar {
             if appState.isDeveloperModeActive {
                 ToolbarItem(placement: .topBarLeading) {

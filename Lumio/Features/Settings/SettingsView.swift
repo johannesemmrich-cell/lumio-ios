@@ -127,6 +127,7 @@ struct SettingsView: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .tint(appState.accentColor)
             .toolbar {
                 if appState.isDeveloperModeActive {
                     ToolbarItem(placement: .topBarLeading) {

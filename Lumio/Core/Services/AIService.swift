@@ -165,8 +165,8 @@ final class AIService: ObservableObject {
                 : "Condense the following text to at most 2 sentences. Keep only what's essential."
         case .expand:
             instruction = isDE
-                ? "Mache den folgenden Tagesplan detaillierter. Füge motivierende Details und praktische Hinweise hinzu."
-                : "Expand the following daily briefing with more details and motivating insights."
+                ? "Mache den folgenden Text deutlich länger und ausführlicher. Erwähne jeden Termin und jede Erinnerung einzeln mit Uhrzeit und Kontext. Füge motivierende Details hinzu. Kürze NICHTS weg – das Ergebnis muss länger als der Original-Text sein."
+                : "Expand the following text significantly. Mention every event and reminder individually with time and context. Add motivating details. Do NOT shorten anything — the result must be longer than the input."
         case .bulletPoints:
             instruction = isDE
                 ? "Wandle den folgenden Text in eine Stichpunktliste um. Jeden Punkt mit '• ' beginnen."
@@ -199,7 +199,7 @@ final class AIService: ObservableObject {
         fmt.dateFormat = "HH:mm"
         let eventLines = events.map { "- \(fmt.string(from: $0.startDate)): \($0.title)" }.joined(separator: "\n")
         let dueTomorrowSuffix = language == "de" ? " (bis morgen)" : " (due tomorrow)"
-        let reminderLines = reminders.prefix(5).map {
+        let reminderLines = reminders.map {
             "- \($0.title)\($0.isDueTomorrow ? dueTomorrowSuffix : "")"
         }.joined(separator: "\n")
         let pdfSection = pdfTexts.isEmpty ? "" : "\n\nLecture content available:\n" + pdfTexts.prefix(3).joined(separator: "\n---\n")
@@ -223,7 +223,7 @@ final class AIService: ObservableObject {
         let reminderCount = reminders.count
 
         return """
-        You are Lumio, a calm and intelligent morning briefing assistant. Summarize the user's day in \(length.maxSentences) sentence(s). Be concise.\(weatherSection)
+        You are Lumio, a calm and intelligent morning briefing assistant.\(weatherSection)
 
         Today's events (\(eventCount) total):
         \(eventLines.isEmpty ? noEventsText : eventLines)
@@ -231,8 +231,8 @@ final class AIService: ObservableObject {
         Today's reminders (\(reminderCount) total):
         \(reminderLines.isEmpty ? noRemindersText : reminderLines)\(pdfSection)
 
-        IMPORTANT: Only reference the exact events and reminders listed above. Do not invent or add any that are not listed.
-        \(langInstruction) Maximum \(length.maxSentences) sentence(s).
+        IMPORTANT: Mention EVERY event and EVERY reminder listed above — do not skip any. Do not invent items not listed.
+        \(langInstruction) Write \(length.maxSentences) sentence(s), but always include all events and reminders even if that requires more sentences.
         """
     }
 
@@ -278,15 +278,16 @@ final class AIService: ObservableObject {
                 parts.append("Heute keine Termine oder Erinnerungen – genieß die freie Zeit.")
             } else {
                 if !events.isEmpty {
-                    let first = events[0]
+                    let eventList = events.map { "\($0.title) um \(fmt.string(from: $0.startDate))" }.joined(separator: ", ")
                     parts.append(events.count == 1
-                        ? "\(first.title) um \(fmt.string(from: first.startDate)) – dein einziger Termin."
-                        : "\(events.count) Termine heute. Erster: \(first.title) um \(fmt.string(from: first.startDate)).")
+                        ? "\(events[0].title) um \(fmt.string(from: events[0].startDate)) – dein einziger Termin."
+                        : "\(events.count) Termine heute: \(eventList).")
                 }
                 if !reminders.isEmpty {
+                    let reminderList = reminders.map { $0.title }.joined(separator: ", ")
                     parts.append(reminders.count == 1
                         ? "Erinnerung: \(reminders[0].title)."
-                        : "\(reminders.count) Erinnerungen, z.B. \(reminders[0].title).")
+                        : "\(reminders.count) Erinnerungen: \(reminderList).")
                 }
             }
         } else {
@@ -294,15 +295,16 @@ final class AIService: ObservableObject {
                 parts.append(String(localized: "You have a clear day today. Enjoy the focus time."))
             } else {
                 if !events.isEmpty {
-                    let first = events[0]
+                    let eventList = events.map { "\($0.title) at \(fmt.string(from: $0.startDate))" }.joined(separator: ", ")
                     parts.append(events.count == 1
-                        ? String(localized: "\(first.title) at \(fmt.string(from: first.startDate)) — that's your only event today.")
-                        : String(localized: "\(events.count) events today. First up: \(first.title) at \(fmt.string(from: first.startDate))."))
+                        ? String(localized: "\(events[0].title) at \(fmt.string(from: events[0].startDate)) — that's your only event today.")
+                        : "\(events.count) events today: \(eventList).")
                 }
                 if !reminders.isEmpty {
+                    let reminderList = reminders.map { $0.title }.joined(separator: ", ")
                     parts.append(reminders.count == 1
                         ? "Reminder: \(reminders[0].title)."
-                        : "\(reminders.count) reminders, e.g. \(reminders[0].title).")
+                        : "\(reminders.count) reminders: \(reminderList).")
                 }
             }
         }

@@ -62,6 +62,7 @@ struct AppLayoutConfigView: View {
         }
         .background(Color(uiColor: .systemGroupedBackground))
         .navigationTitle("App-Layout")
+        .tint(appState.accentColor)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
