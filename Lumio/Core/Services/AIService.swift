@@ -1,4 +1,5 @@
 import Foundation
+import FoundationModels
 import SwiftUI
 
 enum AICapabilityStatus: Equatable {
@@ -16,7 +17,7 @@ enum AICapabilityStatus: Equatable {
         case .deviceNotSupported:
             return "AI features require an iPhone 15 Pro or newer (iPhone 16 or 17). All other Lumio features work perfectly without it."
         case .modelNotReady:
-            return "The on-device AI model is still preparing. Check back in a few minutes."
+            return "The on-device AI model isn't ready yet. Make sure Apple Intelligence is enabled in Settings, then check back in a few minutes."
         case .unknown:
             return "Checking AI availability…"
         }
@@ -45,31 +46,36 @@ final class AIService: ObservableObject {
 
     func checkCapability() async {
         if #available(iOS 26.0, *) {
-            capabilityStatus = await detectFoundationModels()
+            capabilityStatus = Self.detectFoundationModels()
         } else {
             capabilityStatus = .deviceNotSupported
         }
     }
 
+    /// The on-device model configured for transforming user-provided content
+    /// (calendar, reminders, weather) — Apple's intended guardrail mode for
+    /// summarization apps. The default guardrails run an extra safety model
+    /// over the input that can misfire on benign personal data.
+    nonisolated private static let generationModel = SystemLanguageModel(
+        useCase: .general,
+        guardrails: .permissiveContentTransformations
+    )
+
+    /// Maps the live FoundationModels availability onto our capability status.
+    /// Availability can change at runtime (model download finishes, Apple
+    /// Intelligence gets toggled), so callers re-check before every generation.
     @available(iOS 26.0, *)
-    private func detectFoundationModels() async -> AICapabilityStatus {
-        // FoundationModels.framework — iOS 26+, available on A17 Pro / M-chip devices
-        // NSClassFromString fails for Swift types due to name mangling; we try multiple paths.
-
-        // Try bridged ObjC name first, then Swift mangled name patterns
-        let classNames = [
-            "FoundationModels.SystemLanguageModel",
-            "_TtC15FoundationModels18SystemLanguageModel",
-        ]
-        let found = classNames.contains { NSClassFromString($0) != nil }
-        guard found else {
-            // On iOS 26+ the framework exists but NSClassFromString is unreliable for Swift types.
-            // Treat as modelNotReady so the user sees a friendlier message than "device not supported".
+    private static func detectFoundationModels() -> AICapabilityStatus {
+        switch generationModel.availability {
+        case .available:
+            return .available
+        case .unavailable(.deviceNotEligible):
+            return .deviceNotSupported
+        case .unavailable(.appleIntelligenceNotEnabled), .unavailable(.modelNotReady):
             return .modelNotReady
+        default:
+            return .unknown
         }
-
-        // Framework present — assume available; full capability check deferred until actual generation
-        return .available
     }
 
     // MARK: — Briefing summary
@@ -78,6 +84,7 @@ final class AIService: ObservableObject {
         isGenerating = true
         defer { isGenerating = false }
 
+        await checkCapability() // availability can change at runtime
         if capabilityStatus == .available, #available(iOS 26.0, *) {
             return await generateWithFoundationModels(events: events, reminders: reminders, weather: weather, pdfTexts: pdfTexts, language: language, length: length, style: style)
         }
@@ -90,6 +97,7 @@ final class AIService: ObservableObject {
         isGenerating = true
         defer { isGenerating = false }
 
+        await checkCapability() // availability can change at runtime
         guard capabilityStatus == .available else {
             if language == "de" {
                 return capabilityStatus == .deviceNotSupported
@@ -121,33 +129,59 @@ final class AIService: ObservableObject {
         return await runFoundationModelsPrompt(prompt) ?? buildRuleBasedAnswer(question: question, context: context, language: language)
     }
 
+    /// Single choke point for on-device generation: summaries, chat answers and
+    /// transformations all go through here. Returns nil on any failure so the
+    /// rule-based fallbacks kick in.
     @available(iOS 26.0, *)
     private func runFoundationModelsPrompt(_ prompt: String) async -> String? {
-        // Run ObjC runtime dispatch off the main thread to avoid blocking the UI.
-        // Replace with direct FoundationModels import once the framework API is stable.
-        let promptCopy = prompt
-        return await Task.detached(priority: .userInitiated) {
-            guard
-                let modelClass = NSClassFromString("FoundationModels.SystemLanguageModel") as? NSObject.Type,
-                let sessionClass = NSClassFromString("FoundationModels.LanguageModelSession") as? NSObject.Type
-            else { return nil }
+        // Re-check availability right before generating — it can change at
+        // runtime (e.g. the model just finished downloading).
+        let status = Self.detectFoundationModels()
+        capabilityStatus = status
+        guard status == .available else { return nil }
 
-            let defaultSel = NSSelectorFromString("default")
-            guard modelClass.responds(to: defaultSel) else { return nil }
-            let model = modelClass.perform(defaultSel)?.takeUnretainedValue()
-
-            let initSel = NSSelectorFromString("initWithModel:")
-            guard let session = sessionClass.perform(initSel, with: model)?.takeRetainedValue() as? NSObject else { return nil }
-
-            let respondSel = NSSelectorFromString("respondTo:")
-            guard session.responds(to: respondSel) else { return nil }
-            return session.perform(respondSel, with: promptCopy)?.takeUnretainedValue() as? String
+        // Run the session off the main actor so generation never blocks the UI.
+        return await Task.detached(priority: .userInitiated) { () async -> String? in
+            do {
+                let session = LanguageModelSession(model: Self.generationModel)
+                let response = try await session.respond(to: prompt)
+                let cleaned = Self.sanitizeModelOutput(response.content)
+                return cleaned.isEmpty ? nil : cleaned
+            } catch {
+                return nil
+            }
         }.value
+    }
+
+    /// Strips markdown artifacts the model sometimes emits despite the prompt
+    /// rules, so the text is safe to display verbatim AND to speak aloud.
+    nonisolated static func sanitizeModelOutput(_ text: String) -> String {
+        let withoutEmphasis = text
+            .replacingOccurrences(of: "**", with: "")
+            .replacingOccurrences(of: "__", with: "")
+
+        let lines = withoutEmphasis.components(separatedBy: "\n").map { line -> String in
+            var cleaned = line
+            // Markdown bullets ("* " / "- ") → the app's "• " style
+            if let marker = cleaned.range(of: #"^\s*[*-]\s+"#, options: .regularExpression) {
+                cleaned.replaceSubrange(marker, with: "• ")
+            }
+            // Markdown headers ("# ", "## ", …) → plain text
+            if let header = cleaned.range(of: #"^\s*#+\s*"#, options: .regularExpression) {
+                cleaned.removeSubrange(header)
+            }
+            return cleaned
+        }
+
+        return lines.joined(separator: "\n")
+            .replacingOccurrences(of: "\n{3,}", with: "\n\n", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     // MARK: — Briefing transformations
 
     func transformBriefing(_ text: String, into transformation: BriefingTransformation, language: String) async -> String {
+        await checkCapability() // availability can change at runtime
         if capabilityStatus == .available, #available(iOS 26.0, *) {
             let prompt = buildTransformPrompt(text: text, transformation: transformation, language: language)
             if let result = await runFoundationModelsPrompt(prompt) { return result }
@@ -172,7 +206,10 @@ final class AIService: ObservableObject {
                 ? "Wandle den folgenden Text in eine Stichpunktliste um. Jeden Punkt mit '• ' beginnen."
                 : "Convert the following text into a bullet list. Start each point with '• '."
         }
-        return "\(instruction)\n\nText:\n\(text)"
+        let noMarkdownRule = isDE
+            ? "Kein Markdown: keine Sternchen (**), keine Rauten (#), keine Bindestrich-Listen (-)."
+            : "No markdown: no asterisks (**), no hash headings (#), no dash lists (-)."
+        return "\(instruction) \(noMarkdownRule)\n\nText:\n\(text)"
     }
 
     private func fallbackTransform(_ text: String, transformation: BriefingTransformation) -> String {
@@ -204,10 +241,11 @@ final class AIService: ObservableObject {
         }.joined(separator: "\n")
         let pdfSection = pdfTexts.isEmpty ? "" : "\n\nLecture content available:\n" + pdfTexts.prefix(3).joined(separator: "\n---\n")
 
+        let isDE = language == "de"
         let langInstruction: String
         let noEventsText: String
         let noRemindersText: String
-        if language == "de" {
+        if isDE {
             langInstruction = "Antworte auf Deutsch. \(style == .formal ? "Sei sachlich und präzise." : style == .concise ? "Sei sehr knapp." : "Sei warm und motivierend.")"
             noEventsText = "(keine Termine)"
             noRemindersText = "(keine Erinnerungen)"
@@ -217,13 +255,26 @@ final class AIService: ObservableObject {
             noRemindersText = "(no reminders)"
         }
 
+        // Current time + daypart so the greeting matches (no "Guten Morgen" at
+        // 4 pm). The greeting is pinned verbatim — the small on-device model
+        // ignores softer "pick a fitting greeting" instructions.
+        let (greeting, daypart) = BriefingNarrator.timeOfDay(language: language)
+        let timeContext = isDE
+            ? "Aktuelle Uhrzeit: \(fmt.string(from: Date())) (\(daypart)). Beginne exakt mit der Begrüßung \"\(greeting)!\" und verwende keine andere Begrüßung."
+            : "Current time: \(fmt.string(from: Date())) (\(daypart)). Start exactly with the greeting \"\(greeting)!\" and use no other greeting."
+
+        let plainTextRule = isDE
+            ? "Antworte ausschließlich als natürlicher Fließtext ohne Markdown, ohne Sternchen, ohne Überschriften."
+            : "Respond only as natural flowing text — no markdown, no asterisks, no headings."
+
         let weatherSection = weather.map { "\n\nWeather: \($0.briefingSnippet)" } ?? ""
 
         let eventCount = events.count
         let reminderCount = reminders.count
 
         return """
-        You are Lumio, a calm and intelligent morning briefing assistant.\(weatherSection)
+        You are Lumio, a calm and intelligent daily briefing assistant.
+        \(timeContext)\(weatherSection)
 
         Today's events (\(eventCount) total):
         \(eventLines.isEmpty ? noEventsText : eventLines)
@@ -233,6 +284,7 @@ final class AIService: ObservableObject {
 
         IMPORTANT: Mention EVERY event and EVERY reminder listed above — do not skip any. Do not invent items not listed.
         \(langInstruction) Write \(length.maxSentences) sentence(s), but always include all events and reminders even if that requires more sentences.
+        \(plainTextRule)
         """
     }
 
@@ -244,6 +296,9 @@ final class AIService: ObservableObject {
         let langInstruction = language == "de"
             ? "Antworte auf Deutsch. Sei kurz und direkt."
             : "Answer concisely in English."
+        let plainTextRule = language == "de"
+            ? "Antworte ausschließlich als natürlicher Fließtext ohne Markdown, ohne Sternchen, ohne Überschriften."
+            : "Respond only as natural flowing text — no markdown, no asterisks, no headings."
 
         return """
         You are Lumio, a helpful and concise AI assistant for a morning briefing app. Answer the user's question based on their calendar and lecture notes. Be brief and direct.
@@ -253,7 +308,7 @@ final class AIService: ObservableObject {
 
         User question: \(question)
 
-        \(langInstruction)
+        \(langInstruction) \(plainTextRule)
         """
     }
 

@@ -49,6 +49,7 @@ targets:
         NSCalendarsUsageDescription: "Lumio liest deinen Kalender für dein persönliches Morgen-Briefing."
         NSCalendarsWriteOnlyAccessUsageDescription: "Lumio kann per KI-Assistent Termine in deinen Kalender eintragen."
         NSRemindersUsageDescription: "Lumio kann deine Erinnerungen ins Briefing einbeziehen."
+        NSLocationWhenInUseUsageDescription: "Lumio nutzt deinen Standort, um aktuelle Wetterdaten für dein Briefing abzurufen."
         UIBackgroundModes:
           - audio
           - fetch
@@ -78,6 +79,14 @@ targets:
             AppIcon-Ocean:
               CFBundleIconFiles:
                 - AppIcon-Ocean
+              UIPrerenderedIcon: false
+            AppIcon-Slate:
+              CFBundleIconFiles:
+                - AppIcon-Slate
+              UIPrerenderedIcon: false
+            AppIcon-Minimal:
+              CFBundleIconFiles:
+                - AppIcon-Minimal
               UIPrerenderedIcon: false
     entitlements:
       path: Lumio/Supporting Files/Lumio.entitlements
@@ -151,6 +160,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio.tests
+        GENERATE_INFOPLIST_FILE: YES
 
   LumioUITests:
     type: bundle.ui-testing
@@ -163,6 +173,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio.uitests
+        GENERATE_INFOPLIST_FILE: YES
 
 schemes:
   Lumio:

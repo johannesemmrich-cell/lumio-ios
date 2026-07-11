@@ -7,6 +7,10 @@ struct LumioApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var themeManager = ThemeManager()
     @StateObject private var subscriptionManager = SubscriptionManager()
+    /// Single app-wide speech pipeline: exactly one MPRemoteCommandCenter
+    /// registration and one LiveActivityService, so lock-screen controls
+    /// always drive the audio that is actually playing.
+    @StateObject private var speechService = SpeechService()
     @Environment(\.scenePhase) private var scenePhase
 
     var sharedModelContainer: ModelContainer = {
@@ -38,6 +42,7 @@ struct LumioApp: App {
                 .environmentObject(appState)
                 .environmentObject(themeManager)
                 .environmentObject(subscriptionManager)
+                .environmentObject(speechService)
                 .modelContainer(sharedModelContainer)
                 .preferredColorScheme(themeManager.preferredColorScheme)
                 .environment(\.locale, appState.locale)

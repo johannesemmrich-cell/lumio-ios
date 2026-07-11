@@ -6,11 +6,13 @@ enum AppTheme: String, CaseIterable {
     case dark = "dark"
     case system = "system"
 
-    var displayName: LocalizedStringKey {
+    /// Segment title following the app language (not the system language).
+    func displayName(language: String) -> String {
+        let isDE = language == "de"
         switch self {
-        case .light: return "Light"
-        case .dark: return "Dark"
-        case .system: return "System"
+        case .light: return isDE ? "Hell" : "Light"
+        case .dark: return isDE ? "Dunkel" : "Dark"
+        case .system: return isDE ? "Auto" : "System"
         }
     }
 

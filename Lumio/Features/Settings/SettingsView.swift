@@ -19,46 +19,47 @@ struct SettingsView: View {
         NavigationStack {
             List {
                 // Calendar & Reminders
-                Section("Calendar") {
+                Section(loc("Kalender", "Calendar")) {
                     NavigationLink(destination: CalendarSettingsView()) {
-                        Label("Connected Calendars", systemImage: "calendar")
+                        Label(loc("Verbundene Kalender", "Connected Calendars"), systemImage: "calendar")
                     }
                     NavigationLink(destination: ReminderSettingsView()) {
-                        Label("Erinnerungen", systemImage: "checklist")
+                        Label(loc("Erinnerungen", "Reminders"), systemImage: "checklist")
                     }
                 }
 
                 // Notifications
-                Section("Notifications") {
+                Section(loc("Mitteilungen", "Notifications")) {
                     NavigationLink(destination: BriefingScheduleView()) {
-                        Label("Briefing-Zeitplan", systemImage: "bell.badge.clock")
+                        // "bell.badge.clock" does not exist as an SF Symbol (renders blank)
+                        Label(loc("Briefing-Zeitplan", "Briefing schedule"), systemImage: "calendar.badge.clock")
                     }
                 }
 
                 // Appearance
-                Section("Appearance") {
+                Section(loc("Darstellung", "Appearance")) {
                     ThemePickerRow(themeManager: themeManager)
                 }
 
                 // Subscription
-                Section("Subscription") {
+                Section(loc("Abo", "Subscription")) {
                     if subscriptionManager.effectivelyPremium {
-                        Label("Premium Active", systemImage: "star.fill")
+                        Label(loc("Premium aktiv", "Premium Active"), systemImage: "star.fill")
                             .foregroundStyle(Color.lumioAccent)
                     } else {
                         Button {
                             showPaywall = true
                         } label: {
                             HStack {
-                                Label("Upgrade to Premium", systemImage: "star")
+                                Label(loc("Auf Premium upgraden", "Upgrade to Premium"), systemImage: "star")
                                 Spacer()
-                                Text("€2/mo")
+                                Text(loc("2 €/Monat", "€2/mo"))
                                     .font(LumioTypography.caption)
                                     .foregroundStyle(.secondary)
                             }
                         }
                     }
-                    Button("Restore Purchases") {
+                    Button(loc("Käufe wiederherstellen", "Restore Purchases")) {
                         Task { await subscriptionManager.restorePurchases() }
                     }
                     .foregroundStyle(.secondary)
@@ -68,29 +69,30 @@ struct SettingsView: View {
                 if subscriptionManager.effectivelyPremium {
                     Section("Premium") {
                         NavigationLink(destination: BriefingSettingsView()) {
-                            Label("Briefing einstellen", systemImage: "waveform.and.sparkles")
+                            // "waveform.and.sparkles" does not exist as an SF Symbol (renders blank)
+                            Label(loc("Briefing einstellen", "Briefing settings"), systemImage: "wand.and.sparkles")
                         }
                         NavigationLink(destination: AppLayoutConfigView()) {
-                            Label("App-Layout & Farben", systemImage: "paintpalette.fill")
+                            Label(loc("App-Layout & Farben", "App layout & colors"), systemImage: "paintpalette.fill")
                         }
                         NavigationLink(destination: AppIconPickerView()) {
-                            Label("App-Icon", systemImage: "app.badge")
+                            Label(loc("App-Icon", "App icon"), systemImage: "app.badge")
                         }
                     }
                 }
 
                 // About
-                Section("About") {
+                Section(loc("Über", "About")) {
                     NavigationLink(destination: AboutView()) {
-                        Label("About Lumio", systemImage: "info.circle")
+                        Label(loc("Über Lumio", "About Lumio"), systemImage: "info.circle")
                     }
                     NavigationLink(destination: PrivacyView()) {
-                        Label("Privacy", systemImage: "hand.raised")
+                        Label(loc("Datenschutz", "Privacy"), systemImage: "hand.raised")
                     }
                     Button {
                         showResetOnboardingConfirm = true
                     } label: {
-                        Label("Onboarding wiederholen", systemImage: "arrow.counterclockwise")
+                        Label(loc("Onboarding wiederholen", "Repeat onboarding"), systemImage: "arrow.counterclockwise")
                             .foregroundStyle(.primary)
                     }
                 }
@@ -158,6 +160,11 @@ struct SettingsView: View {
         }
     }
 
+    /// Picks the German or English string based on the app language.
+    private func loc(_ de: String, _ en: String) -> String {
+        appState.selectedLanguage == "de" ? de : en
+    }
+
     private func resetOnboarding() {
         UserDefaults.standard.set(false, forKey: UserDefaultsKey.hasCompletedOnboarding)
         withAnimation(.easeInOut(duration: 0.5)) {
@@ -178,19 +185,25 @@ struct SettingsView: View {
 
 struct ThemePickerRow: View {
     @ObservedObject var themeManager: ThemeManager
+    @EnvironmentObject private var appState: AppState
 
     var body: some View {
         HStack {
-            Label("Theme", systemImage: "paintbrush")
+            Label(loc("Design", "Theme"), systemImage: "paintbrush")
             Spacer()
-            Picker("Theme", selection: $themeManager.currentTheme) {
+            Picker(loc("Design", "Theme"), selection: $themeManager.currentTheme) {
                 ForEach(AppTheme.allCases, id: \.self) { theme in
-                    Text(theme.displayName).tag(theme)
+                    Text(theme.displayName(language: appState.selectedLanguage)).tag(theme)
                 }
             }
             .pickerStyle(.segmented)
             .frame(maxWidth: 180)
         }
+    }
+
+    /// Picks the German or English string based on the app language.
+    private func loc(_ de: String, _ en: String) -> String {
+        appState.selectedLanguage == "de" ? de : en
     }
 }
 
@@ -276,6 +289,8 @@ struct CalendarSettingsView: View {
 // MARK: — About & Privacy
 
 struct AboutView: View {
+    @EnvironmentObject private var appState: AppState
+
     var body: some View {
         List {
             Section {
@@ -286,36 +301,47 @@ struct AboutView: View {
                     VStack(alignment: .leading) {
                         Text("Lumio")
                             .font(LumioTypography.title3.weight(.bold))
-                        Text("Your morning briefing")
+                        Text(loc("Dein Morgen-Briefing", "Your morning briefing"))
                             .font(LumioTypography.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
                 .padding(.vertical, 8)
             }
-            Section("Technology") {
-                Label("Built with SwiftUI & SwiftData", systemImage: "swift")
-                Label("On-device AI via Apple Foundation Models", systemImage: "brain")
-                Label("PDFs processed entirely on-device", systemImage: "lock.shield")
+            Section(loc("Technologie", "Technology")) {
+                Label(loc("Gebaut mit SwiftUI & SwiftData", "Built with SwiftUI & SwiftData"), systemImage: "swift")
+                Label(loc("KI auf dem Gerät mit Apple Foundation Models", "On-device AI via Apple Foundation Models"), systemImage: "brain")
+                Label(loc("PDFs werden komplett auf dem Gerät verarbeitet", "PDFs processed entirely on-device"), systemImage: "lock.shield")
             }
         }
-        .navigationTitle("About")
+        .navigationTitle(loc("Über", "About"))
         .listStyle(.insetGrouped)
+    }
+
+    /// Picks the German or English string based on the app language.
+    private func loc(_ de: String, _ en: String) -> String {
+        appState.selectedLanguage == "de" ? de : en
     }
 }
 
 struct PrivacyView: View {
+    @EnvironmentObject private var appState: AppState
+
     var body: some View {
         List {
-            Section("Your privacy") {
-                Label("No account required", systemImage: "person.slash")
-                Label("No data sent to servers", systemImage: "server.rack")
-                Label("AI runs entirely on-device", systemImage: "iphone")
-                Label("PDFs never leave your device", systemImage: "doc.fill")
-                Label("Calendar data stays local", systemImage: "calendar")
+            Section(loc("Deine Privatsphäre", "Your privacy")) {
+                Label(loc("Kein Konto, kein Tracking", "No account, no tracking"), systemImage: "person.slash")
+                Label(loc("KI läuft komplett auf dem Gerät", "AI runs entirely on-device"), systemImage: "iphone")
+                Label(loc("PDFs bleiben auf deinem Gerät", "PDFs never leave your device"), systemImage: "doc.fill")
+                Label(loc("Kalenderdaten bleiben lokal", "Calendar data stays local"), systemImage: "calendar")
             }
         }
-        .navigationTitle("Privacy")
+        .navigationTitle(loc("Datenschutz", "Privacy"))
         .listStyle(.insetGrouped)
+    }
+
+    /// Picks the German or English string based on the app language.
+    private func loc(_ de: String, _ en: String) -> String {
+        appState.selectedLanguage == "de" ? de : en
     }
 }

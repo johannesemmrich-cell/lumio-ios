@@ -5,7 +5,9 @@ struct TodayView: View {
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
     @EnvironmentObject private var appState: AppState
     @StateObject private var viewModel = TodayViewModel()
-    @StateObject private var speechService = SpeechService()
+    // Shared app-wide instance (injected in LumioApp) so only one playback
+    // pipeline exists — see SpeechService for why two instances conflict.
+    @EnvironmentObject private var speechService: SpeechService
 
     @State private var showPaywall = false
     @State private var showCalendar = false
@@ -36,7 +38,7 @@ struct TodayView: View {
                         }
 
                         if viewModel.events.isEmpty && viewModel.reminders.isEmpty && !viewModel.isLoadingEvents {
-                            EmptyDayView(accentColor: appState.accentColor)
+                            EmptyDayView(accentColor: appState.accentColor, language: appState.selectedLanguage)
                                 .padding(.horizontal, 20)
                         } else {
                             eventsSection
@@ -59,7 +61,7 @@ struct TodayView: View {
                     await viewModel.refresh()
                 }
 
-                PlayBarView(speechService: speechService, events: viewModel.events, reminders: viewModel.reminders, weather: viewModel.weather, language: appState.selectedLanguage, accentColor: appState.accentColor, accentColorHex: appState.accentColorHex)
+                PlayBarView(speechService: speechService, aiSummary: viewModel.aiSummary, events: viewModel.events, reminders: viewModel.reminders, weather: viewModel.weather, language: appState.selectedLanguage, accentColor: appState.accentColor, accentColorHex: appState.accentColorHex)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 20)
                     .shadow(color: .black.opacity(0.08), radius: 20, y: -4)
@@ -217,12 +219,7 @@ struct TodayHeaderView: View {
     var onSummaryTap: (() -> Void)? = nil
 
     private var greeting: String {
-        let hour = Calendar.current.component(.hour, from: Date())
-        switch hour {
-        case 5..<12: return String(localized: "Good morning")
-        case 12..<17: return String(localized: "Good afternoon")
-        default: return String(localized: "Good evening")
-        }
+        BriefingNarrator.timeOfDay(language: appState.selectedLanguage).greeting
     }
 
     var body: some View {
@@ -245,7 +242,7 @@ struct TodayHeaderView: View {
                 HStack(spacing: 8) {
                     ProgressView()
                         .scaleEffect(0.8)
-                    Text("Preparing your briefing…")
+                    Text(appState.selectedLanguage == "de" ? "Briefing wird vorbereitet…" : "Preparing your briefing…")
                         .font(LumioTypography.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -379,12 +376,23 @@ struct EventCard: View {
 
 struct PlayBarView: View {
     @ObservedObject var speechService: SpeechService
+    /// The AI-generated briefing from TodayViewModel; empty while generating
+    /// or when generation is unavailable.
+    let aiSummary: String
     let events: [CalendarEvent]
     let reminders: [ReminderItem]
     let weather: WeatherData?
     let language: String
     let accentColor: Color
     let accentColorHex: String
+
+    /// The exact text that gets spoken: the AI briefing when it exists,
+    /// otherwise the rule-based narrator template.
+    private var spokenText: String {
+        aiSummary.isEmpty
+            ? BriefingNarrator.narrative(events: events, reminders: reminders, weather: weather, language: language)
+            : aiSummary
+    }
 
     var body: some View {
         HStack(spacing: 16) {
@@ -396,9 +404,9 @@ struct PlayBarView: View {
                     ProgressView(value: speechService.progress)
                         .tint(accentColor)
                 } else {
-                    Text("Play briefing")
+                    Text(language == "de" ? "Briefing abspielen" : "Play briefing")
                         .font(LumioTypography.callout.weight(.semibold))
-                    Text("Tap to hear your day read aloud")
+                    Text(language == "de" ? "Tippe, um deinen Tag zu hören" : "Tap to hear your day read aloud")
                         .font(LumioTypography.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -423,10 +431,9 @@ struct PlayBarView: View {
                     } else if speechService.isPaused {
                         speechService.resume()
                     } else {
-                        let narrativeText = buildNarrativeBriefing(events: events, reminders: reminders, weather: weather, language: language)
                         let item = SpeechItem(
                             title: "Briefing",
-                            text: narrativeText,
+                            text: spokenText,
                             language: language == "de" ? "de-DE" : "en-US"
                         )
                         speechService.speak([item], accentColorHex: accentColorHex)
@@ -460,112 +467,22 @@ struct PlayBarView: View {
                 .shadow(color: .black.opacity(0.1), radius: 16, y: 4)
         )
     }
-
-    private func buildNarrativeBriefing(events: [CalendarEvent], reminders: [ReminderItem], weather: WeatherData?, language: String) -> String {
-        let isDE = language == "de"
-        let fmt = DateFormatter()
-        fmt.dateFormat = "HH:mm"
-
-        let hour = Calendar.current.component(.hour, from: Date())
-        let greeting: String
-        if isDE {
-            switch hour {
-            case 5..<12: greeting = "Guten Morgen!"
-            case 12..<17: greeting = "Hallo!"
-            default: greeting = "Guten Abend!"
-            }
-        } else {
-            switch hour {
-            case 5..<12: greeting = "Good morning!"
-            case 12..<17: greeting = "Hello!"
-            default: greeting = "Good evening!"
-            }
-        }
-
-        var parts: [String] = [greeting]
-
-        // Weather
-        if let w = weather {
-            let temp = Int(w.temperatureCurrent.rounded())
-            if isDE {
-                parts.append("Das Wetter heute: \(w.conditionLabel), \(temp) Grad.")
-            } else {
-                parts.append("Today's weather: \(w.conditionLabel), \(temp) degrees.")
-            }
-        }
-
-        // Events
-        if events.isEmpty && reminders.isEmpty {
-            parts.append(isDE
-                ? "Du hast heute keine Termine oder Erinnerungen. Genieße den freien Tag!"
-                : "You have no events or reminders today. Enjoy your free day!")
-        } else {
-            if !events.isEmpty {
-                if isDE {
-                    parts.append("Du hast \(events.count == 1 ? "einen Termin" : "\(events.count) Termine") heute.")
-                } else {
-                    parts.append("You have \(events.count == 1 ? "one event" : "\(events.count) events") today.")
-                }
-
-                for (index, event) in events.enumerated() {
-                    let timeStr = event.isAllDay
-                        ? (isDE ? "den ganzen Tag" : "all day")
-                        : (isDE ? "um \(fmt.string(from: event.startDate)) Uhr" : "at \(fmt.string(from: event.startDate))")
-                    let locationPart: String
-                    if let loc = event.location, !loc.isEmpty {
-                        locationPart = isDE ? ", in \(loc)," : ", at \(loc),"
-                    } else {
-                        locationPart = ""
-                    }
-                    let sentence: String
-                    if index == 0 {
-                        sentence = isDE
-                            ? "Dein Tag startet \(timeStr) mit \(event.title)\(locationPart)."
-                            : "Your day starts \(timeStr) with \(event.title)\(locationPart)."
-                    } else if index == events.count - 1 {
-                        sentence = isDE
-                            ? "Und zum Abschluss hast du \(timeStr) \(event.title)\(locationPart)."
-                            : "And to wrap up, you have \(event.title) \(timeStr)\(locationPart)."
-                    } else {
-                        let transitions = isDE
-                            ? ["Danach", "Anschließend", "Im Anschluss"]
-                            : ["Then", "After that,", "Next up:"]
-                        let transition = transitions[index % transitions.count]
-                        sentence = isDE
-                            ? "\(transition) geht es \(timeStr) weiter mit \(event.title)\(locationPart)."
-                            : "\(transition) \(event.title) \(timeStr)\(locationPart)."
-                    }
-                    parts.append(sentence)
-                }
-            }
-
-            if !reminders.isEmpty {
-                if isDE {
-                    parts.append("Deine Erinnerungen für heute: \(reminders.prefix(3).map(\.title).joined(separator: ", ")).")
-                } else {
-                    parts.append("Your reminders today: \(reminders.prefix(3).map(\.title).joined(separator: ", ")).")
-                }
-            }
-        }
-
-        parts.append(isDE ? "Das war dein Briefing — einen schönen Tag!" : "That's your briefing — have a great day!")
-        return parts.joined(separator: " ")
-    }
 }
 
 // MARK: — Empty state
 
 struct EmptyDayView: View {
     let accentColor: Color
+    let language: String
 
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "sparkles")
                 .font(.system(size: 48))
                 .foregroundStyle(accentColor)
-            Text("Clear day ahead")
+            Text(language == "de" ? "Entspannter Tag" : "Clear day ahead")
                 .font(LumioTypography.title3)
-            Text("No events scheduled for today. Enjoy the open time.")
+            Text(language == "de" ? "Keine Termine heute. Genieß die freie Zeit." : "No events scheduled for today. Enjoy the open time.")
                 .font(LumioTypography.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

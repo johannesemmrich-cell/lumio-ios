@@ -284,18 +284,15 @@ struct BriefingDetailView: View {
 
     // MARK: — TTS
 
+    /// The exact string that gets spoken.
+    /// No weather prefix: `displayText` (AI summary and fallback alike) already
+    /// leads with the weather, so a prefix would have it spoken twice.
+    private var speechText: String { displayText }
+
     private func startPlayback() {
-        var parts: [String] = []
-        if let w = weather {
-            let t = Int(w.temperatureCurrent.rounded())
-            parts.append(language == "de"
-                ? "Wetter: \(w.conditionLabel), \(t) Grad."
-                : "Weather: \(w.conditionLabel), \(t) degrees.")
-        }
-        parts.append(displayText)
         speechService.speak(
             [SpeechItem(title: language == "de" ? "Briefing" : "Briefing",
-                        text: parts.joined(separator: " "),
+                        text: speechText,
                         language: language == "de" ? "de-DE" : "en-US")],
             accentColorHex: accentColorHex
         )

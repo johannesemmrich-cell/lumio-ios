@@ -39,6 +39,15 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
+			<key>AppIcon-Minimal</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>AppIcon-Minimal</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+			</dict>
 			<key>AppIcon-Ocean</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -53,15 +62,6 @@
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>AppIcon-Slate</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
-			<key>AppIcon-Minimal</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>AppIcon-Minimal</string>
 				</array>
 				<key>UIPrerenderedIcon</key>
 				<false/>

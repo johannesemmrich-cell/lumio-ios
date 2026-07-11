@@ -124,9 +124,13 @@ final class SpeechService: NSObject, ObservableObject {
         let all = AVSpeechSynthesisVoice.speechVoices()
 
         let candidates = all.filter { v in
-            v.language.lowercased().hasPrefix(prefix) &&
-            !v.identifier.lowercased().contains("novelty") &&
-            !v.identifier.lowercased().contains("humor")
+            let id = v.identifier.lowercased()
+            // Eloquence voices (Eddy, Flo, Sandy, …) are ancient robotic
+            // formant voices — never use them. Same for novelty/humor voices.
+            return v.language.lowercased().hasPrefix(prefix)
+                && !id.contains("eloquence")
+                && !id.contains("novelty")
+                && !id.contains("humor")
         }
 
         let sorted = candidates.sorted { lhs, rhs in
@@ -134,15 +138,11 @@ final class SpeechService: NSObject, ObservableObject {
             if lhs.quality.rawValue != rhs.quality.rawValue {
                 return lhs.quality.rawValue > rhs.quality.rawValue
             }
-            // 2. Eloquence = Apple's on-device neural TTS engine (same as Siri's voice backend)
-            let lEloquence = lhs.identifier.lowercased().contains("eloquence")
-            let rEloquence = rhs.identifier.lowercased().contains("eloquence")
-            if lEloquence != rEloquence { return lEloquence }
-            // 3. Siri-branded voices
+            // 2. Siri-branded voices
             let lSiri = lhs.identifier.lowercased().contains("siri")
             let rSiri = rhs.identifier.lowercased().contains("siri")
             if lSiri != rSiri { return lSiri }
-            // 4. Prefer female
+            // 3. Prefer female
             return lhs.gender == .female && rhs.gender != .female
         }
 

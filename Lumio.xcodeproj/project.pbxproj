@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		01F0B902FB6D029D67264D48 /* DeveloperModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46838FB7998E4CAC71C736F7 /* DeveloperModeView.swift */; };
 		020EED98A2108FD26B033649 /* TabOrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA63585379E106A69703C587 /* TabOrderView.swift */; };
-		1E3B67C03A9E4B7995D6AE8F /* AppLayoutConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D7BD3D3369461ABA756409 /* AppLayoutConfigView.swift */; };
 		02748FC6637A459980811809 /* OnboardingStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553280A34E5E26BE6065CB9F /* OnboardingStepView.swift */; };
 		0588BC6D02A7C54F9268F755 /* PDFService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2C3A29D048FF2DD55E1593 /* PDFService.swift */; };
 		0696EDE41E26930623EE8551 /* LumioBriefingLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B65688E0CFA32239F74AAB /* LumioBriefingLiveActivity.swift */; };
@@ -18,24 +17,28 @@
 		1D4FA407877AC120DFED0A9C /* LumioTodayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44C8795AF6BC601EDFB1D878 /* LumioTodayWidget.swift */; };
 		26360EF072B317DE3B210D30 /* LiveActivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB37907C308EE92921E9C18 /* LiveActivityService.swift */; };
 		337132F6900782CD18FBD0E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14FA7110BBFBC6448A26C840 /* Assets.xcassets */; };
+		340D5F9869DD8E3148875ACD /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B87D8AE8BDC3374331CDF /* WeatherService.swift */; };
 		3C4C53337872A841C38107B8 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF54D8AFFE1A01AC1558973A /* SubscriptionManager.swift */; };
 		48B07B0AB5B7B29D3880DDFD /* LumioDynamicIslandBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21A27F0F71C04B344C2DF61 /* LumioDynamicIslandBundle.swift */; };
+		48D31A757E37E7EE4FDC3C8F /* ReminderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A89C188E35D022CAB5B81EC /* ReminderSettingsView.swift */; };
 		4A344B8E2EC520C71C2D70D1 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA48C8AF90AC73A83391B04 /* SpeechService.swift */; };
 		745E5ECD423A2463EC35E678 /* LumioUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE6098D84F60AAA5C8CAAD3 /* LumioUITests.swift */; };
 		7896BB8BFE165062C8141DE2 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1F09B386C51B86A03E8AD6 /* PaywallView.swift */; };
 		81FB4BB83169AF6006D8837D /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EB7BEF0A1A348E30B0C0E8F /* AIService.swift */; };
+		829241BBE1BC5BE60989F865 /* AppLayoutConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8FAE03E85C91A7BE2BD9FF3 /* AppLayoutConfigView.swift */; };
+		8C7A18D1F2BDC4ECE5A9F8E1 /* BriefingScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB17B6E4902D2CE3CB2E43F2 /* BriefingScheduleView.swift */; };
 		8DDDDF417373D782C6EAA739 /* LumioWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 380413F29FFBA82FBEB1A691 /* LumioWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		93D244780900F5CF50BB15FE /* AppIconPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C097AA9094F740D4614C78 /* AppIconPickerView.swift */; };
-		A1B2C3D4E5F60718293A4B5C /* ReminderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F60718293A4B5C6D /* ReminderSettingsView.swift */; };
 		9526AD58F745FCA65D3A15C2 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8BD392039AC572C861EFDE /* AppState.swift */; };
 		96893A54167533CF228F34A1 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA787B7689086AF4BFC7109 /* ChatView.swift */; };
 		9B8EF230AEE6C5783CB508F1 /* BriefingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E43379C270CA2D23F0F965C /* BriefingSettingsView.swift */; };
 		9F1F8D36FF21A002106BC95C /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3FAC10EA8C3626D182A377 /* CalendarView.swift */; };
 		A8BF8F3D6AEE8D665CF761CE /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C80803545FB80EE408D7EDD /* TodayView.swift */; };
-		A9C0D1E2F3040516273849AB /* BriefingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C1D2E3F404152637485960 /* BriefingDetailView.swift */; };
 		AA849029D816F7A602DA2CC5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */; };
 		AB667F5E5453F047F5DE2589 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22880EC8D849EB2BB1C4CF97 /* CalendarService.swift */; };
 		AC420AAA13E50A6BC7CCBD1C /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AFD9F0EC3B89E66BCECB09 /* OnboardingViewModel.swift */; };
+		AE2A6C33DEC29F0378F84A67 /* BriefingNarrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEF8B1740960D260A19B7B49 /* BriefingNarrator.swift */; };
+		B5847057991EE0E41D37E9B0 /* BriefingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB80CCDCF53BA09404026870 /* BriefingDetailView.swift */; };
 		C899971CA7E64CBFBF689815 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3E52FDCA722E9EC392E4FE94 /* Localizable.strings */; };
 		CDD7F96CEF9782DE5282A14D /* LiveActivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB37907C308EE92921E9C18 /* LiveActivityService.swift */; };
 		D073C9F212E527063EC6CEF6 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D698E53BE485BF711A70FC /* ThemeManager.swift */; };
@@ -48,10 +51,8 @@
 		F067AB1DFFFADDC50881D449 /* TodayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B3708C238B582338CCDC7 /* TodayViewModel.swift */; };
 		F0742BBF8550C5AA76D9DB56 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF77936F92758F5D3B8D83E0 /* NotificationService.swift */; };
 		F42AA6E55E13C1A390DBB316 /* OnboardingContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96EA9B375A0C43D916A8270 /* OnboardingContainerView.swift */; };
+		F7D80E96B98CF4E6157D1C8D /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = E170D70F1E3F8E87A160E3E7 /* HapticFeedback.swift */; };
 		FC5943A1F06C3B86E8F82368 /* LumioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05349DD390F5584FEFF1ADE /* LumioTests.swift */; };
-		FF22AA33BB44CC55DD66EE11 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE11FF22AA33BB44CC55DD66 /* WeatherService.swift */; };
-		BB44CC55DD66EE11FF22AA33 /* BriefingScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA33BB44CC55DD66EE11FF22 /* BriefingScheduleView.swift */; };
-		DD66EE11FF22AA33BB44CC55 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC55DD66EE11FF22AA33BB44 /* HapticFeedback.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +102,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		044B87D8AE8BDC3374331CDF /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		05C5765A26A414F4A9338019 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		08430B3A477D7F93A96A8CEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0843B976E75FD3634CDA0813 /* SwiftDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataModels.swift; sourceTree = "<group>"; };
@@ -109,7 +111,6 @@
 		1AA48C8AF90AC73A83391B04 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
 		22880EC8D849EB2BB1C4CF97 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
 		29C097AA9094F740D4614C78 /* AppIconPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPickerView.swift; sourceTree = "<group>"; };
-		B2C3D4E5F60718293A4B5C6D /* ReminderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderSettingsView.swift; sourceTree = "<group>"; };
 		2C64E3D180D9C05CE91BB795 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		34D698E53BE485BF711A70FC /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		380413F29FFBA82FBEB1A691 /* LumioWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = LumioWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -119,7 +120,6 @@
 		44C8795AF6BC601EDFB1D878 /* LumioTodayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioTodayWidget.swift; sourceTree = "<group>"; };
 		46838FB7998E4CAC71C736F7 /* DeveloperModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperModeView.swift; sourceTree = "<group>"; };
 		4C80803545FB80EE408D7EDD /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
-		B0C1D2E3F404152637485960 /* BriefingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingDetailView.swift; sourceTree = "<group>"; };
 		553280A34E5E26BE6065CB9F /* OnboardingStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStepView.swift; sourceTree = "<group>"; };
 		613B3708C238B582338CCDC7 /* TodayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewModel.swift; sourceTree = "<group>"; };
 		6A1F09B386C51B86A03E8AD6 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
@@ -128,31 +128,33 @@
 		7CE6098D84F60AAA5C8CAAD3 /* LumioUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioUITests.swift; sourceTree = "<group>"; };
 		7E43379C270CA2D23F0F965C /* BriefingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingSettingsView.swift; sourceTree = "<group>"; };
 		84B65688E0CFA32239F74AAB /* LumioBriefingLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioBriefingLiveActivity.swift; sourceTree = "<group>"; };
+		8A89C188E35D022CAB5B81EC /* ReminderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderSettingsView.swift; sourceTree = "<group>"; };
 		8BCF9DF465E3AEB48FF25328 /* LumioTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LumioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FB37907C308EE92921E9C18 /* LiveActivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityService.swift; sourceTree = "<group>"; };
 		91AFD9F0EC3B89E66BCECB09 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		A4DC63E04C85C0FD3AAF9BDA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AB271E6CFE2390F85F248AD6 /* LumioDynamicIsland.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = LumioDynamicIsland.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB80CCDCF53BA09404026870 /* BriefingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingDetailView.swift; sourceTree = "<group>"; };
 		ABCC65D5E4201CB6960463B8 /* Lumio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Lumio.entitlements; sourceTree = "<group>"; };
 		B05349DD390F5584FEFF1ADE /* LumioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioTests.swift; sourceTree = "<group>"; };
 		B96EA9B375A0C43D916A8270 /* OnboardingContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerView.swift; sourceTree = "<group>"; };
 		BD2C3A29D048FF2DD55E1593 /* PDFService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFService.swift; sourceTree = "<group>"; };
 		CA3FAC10EA8C3626D182A377 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		CA63585379E106A69703C587 /* TabOrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabOrderView.swift; sourceTree = "<group>"; };
-		03D7BD3D3369461ABA756409 /* AppLayoutConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLayoutConfigView.swift; sourceTree = "<group>"; };
 		CBA787B7689086AF4BFC7109 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		CF54D8AFFE1A01AC1558973A /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		D1262592F932571451E303AB /* LumioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioApp.swift; sourceTree = "<group>"; };
 		D7B8333D45697E66F3D1F415 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		DB17B6E4902D2CE3CB2E43F2 /* BriefingScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingScheduleView.swift; sourceTree = "<group>"; };
+		DEF8B1740960D260A19B7B49 /* BriefingNarrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingNarrator.swift; sourceTree = "<group>"; };
 		DF77936F92758F5D3B8D83E0 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		E170D70F1E3F8E87A160E3E7 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		E21A27F0F71C04B344C2DF61 /* LumioDynamicIslandBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioDynamicIslandBundle.swift; sourceTree = "<group>"; };
 		E8FA7D99752DF818468209AF /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		E8FAE03E85C91A7BE2BD9FF3 /* AppLayoutConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLayoutConfigView.swift; sourceTree = "<group>"; };
 		EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F54991DCB350A318338C10BB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F62F40A2BDD302AB2C96C200 /* LumioWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LumioWidgetBundle.swift; sourceTree = "<group>"; };
-		CC55DD66EE11FF22AA33BB44 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
-		EE11FF22AA33BB44CC55DD66 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
-		AA33BB44CC55DD66EE11FF22 /* BriefingScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingScheduleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -245,13 +247,14 @@
 			isa = PBXGroup;
 			children = (
 				3EB7BEF0A1A348E30B0C0E8F /* AIService.swift */,
+				DEF8B1740960D260A19B7B49 /* BriefingNarrator.swift */,
 				22880EC8D849EB2BB1C4CF97 /* CalendarService.swift */,
 				8FB37907C308EE92921E9C18 /* LiveActivityService.swift */,
 				DF77936F92758F5D3B8D83E0 /* NotificationService.swift */,
 				BD2C3A29D048FF2DD55E1593 /* PDFService.swift */,
 				1AA48C8AF90AC73A83391B04 /* SpeechService.swift */,
 				CF54D8AFFE1A01AC1558973A /* SubscriptionManager.swift */,
-				EE11FF22AA33BB44CC55DD66 /* WeatherService.swift */,
+				044B87D8AE8BDC3374331CDF /* WeatherService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -304,10 +307,10 @@
 		A5D1611788D5BB36A95CD9D7 /* Today */ = {
 			isa = PBXGroup;
 			children = (
+				AB80CCDCF53BA09404026870 /* BriefingDetailView.swift */,
 				CA3FAC10EA8C3626D182A377 /* CalendarView.swift */,
 				4C80803545FB80EE408D7EDD /* TodayView.swift */,
 				613B3708C238B582338CCDC7 /* TodayViewModel.swift */,
-				B0C1D2E3F404152637485960 /* BriefingDetailView.swift */,
 			);
 			path = Today;
 			sourceTree = "<group>";
@@ -360,14 +363,14 @@
 			isa = PBXGroup;
 			children = (
 				29C097AA9094F740D4614C78 /* AppIconPickerView.swift */,
-				B2C3D4E5F60718293A4B5C6D /* ReminderSettingsView.swift */,
+				E8FAE03E85C91A7BE2BD9FF3 /* AppLayoutConfigView.swift */,
+				DB17B6E4902D2CE3CB2E43F2 /* BriefingScheduleView.swift */,
 				7E43379C270CA2D23F0F965C /* BriefingSettingsView.swift */,
-				AA33BB44CC55DD66EE11FF22 /* BriefingScheduleView.swift */,
 				46838FB7998E4CAC71C736F7 /* DeveloperModeView.swift */,
 				6A1F09B386C51B86A03E8AD6 /* PaywallView.swift */,
+				8A89C188E35D022CAB5B81EC /* ReminderSettingsView.swift */,
 				EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */,
 				CA63585379E106A69703C587 /* TabOrderView.swift */,
-				03D7BD3D3369461ABA756409 /* AppLayoutConfigView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -391,7 +394,7 @@
 		FBC44AE75ADC6DB54487DDAE /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				CC55DD66EE11FF22AA33BB44 /* HapticFeedback.swift */,
+				E170D70F1E3F8E87A160E3E7 /* HapticFeedback.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -587,14 +590,18 @@
 			files = (
 				81FB4BB83169AF6006D8837D /* AIService.swift in Sources */,
 				93D244780900F5CF50BB15FE /* AppIconPickerView.swift in Sources */,
-				A1B2C3D4E5F60718293A4B5C /* ReminderSettingsView.swift in Sources */,
+				829241BBE1BC5BE60989F865 /* AppLayoutConfigView.swift in Sources */,
 				9526AD58F745FCA65D3A15C2 /* AppState.swift in Sources */,
+				B5847057991EE0E41D37E9B0 /* BriefingDetailView.swift in Sources */,
+				AE2A6C33DEC29F0378F84A67 /* BriefingNarrator.swift in Sources */,
+				8C7A18D1F2BDC4ECE5A9F8E1 /* BriefingScheduleView.swift in Sources */,
 				9B8EF230AEE6C5783CB508F1 /* BriefingSettingsView.swift in Sources */,
 				AB667F5E5453F047F5DE2589 /* CalendarService.swift in Sources */,
 				9F1F8D36FF21A002106BC95C /* CalendarView.swift in Sources */,
 				96893A54167533CF228F34A1 /* ChatView.swift in Sources */,
 				19AA7BDF6C8205F32CC99065 /* ChatViewModel.swift in Sources */,
 				01F0B902FB6D029D67264D48 /* DeveloperModeView.swift in Sources */,
+				F7D80E96B98CF4E6157D1C8D /* HapticFeedback.swift in Sources */,
 				E12B7266A0D754032F026DDD /* LibraryView.swift in Sources */,
 				26360EF072B317DE3B210D30 /* LiveActivityService.swift in Sources */,
 				D4439ACB75E9A7C91247785F /* LumioApp.swift in Sources */,
@@ -605,20 +612,17 @@
 				AC420AAA13E50A6BC7CCBD1C /* OnboardingViewModel.swift in Sources */,
 				0588BC6D02A7C54F9268F755 /* PDFService.swift in Sources */,
 				7896BB8BFE165062C8141DE2 /* PaywallView.swift in Sources */,
+				48D31A757E37E7EE4FDC3C8F /* ReminderSettingsView.swift in Sources */,
 				0F8A1AFED19705882EAA9C3D /* RootView.swift in Sources */,
 				AA849029D816F7A602DA2CC5 /* SettingsView.swift in Sources */,
 				4A344B8E2EC520C71C2D70D1 /* SpeechService.swift in Sources */,
 				3C4C53337872A841C38107B8 /* SubscriptionManager.swift in Sources */,
 				E4F1886B11951808865FC9F3 /* SwiftDataModels.swift in Sources */,
 				020EED98A2108FD26B033649 /* TabOrderView.swift in Sources */,
-				1E3B67C03A9E4B7995D6AE8F /* AppLayoutConfigView.swift in Sources */,
 				D073C9F212E527063EC6CEF6 /* ThemeManager.swift in Sources */,
 				A8BF8F3D6AEE8D665CF761CE /* TodayView.swift in Sources */,
 				F067AB1DFFFADDC50881D449 /* TodayViewModel.swift in Sources */,
-				A9C0D1E2F3040516273849AB /* BriefingDetailView.swift in Sources */,
-				FF22AA33BB44CC55DD66EE11 /* WeatherService.swift in Sources */,
-				BB44CC55DD66EE11FF22AA33 /* BriefingScheduleView.swift in Sources */,
-				DD66EE11FF22AA33BB44CC55 /* HapticFeedback.swift in Sources */,
+				340D5F9869DD8E3148875ACD /* WeatherService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -768,6 +772,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -901,6 +906,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -954,6 +960,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -971,6 +978,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
