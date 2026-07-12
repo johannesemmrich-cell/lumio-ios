@@ -47,6 +47,7 @@
 		DCD62B118819502687C10D11 /* LumioWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62F40A2BDD302AB2C96C200 /* LumioWidgetBundle.swift */; };
 		E12B7266A0D754032F026DDD /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B8333D45697E66F3D1F415 /* LibraryView.swift */; };
 		E4F1886B11951808865FC9F3 /* SwiftDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0843B976E75FD3634CDA0813 /* SwiftDataModels.swift */; };
+		E5FCE3472F785CE820801AD8 /* VoiceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAB280B7885E7BEE205648C7 /* VoiceSettingsView.swift */; };
 		ED2078D368DC54432682A2F4 /* LumioDynamicIsland.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AB271E6CFE2390F85F248AD6 /* LumioDynamicIsland.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F067AB1DFFFADDC50881D449 /* TodayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B3708C238B582338CCDC7 /* TodayViewModel.swift */; };
 		F0742BBF8550C5AA76D9DB56 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF77936F92758F5D3B8D83E0 /* NotificationService.swift */; };
@@ -133,6 +134,7 @@
 		8FB37907C308EE92921E9C18 /* LiveActivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityService.swift; sourceTree = "<group>"; };
 		91AFD9F0EC3B89E66BCECB09 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		A4DC63E04C85C0FD3AAF9BDA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		AAB280B7885E7BEE205648C7 /* VoiceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceSettingsView.swift; sourceTree = "<group>"; };
 		AB271E6CFE2390F85F248AD6 /* LumioDynamicIsland.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = LumioDynamicIsland.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB80CCDCF53BA09404026870 /* BriefingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingDetailView.swift; sourceTree = "<group>"; };
 		ABCC65D5E4201CB6960463B8 /* Lumio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Lumio.entitlements; sourceTree = "<group>"; };
@@ -371,6 +373,7 @@
 				8A89C188E35D022CAB5B81EC /* ReminderSettingsView.swift */,
 				EBDF8BF93A22E8CA24854B66 /* SettingsView.swift */,
 				CA63585379E106A69703C587 /* TabOrderView.swift */,
+				AAB280B7885E7BEE205648C7 /* VoiceSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -622,6 +625,7 @@
 				D073C9F212E527063EC6CEF6 /* ThemeManager.swift in Sources */,
 				A8BF8F3D6AEE8D665CF761CE /* TodayView.swift in Sources */,
 				F067AB1DFFFADDC50881D449 /* TodayViewModel.swift in Sources */,
+				E5FCE3472F785CE820801AD8 /* VoiceSettingsView.swift in Sources */,
 				340D5F9869DD8E3148875ACD /* WeatherService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

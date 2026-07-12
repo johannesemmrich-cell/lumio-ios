@@ -133,6 +133,7 @@ enum UserDefaultsKey {
     static let briefingScheduleHour = "briefingScheduleHour"
     static let briefingScheduleMinute = "briefingScheduleMinute"
     static let hasMigratedPremiumLayout = "hasMigratedPremiumLayout"
+    static let selectedVoiceIdentifier = "selectedVoiceIdentifier"
     // Per-day times: "briefingHour_<weekday>" / "briefingMinute_<weekday>"
     static func briefingHourKey(_ weekday: Int) -> String { "briefingHour_\(weekday)" }
     static func briefingMinuteKey(_ weekday: Int) -> String { "briefingMinute_\(weekday)" }

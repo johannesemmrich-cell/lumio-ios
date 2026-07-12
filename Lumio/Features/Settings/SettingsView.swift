@@ -36,6 +36,13 @@ struct SettingsView: View {
                     }
                 }
 
+                // Voice
+                Section(loc("Vorlesen", "Read aloud")) {
+                    NavigationLink(destination: VoiceSettingsView()) {
+                        Label(loc("Stimme", "Voice"), systemImage: "waveform")
+                    }
+                }
+
                 // Appearance
                 Section(loc("Darstellung", "Appearance")) {
                     ThemePickerRow(themeManager: themeManager)

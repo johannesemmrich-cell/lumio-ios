@@ -39,6 +39,13 @@ final class SpeechService: NSObject, ObservableObject {
         )
     }
 
+    /// Starts playback after a delay, e.g. to let a UI transition finish first.
+    func speak(_ items: [SpeechItem], after delay: TimeInterval, accentColorHex: String = "FF9500") {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.speak(items, accentColorHex: accentColorHex)
+        }
+    }
+
     func pause() {
         synthesizer.pauseSpeaking(at: .word)
         isPaused = true
@@ -75,6 +82,16 @@ final class SpeechService: NSObject, ObservableObject {
         Task { await liveActivityService.stop() }
     }
 
+    /// Speaks a short sample with the given voice, without touching the playback queue.
+    func preview(text: String, voice: AVSpeechSynthesisVoice) {
+        synthesizer.stopSpeaking(at: .immediate)
+        try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = voice
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        synthesizer.speak(utterance)
+    }
+
     func skipForward() {
         synthesizer.stopSpeaking(at: .immediate)
         guard currentIndex + 1 < queue.count else {
@@ -107,11 +124,8 @@ final class SpeechService: NSObject, ObservableObject {
 
         let utterance = AVSpeechUtterance(string: item.text)
         utterance.voice = bestVoice(for: item.language)
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.9
-        utterance.pitchMultiplier = 1.05
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
         utterance.volume = 1.0
-        utterance.preUtteranceDelay = 0.05
-        utterance.postUtteranceDelay = 0.25
         currentUtterance = utterance
         synthesizer.speak(utterance)
         isPlaying = true
@@ -120,10 +134,21 @@ final class SpeechService: NSObject, ObservableObject {
     }
 
     private func bestVoice(for languageCode: String) -> AVSpeechSynthesisVoice? {
-        let prefix = languageCode.prefix(2).lowercased()
-        let all = AVSpeechSynthesisVoice.speechVoices()
+        let candidates = Self.qualityFilteredVoices(for: languageCode)
 
-        let candidates = all.filter { v in
+        if let savedID = UserDefaults.standard.string(forKey: UserDefaultsKey.selectedVoiceIdentifier),
+           let saved = candidates.first(where: { $0.identifier == savedID }) {
+            return saved
+        }
+
+        let sorted = Self.sortedByQuality(candidates)
+        return sorted.first ?? AVSpeechSynthesisVoice(language: languageCode)
+    }
+
+    /// All installed voices for a language, with Eloquence/novelty/humor formant voices excluded.
+    static func qualityFilteredVoices(for languageCode: String) -> [AVSpeechSynthesisVoice] {
+        let prefix = languageCode.prefix(2).lowercased()
+        return AVSpeechSynthesisVoice.speechVoices().filter { v in
             let id = v.identifier.lowercased()
             // Eloquence voices (Eddy, Flo, Sandy, …) are ancient robotic
             // formant voices — never use them. Same for novelty/humor voices.
@@ -132,8 +157,10 @@ final class SpeechService: NSObject, ObservableObject {
                 && !id.contains("novelty")
                 && !id.contains("humor")
         }
+    }
 
-        let sorted = candidates.sorted { lhs, rhs in
+    static func sortedByQuality(_ voices: [AVSpeechSynthesisVoice]) -> [AVSpeechSynthesisVoice] {
+        voices.sorted { lhs, rhs in
             // 1. Quality tier: premium (3) > enhanced (2) > default (1)
             if lhs.quality.rawValue != rhs.quality.rawValue {
                 return lhs.quality.rawValue > rhs.quality.rawValue
@@ -145,14 +172,19 @@ final class SpeechService: NSObject, ObservableObject {
             // 3. Prefer female
             return lhs.gender == .female && rhs.gender != .female
         }
+    }
 
-        return sorted.first ?? AVSpeechSynthesisVoice(language: languageCode)
+    /// True if no Enhanced/Premium voice is installed for the given language —
+    /// used to prompt the user to download one for better quality.
+    static func onlyDefaultQualityAvailable(for languageCode: String) -> Bool {
+        !qualityFilteredVoices(for: languageCode).contains { $0.quality != .default }
     }
 
     private func setupAudioSession() {
         do {
-            // .playback ignores the silent switch; no .mixWithOthers so we own the audio route
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
+            // .playback ignores the silent switch; .mixWithOthers lets the briefing
+            // play over music/podcasts instead of stopping them
+            try AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
         } catch {
             print("Audio session setup failed: \(error)")
         }
