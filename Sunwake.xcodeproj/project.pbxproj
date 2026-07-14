@@ -1,0 +1,1059 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03AF2BF1E5DE28E18EB0EF49 /* AppIconPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0FDEDB329AB14D3EEEE5C4 /* AppIconPickerView.swift */; };
+		06CFFB71A04051E25E7BD197 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E50D4D491B981E57D40D4E7 /* SettingsView.swift */; };
+		0997F1F1077CDBE5F5B3C367 /* BriefingDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BFDC8386C151E73BA36485 /* BriefingDetailView.swift */; };
+		0B13C5555874E2F4642EE384 /* SunwakeDynamicIsland.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 183D9BCFE16505AD572FC3BE /* SunwakeDynamicIsland.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0D5CE697E7264DE82710B3FE /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C826E71F1FD2500CBB7C77A /* TodayView.swift */; };
+		0ED8D865001692EABFE0BC7E /* VoiceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB60BFFC5A82E2854DF6502 /* VoiceSettingsView.swift */; };
+		1018C1926D051530E512CAC6 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3614B113A1519BC13584C2A1 /* ThemeManager.swift */; };
+		14ACD0ECE1FEE45BFC36E447 /* TodayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9464CF40379E4A52937E43 /* TodayViewModel.swift */; };
+		1AF73843DBBBF614E5BA092F /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCDD1E126D4425AB40EC1E /* SubscriptionManager.swift */; };
+		1FE44125E31586252A19A0E3 /* SunwakeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCEDF3565738176218FADC1D /* SunwakeApp.swift */; };
+		2F7878B1AA796D8477929EBC /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B391542D1396AD0C62EA76 /* WeatherService.swift */; };
+		2FB51AC9172B85E9A71A472D /* SunwakeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A56BCA7B31FA023F5920A28F /* SunwakeTests.swift */; };
+		34D65D8F4A048F190E738CD4 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23AF8694D90A93CBD730A9C /* PaywallView.swift */; };
+		3BCADCEB99E55475E0D888C3 /* PDFService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54791727BD84316572EE081E /* PDFService.swift */; };
+		3D3AF50BE4C8641DB92C63A4 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0283EB771D847FE3B5A5911D /* AppState.swift */; };
+		51173D85267D9679DC658E70 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FBE1A6BCE1541E2F4512C68 /* NotificationService.swift */; };
+		53699457DC2CA0EAB3B93741 /* AppLayoutConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70CE920903C18F0DE1036AD4 /* AppLayoutConfigView.swift */; };
+		57D055CA9746C47E43D8E821 /* BriefingNarrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8D1FBDA373AE5F118D16B9 /* BriefingNarrator.swift */; };
+		5F86F55CD73A031D5DB078CC /* BriefingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2615D67356B8DA654ECAB280 /* BriefingSettingsView.swift */; };
+		63792AC5A1926A9F21F0E3F6 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3249370938012BCB074E1766 /* AIService.swift */; };
+		6853A5708BE70A1D462772BB /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0DBF91EC3232E58B142FD0 /* SpeechService.swift */; };
+		6F0C7097399FF856953D75E8 /* LiveActivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F07FA08772E0AF8F58051CE /* LiveActivityService.swift */; };
+		75A41327942F874F0E7A61F9 /* LiveActivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F07FA08772E0AF8F58051CE /* LiveActivityService.swift */; };
+		77BC8E86A51848041011E0DE /* OnboardingContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44661BFC639CEA69D395B82 /* OnboardingContainerView.swift */; };
+		79F8DCA03EAE5E1E37CB54E8 /* SunwakeTodayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A240EA36E82E324F68A2CEFF /* SunwakeTodayWidget.swift */; };
+		7E0DEEE514053BA58E4F850C /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0C204D93A7558898532E84 /* CalendarService.swift */; };
+		7F6F283021E44D9E834D66F3 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED1C907A8919CDF99A2DCA9 /* CalendarView.swift */; };
+		80E0A3B110C08FD74E59ACE4 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BA4019E6B6CACE451B375B6A /* Localizable.strings */; };
+		85EBAA36136D961C4E01366B /* BriefingScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B31A2D948FEBDC2C370468A /* BriefingScheduleView.swift */; };
+		8C4223DFED4AB1CAB9DBAAB6 /* ReminderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F428C6BF46B4F59412295257 /* ReminderSettingsView.swift */; };
+		8EAE11125A5482281A02FC8E /* DeveloperModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D3477BB5B9547E5F8B99F2 /* DeveloperModeView.swift */; };
+		91BD6E46CF62DDA3497B2105 /* SunwakeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9765EE4D1D5A1A8A73CC1948 /* SunwakeUITests.swift */; };
+		9C91B107770CE774E4F8C7A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79316C9BF8556C88604A87E6 /* Assets.xcassets */; };
+		A499F117603C6F49A0C90971 /* SunwakeWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D20DDBE8B05629A5BAC7EE8C /* SunwakeWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AE43D102DC6AA0DE6D1C1278 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72A2C5FA3D3067C421CB688E /* HapticFeedback.swift */; };
+		C095284C2F4EF0AEF8E0E3C4 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E7F817673F133401C8225C6 /* RootView.swift */; };
+		C2500DF925C03775BF0BC266 /* SunwakeBriefingLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABAFCD8FE7174877CABBA259 /* SunwakeBriefingLiveActivity.swift */; };
+		CA81B6D8F796A16D95D46B32 /* TabOrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486FBB9DD0EDF34E3D4D00DC /* TabOrderView.swift */; };
+		CE3C09E7D5FD7938F4693822 /* OnboardingStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E5CFF71EBAD922400A6099 /* OnboardingStepView.swift */; };
+		D1FD9B345A698DF2CDB9E7D9 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E47F3A382C158FD75DB93B2 /* MainTabView.swift */; };
+		D26754C08E6AC5735AB4D4CB /* SwiftDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2699366BDC0C119E265FCEF3 /* SwiftDataModels.swift */; };
+		D59B3ECA30D1BEC6249C6EBF /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128ED1902A4F4F6B2198EC04 /* LibraryView.swift */; };
+		DF41F752375425F9EFA3CB55 /* SunwakeDynamicIslandBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB52FBE1BE46700CE4B08975 /* SunwakeDynamicIslandBundle.swift */; };
+		E0B3C98AE826E9E0584BA5FD /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB0C81EA30D74676F83F10D /* ChatViewModel.swift */; };
+		EDB751482F39614B86A3475E /* SunwakeWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE5DECCEB4B07CA3FB073C5 /* SunwakeWidgetBundle.swift */; };
+		F2F69835869A23DA1B4FA753 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF920339085D0DA2E63FB8A1 /* OnboardingViewModel.swift */; };
+		FD437CD5E6CD8C0182F94491 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E34896D6AB03F9AD1B74DC9 /* ChatView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		634052AF3CAA3440FBCED65D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95F978BF5BCC8C2D28D6510A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0E36610C5169FD2F300A29C3;
+			remoteInfo = Sunwake;
+		};
+		74AD96100D252B5B5E3C5F38 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95F978BF5BCC8C2D28D6510A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0E36610C5169FD2F300A29C3;
+			remoteInfo = Sunwake;
+		};
+		B9964339F75E1B4D01935E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95F978BF5BCC8C2D28D6510A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 372964173A2EBD0A3C7FC9EF;
+			remoteInfo = SunwakeWidgetExtension;
+		};
+		F6C5F24E83EBF15CA1C2FE16 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95F978BF5BCC8C2D28D6510A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C13FF4AAF77A819A0831E32B;
+			remoteInfo = SunwakeDynamicIsland;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A5A3624DB4C905CAF8909F1E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0B13C5555874E2F4642EE384 /* SunwakeDynamicIsland.appex in Embed Foundation Extensions */,
+				A499F117603C6F49A0C90971 /* SunwakeWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0283EB771D847FE3B5A5911D /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		0F0DBF91EC3232E58B142FD0 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
+		128ED1902A4F4F6B2198EC04 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		183D9BCFE16505AD572FC3BE /* SunwakeDynamicIsland.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = SunwakeDynamicIsland.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CB60BFFC5A82E2854DF6502 /* VoiceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceSettingsView.swift; sourceTree = "<group>"; };
+		1E34896D6AB03F9AD1B74DC9 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		25D3477BB5B9547E5F8B99F2 /* DeveloperModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperModeView.swift; sourceTree = "<group>"; };
+		2615D67356B8DA654ECAB280 /* BriefingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingSettingsView.swift; sourceTree = "<group>"; };
+		2699366BDC0C119E265FCEF3 /* SwiftDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataModels.swift; sourceTree = "<group>"; };
+		2B3B13212D92DC016FC78DCC /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3249370938012BCB074E1766 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
+		3614B113A1519BC13584C2A1 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		3A8D1FBDA373AE5F118D16B9 /* BriefingNarrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingNarrator.swift; sourceTree = "<group>"; };
+		3D9464CF40379E4A52937E43 /* TodayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewModel.swift; sourceTree = "<group>"; };
+		486FBB9DD0EDF34E3D4D00DC /* TabOrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabOrderView.swift; sourceTree = "<group>"; };
+		54791727BD84316572EE081E /* PDFService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFService.swift; sourceTree = "<group>"; };
+		54B391542D1396AD0C62EA76 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		6E47F3A382C158FD75DB93B2 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		70CE920903C18F0DE1036AD4 /* AppLayoutConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLayoutConfigView.swift; sourceTree = "<group>"; };
+		72A2C5FA3D3067C421CB688E /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
+		79316C9BF8556C88604A87E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7E7F817673F133401C8225C6 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		8E50D4D491B981E57D40D4E7 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8FBE1A6BCE1541E2F4512C68 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		9765EE4D1D5A1A8A73CC1948 /* SunwakeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunwakeUITests.swift; sourceTree = "<group>"; };
+		9B31A2D948FEBDC2C370468A /* BriefingScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingScheduleView.swift; sourceTree = "<group>"; };
+		9C826E71F1FD2500CBB7C77A /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		9CE5DECCEB4B07CA3FB073C5 /* SunwakeWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunwakeWidgetBundle.swift; sourceTree = "<group>"; };
+		9ECCDD1E126D4425AB40EC1E /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		9F07FA08772E0AF8F58051CE /* LiveActivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityService.swift; sourceTree = "<group>"; };
+		A17497E69093048B954BD094 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A240EA36E82E324F68A2CEFF /* SunwakeTodayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunwakeTodayWidget.swift; sourceTree = "<group>"; };
+		A56BCA7B31FA023F5920A28F /* SunwakeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunwakeTests.swift; sourceTree = "<group>"; };
+		A99954FBAA914994919B75A9 /* Sunwake.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Sunwake.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB0C204D93A7558898532E84 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		ABAFCD8FE7174877CABBA259 /* SunwakeBriefingLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunwakeBriefingLiveActivity.swift; sourceTree = "<group>"; };
+		AF920339085D0DA2E63FB8A1 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		B9E5CFF71EBAD922400A6099 /* OnboardingStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStepView.swift; sourceTree = "<group>"; };
+		C2D867C585122B15DB7EE834 /* Sunwake.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sunwake.entitlements; sourceTree = "<group>"; };
+		C2E3939050B08CF90228760F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		CA0FDEDB329AB14D3EEEE5C4 /* AppIconPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPickerView.swift; sourceTree = "<group>"; };
+		CB67B03714B058A18DB3D015 /* SunwakeTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SunwakeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CCEDF3565738176218FADC1D /* SunwakeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunwakeApp.swift; sourceTree = "<group>"; };
+		CED1C907A8919CDF99A2DCA9 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		D0BFDC8386C151E73BA36485 /* BriefingDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingDetailView.swift; sourceTree = "<group>"; };
+		D20DDBE8B05629A5BAC7EE8C /* SunwakeWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = SunwakeWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3193FCF15E059D3C20CB7F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D418596DD3A14F652C9B533C /* SunwakeUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SunwakeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB4DB59F3B20D8C6849CC3D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		EB52FBE1BE46700CE4B08975 /* SunwakeDynamicIslandBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunwakeDynamicIslandBundle.swift; sourceTree = "<group>"; };
+		EFB0C81EA30D74676F83F10D /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		F23AF8694D90A93CBD730A9C /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		F428C6BF46B4F59412295257 /* ReminderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderSettingsView.swift; sourceTree = "<group>"; };
+		F44661BFC639CEA69D395B82 /* OnboardingContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		04F96049712A71367DAF753B /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Styles;
+			sourceTree = "<group>";
+		};
+		0D474D70244F432B5EFD8990 /* SunwakeDynamicIsland */ = {
+			isa = PBXGroup;
+			children = (
+				D3193FCF15E059D3C20CB7F6 /* Info.plist */,
+				ABAFCD8FE7174877CABBA259 /* SunwakeBriefingLiveActivity.swift */,
+				EB52FBE1BE46700CE4B08975 /* SunwakeDynamicIslandBundle.swift */,
+			);
+			path = SunwakeDynamicIsland;
+			sourceTree = "<group>";
+		};
+		11250668F011F88183551EB5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A99954FBAA914994919B75A9 /* Sunwake.app */,
+				183D9BCFE16505AD572FC3BE /* SunwakeDynamicIsland.appex */,
+				CB67B03714B058A18DB3D015 /* SunwakeTests.xctest */,
+				D418596DD3A14F652C9B533C /* SunwakeUITests.xctest */,
+				D20DDBE8B05629A5BAC7EE8C /* SunwakeWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		26174854E976B1D723DC6E3B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0283EB771D847FE3B5A5911D /* AppState.swift */,
+				2699366BDC0C119E265FCEF3 /* SwiftDataModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		3F842EC754273ADAE613F83C /* Today */ = {
+			isa = PBXGroup;
+			children = (
+				D0BFDC8386C151E73BA36485 /* BriefingDetailView.swift */,
+				CED1C907A8919CDF99A2DCA9 /* CalendarView.swift */,
+				9C826E71F1FD2500CBB7C77A /* TodayView.swift */,
+				3D9464CF40379E4A52937E43 /* TodayViewModel.swift */,
+			);
+			path = Today;
+			sourceTree = "<group>";
+		};
+		42ED903B2AF300A749FFB062 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BA4019E6B6CACE451B375B6A /* Localizable.strings */,
+				79316C9BF8556C88604A87E6 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		48D79D6365E51E038072F426 /* Sunwake */ = {
+			isa = PBXGroup;
+			children = (
+				C52C2050814DC63DB3199E2B /* App */,
+				803394D9E98B2C86B101C9E1 /* Core */,
+				55E86FAFCEAD98A8F1B5D97D /* Features */,
+				42ED903B2AF300A749FFB062 /* Resources */,
+				F5759D45C8E28E2EC3D94240 /* Supporting Files */,
+				BD4CECDDCCB59A947C87864C /* UI */,
+			);
+			path = Sunwake;
+			sourceTree = "<group>";
+		};
+		55E86FAFCEAD98A8F1B5D97D /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				FF2652BC84D9668BEABEF8C8 /* Chat */,
+				B9EA737DFD8152E444A51289 /* Library */,
+				D3B3D93204E4162E3CEE1B7B /* Onboarding */,
+				93223D433A186F35E440483C /* Settings */,
+				3F842EC754273ADAE613F83C /* Today */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		5FF5F3C3F25BE4B6B1F71205 = {
+			isa = PBXGroup;
+			children = (
+				48D79D6365E51E038072F426 /* Sunwake */,
+				0D474D70244F432B5EFD8990 /* SunwakeDynamicIsland */,
+				B18DCC57720387C244DC027D /* SunwakeTests */,
+				86C328B78DE1586310292B7C /* SunwakeUITests */,
+				8C5804F3C814BD353851A75F /* SunwakeWidgetExtension */,
+				11250668F011F88183551EB5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		803394D9E98B2C86B101C9E1 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				8D3223F0D697A5C605029E99 /* Extensions */,
+				26174854E976B1D723DC6E3B /* Models */,
+				E825E522A54C552B1E2A01C0 /* Services */,
+				DEABB523988BEDAA21106BB4 /* Utilities */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		852A555B348785F0CCA3AE4B /* Components */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		86C328B78DE1586310292B7C /* SunwakeUITests */ = {
+			isa = PBXGroup;
+			children = (
+				9765EE4D1D5A1A8A73CC1948 /* SunwakeUITests.swift */,
+			);
+			path = SunwakeUITests;
+			sourceTree = "<group>";
+		};
+		8C5804F3C814BD353851A75F /* SunwakeWidgetExtension */ = {
+			isa = PBXGroup;
+			children = (
+				DB4DB59F3B20D8C6849CC3D8 /* Info.plist */,
+				A240EA36E82E324F68A2CEFF /* SunwakeTodayWidget.swift */,
+				9CE5DECCEB4B07CA3FB073C5 /* SunwakeWidgetBundle.swift */,
+			);
+			path = SunwakeWidgetExtension;
+			sourceTree = "<group>";
+		};
+		8D3223F0D697A5C605029E99 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		93223D433A186F35E440483C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				CA0FDEDB329AB14D3EEEE5C4 /* AppIconPickerView.swift */,
+				70CE920903C18F0DE1036AD4 /* AppLayoutConfigView.swift */,
+				9B31A2D948FEBDC2C370468A /* BriefingScheduleView.swift */,
+				2615D67356B8DA654ECAB280 /* BriefingSettingsView.swift */,
+				25D3477BB5B9547E5F8B99F2 /* DeveloperModeView.swift */,
+				F23AF8694D90A93CBD730A9C /* PaywallView.swift */,
+				F428C6BF46B4F59412295257 /* ReminderSettingsView.swift */,
+				8E50D4D491B981E57D40D4E7 /* SettingsView.swift */,
+				486FBB9DD0EDF34E3D4D00DC /* TabOrderView.swift */,
+				1CB60BFFC5A82E2854DF6502 /* VoiceSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		B18DCC57720387C244DC027D /* SunwakeTests */ = {
+			isa = PBXGroup;
+			children = (
+				A56BCA7B31FA023F5920A28F /* SunwakeTests.swift */,
+			);
+			path = SunwakeTests;
+			sourceTree = "<group>";
+		};
+		B9EA737DFD8152E444A51289 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				128ED1902A4F4F6B2198EC04 /* LibraryView.swift */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		BD4CECDDCCB59A947C87864C /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				852A555B348785F0CCA3AE4B /* Components */,
+				04F96049712A71367DAF753B /* Styles */,
+				E3D21356CD3A04CF87A36CE9 /* Theme */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		C52C2050814DC63DB3199E2B /* App */ = {
+			isa = PBXGroup;
+			children = (
+				6E47F3A382C158FD75DB93B2 /* MainTabView.swift */,
+				7E7F817673F133401C8225C6 /* RootView.swift */,
+				CCEDF3565738176218FADC1D /* SunwakeApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D3B3D93204E4162E3CEE1B7B /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				F44661BFC639CEA69D395B82 /* OnboardingContainerView.swift */,
+				B9E5CFF71EBAD922400A6099 /* OnboardingStepView.swift */,
+				AF920339085D0DA2E63FB8A1 /* OnboardingViewModel.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		DEABB523988BEDAA21106BB4 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				72A2C5FA3D3067C421CB688E /* HapticFeedback.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		E3D21356CD3A04CF87A36CE9 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				3614B113A1519BC13584C2A1 /* ThemeManager.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		E825E522A54C552B1E2A01C0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				3249370938012BCB074E1766 /* AIService.swift */,
+				3A8D1FBDA373AE5F118D16B9 /* BriefingNarrator.swift */,
+				AB0C204D93A7558898532E84 /* CalendarService.swift */,
+				9F07FA08772E0AF8F58051CE /* LiveActivityService.swift */,
+				8FBE1A6BCE1541E2F4512C68 /* NotificationService.swift */,
+				54791727BD84316572EE081E /* PDFService.swift */,
+				0F0DBF91EC3232E58B142FD0 /* SpeechService.swift */,
+				9ECCDD1E126D4425AB40EC1E /* SubscriptionManager.swift */,
+				54B391542D1396AD0C62EA76 /* WeatherService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F5759D45C8E28E2EC3D94240 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A17497E69093048B954BD094 /* Info.plist */,
+				C2D867C585122B15DB7EE834 /* Sunwake.entitlements */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FF2652BC84D9668BEABEF8C8 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				1E34896D6AB03F9AD1B74DC9 /* ChatView.swift */,
+				EFB0C81EA30D74676F83F10D /* ChatViewModel.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0E36610C5169FD2F300A29C3 /* Sunwake */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3FC0BF82A8E1A38C5A9DAAB8 /* Build configuration list for PBXNativeTarget "Sunwake" */;
+			buildPhases = (
+				A0345BCB2193B13B83967692 /* Sources */,
+				A44D76021ECDD02173814C14 /* Resources */,
+				A5A3624DB4C905CAF8909F1E /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7A1DD6388170BE63874BFC69 /* PBXTargetDependency */,
+				553F52B1FCB46D2F134C3998 /* PBXTargetDependency */,
+			);
+			name = Sunwake;
+			packageProductDependencies = (
+			);
+			productName = Sunwake;
+			productReference = A99954FBAA914994919B75A9 /* Sunwake.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1B7D3D3D7BA90D3D73C58B11 /* SunwakeUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCE1527FBE511F3B4933FF73 /* Build configuration list for PBXNativeTarget "SunwakeUITests" */;
+			buildPhases = (
+				C44F702D359FD0DC791B3758 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				63DDC5CF50A46BF77809986E /* PBXTargetDependency */,
+			);
+			name = SunwakeUITests;
+			packageProductDependencies = (
+			);
+			productName = SunwakeUITests;
+			productReference = D418596DD3A14F652C9B533C /* SunwakeUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		372964173A2EBD0A3C7FC9EF /* SunwakeWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0DDA4CB046C5416014A76210 /* Build configuration list for PBXNativeTarget "SunwakeWidgetExtension" */;
+			buildPhases = (
+				D5C2154C3C42610EEAF52293 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SunwakeWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = SunwakeWidgetExtension;
+			productReference = D20DDBE8B05629A5BAC7EE8C /* SunwakeWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		53104A2328B91D0CAD37E173 /* SunwakeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CFBA3C5473A9B26B5301A04D /* Build configuration list for PBXNativeTarget "SunwakeTests" */;
+			buildPhases = (
+				C26AF42BFB6D4EF5DC45A11A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D94DFA5CA9DF76B8C98969A7 /* PBXTargetDependency */,
+			);
+			name = SunwakeTests;
+			packageProductDependencies = (
+			);
+			productName = SunwakeTests;
+			productReference = CB67B03714B058A18DB3D015 /* SunwakeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C13FF4AAF77A819A0831E32B /* SunwakeDynamicIsland */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 70DF0333CFC16BF6D190AAE1 /* Build configuration list for PBXNativeTarget "SunwakeDynamicIsland" */;
+			buildPhases = (
+				9B13FBD93776FFCEC84D41C4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SunwakeDynamicIsland;
+			packageProductDependencies = (
+			);
+			productName = SunwakeDynamicIsland;
+			productReference = 183D9BCFE16505AD572FC3BE /* SunwakeDynamicIsland.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		95F978BF5BCC8C2D28D6510A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					0E36610C5169FD2F300A29C3 = {
+						DevelopmentTeam = XK87E2B3VR;
+					};
+					1B7D3D3D7BA90D3D73C58B11 = {
+						DevelopmentTeam = XK87E2B3VR;
+						TestTargetID = 0E36610C5169FD2F300A29C3;
+					};
+					372964173A2EBD0A3C7FC9EF = {
+						DevelopmentTeam = XK87E2B3VR;
+					};
+					53104A2328B91D0CAD37E173 = {
+						DevelopmentTeam = XK87E2B3VR;
+					};
+					C13FF4AAF77A819A0831E32B = {
+						DevelopmentTeam = XK87E2B3VR;
+					};
+				};
+			};
+			buildConfigurationList = 096021746ACAFF1BAF2FBEBD /* Build configuration list for PBXProject "Sunwake" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				de,
+				en,
+			);
+			mainGroup = 5FF5F3C3F25BE4B6B1F71205;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 11250668F011F88183551EB5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0E36610C5169FD2F300A29C3 /* Sunwake */,
+				C13FF4AAF77A819A0831E32B /* SunwakeDynamicIsland */,
+				53104A2328B91D0CAD37E173 /* SunwakeTests */,
+				1B7D3D3D7BA90D3D73C58B11 /* SunwakeUITests */,
+				372964173A2EBD0A3C7FC9EF /* SunwakeWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A44D76021ECDD02173814C14 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9C91B107770CE774E4F8C7A4 /* Assets.xcassets in Resources */,
+				80E0A3B110C08FD74E59ACE4 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9B13FBD93776FFCEC84D41C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				75A41327942F874F0E7A61F9 /* LiveActivityService.swift in Sources */,
+				C2500DF925C03775BF0BC266 /* SunwakeBriefingLiveActivity.swift in Sources */,
+				DF41F752375425F9EFA3CB55 /* SunwakeDynamicIslandBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A0345BCB2193B13B83967692 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				63792AC5A1926A9F21F0E3F6 /* AIService.swift in Sources */,
+				03AF2BF1E5DE28E18EB0EF49 /* AppIconPickerView.swift in Sources */,
+				53699457DC2CA0EAB3B93741 /* AppLayoutConfigView.swift in Sources */,
+				3D3AF50BE4C8641DB92C63A4 /* AppState.swift in Sources */,
+				0997F1F1077CDBE5F5B3C367 /* BriefingDetailView.swift in Sources */,
+				57D055CA9746C47E43D8E821 /* BriefingNarrator.swift in Sources */,
+				85EBAA36136D961C4E01366B /* BriefingScheduleView.swift in Sources */,
+				5F86F55CD73A031D5DB078CC /* BriefingSettingsView.swift in Sources */,
+				7E0DEEE514053BA58E4F850C /* CalendarService.swift in Sources */,
+				7F6F283021E44D9E834D66F3 /* CalendarView.swift in Sources */,
+				FD437CD5E6CD8C0182F94491 /* ChatView.swift in Sources */,
+				E0B3C98AE826E9E0584BA5FD /* ChatViewModel.swift in Sources */,
+				8EAE11125A5482281A02FC8E /* DeveloperModeView.swift in Sources */,
+				AE43D102DC6AA0DE6D1C1278 /* HapticFeedback.swift in Sources */,
+				D59B3ECA30D1BEC6249C6EBF /* LibraryView.swift in Sources */,
+				6F0C7097399FF856953D75E8 /* LiveActivityService.swift in Sources */,
+				D1FD9B345A698DF2CDB9E7D9 /* MainTabView.swift in Sources */,
+				51173D85267D9679DC658E70 /* NotificationService.swift in Sources */,
+				77BC8E86A51848041011E0DE /* OnboardingContainerView.swift in Sources */,
+				CE3C09E7D5FD7938F4693822 /* OnboardingStepView.swift in Sources */,
+				F2F69835869A23DA1B4FA753 /* OnboardingViewModel.swift in Sources */,
+				3BCADCEB99E55475E0D888C3 /* PDFService.swift in Sources */,
+				34D65D8F4A048F190E738CD4 /* PaywallView.swift in Sources */,
+				8C4223DFED4AB1CAB9DBAAB6 /* ReminderSettingsView.swift in Sources */,
+				C095284C2F4EF0AEF8E0E3C4 /* RootView.swift in Sources */,
+				06CFFB71A04051E25E7BD197 /* SettingsView.swift in Sources */,
+				6853A5708BE70A1D462772BB /* SpeechService.swift in Sources */,
+				1AF73843DBBBF614E5BA092F /* SubscriptionManager.swift in Sources */,
+				1FE44125E31586252A19A0E3 /* SunwakeApp.swift in Sources */,
+				D26754C08E6AC5735AB4D4CB /* SwiftDataModels.swift in Sources */,
+				CA81B6D8F796A16D95D46B32 /* TabOrderView.swift in Sources */,
+				1018C1926D051530E512CAC6 /* ThemeManager.swift in Sources */,
+				0D5CE697E7264DE82710B3FE /* TodayView.swift in Sources */,
+				14ACD0ECE1FEE45BFC36E447 /* TodayViewModel.swift in Sources */,
+				0ED8D865001692EABFE0BC7E /* VoiceSettingsView.swift in Sources */,
+				2F7878B1AA796D8477929EBC /* WeatherService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C26AF42BFB6D4EF5DC45A11A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2FB51AC9172B85E9A71A472D /* SunwakeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C44F702D359FD0DC791B3758 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91BD6E46CF62DDA3497B2105 /* SunwakeUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5C2154C3C42610EEAF52293 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79F8DCA03EAE5E1E37CB54E8 /* SunwakeTodayWidget.swift in Sources */,
+				EDB751482F39614B86A3475E /* SunwakeWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		553F52B1FCB46D2F134C3998 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 372964173A2EBD0A3C7FC9EF /* SunwakeWidgetExtension */;
+			targetProxy = B9964339F75E1B4D01935E84 /* PBXContainerItemProxy */;
+		};
+		63DDC5CF50A46BF77809986E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0E36610C5169FD2F300A29C3 /* Sunwake */;
+			targetProxy = 634052AF3CAA3440FBCED65D /* PBXContainerItemProxy */;
+		};
+		7A1DD6388170BE63874BFC69 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C13FF4AAF77A819A0831E32B /* SunwakeDynamicIsland */;
+			targetProxy = F6C5F24E83EBF15CA1C2FE16 /* PBXContainerItemProxy */;
+		};
+		D94DFA5CA9DF76B8C98969A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0E36610C5169FD2F300A29C3 /* Sunwake */;
+			targetProxy = 74AD96100D252B5B5E3C5F38 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BA4019E6B6CACE451B375B6A /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2B3B13212D92DC016FC78DCC /* de */,
+				C2E3939050B08CF90228760F /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2747B4C46FC547B7011E2E2B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = XK87E2B3VR;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		320EBC4569EC12A2A3DDEA3C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				INFOPLIST_FILE = SunwakeWidgetExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		478A957FA745E09CCF25CDEA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = XK87E2B3VR;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		59DE2844D572C90E8B671352 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Sunwake;
+			};
+			name = Release;
+		};
+		6D724A6B8B7834B24E30807A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Sunwake;
+			};
+			name = Debug;
+		};
+		750B05DD1A3B8D626BD7132A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sunwake.app/Sunwake";
+			};
+			name = Release;
+		};
+		80D7B61F6E2423B65D68964B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				INFOPLIST_FILE = SunwakeDynamicIsland/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake.dynamicisland;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8270536D984D36170A92D944 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				INFOPLIST_FILE = SunwakeWidgetExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		86D34F56230EBDF220880CB9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				INFOPLIST_FILE = SunwakeDynamicIsland/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake.dynamicisland;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		C0AD44A70DAF25AC0226F67F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = "Sunwake/Supporting Files/Sunwake.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Sunwake/Supporting Files/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C88966979C2CCE5218CB211B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sunwake.app/Sunwake";
+			};
+			name = Debug;
+		};
+		D82ED69E22BBF38CCFAF1B69 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = "Sunwake/Supporting Files/Sunwake.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Sunwake/Supporting Files/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesemmrich.sunwake;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		096021746ACAFF1BAF2FBEBD /* Build configuration list for PBXProject "Sunwake" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				478A957FA745E09CCF25CDEA /* Debug */,
+				2747B4C46FC547B7011E2E2B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		0DDA4CB046C5416014A76210 /* Build configuration list for PBXNativeTarget "SunwakeWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				320EBC4569EC12A2A3DDEA3C /* Debug */,
+				8270536D984D36170A92D944 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3FC0BF82A8E1A38C5A9DAAB8 /* Build configuration list for PBXNativeTarget "Sunwake" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0AD44A70DAF25AC0226F67F /* Debug */,
+				D82ED69E22BBF38CCFAF1B69 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		70DF0333CFC16BF6D190AAE1 /* Build configuration list for PBXNativeTarget "SunwakeDynamicIsland" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				80D7B61F6E2423B65D68964B /* Debug */,
+				86D34F56230EBDF220880CB9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BCE1527FBE511F3B4933FF73 /* Build configuration list for PBXNativeTarget "SunwakeUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D724A6B8B7834B24E30807A /* Debug */,
+				59DE2844D572C90E8B671352 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CFBA3C5473A9B26B5301A04D /* Build configuration list for PBXNativeTarget "SunwakeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C88966979C2CCE5218CB211B /* Debug */,
+				750B05DD1A3B8D626BD7132A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 95F978BF5BCC8C2D28D6510A /* Project object */;
+}

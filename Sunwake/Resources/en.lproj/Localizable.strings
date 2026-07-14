@@ -1,0 +1,105 @@
+/* App-wide */
+"Good morning" = "Good morning";
+"Good afternoon" = "Good afternoon";
+"Good evening" = "Good evening";
+"Today" = "Today";
+"Library" = "Library";
+"Chat" = "Chat";
+"Settings" = "Settings";
+"Cancel" = "Cancel";
+"Done" = "Done";
+"Continue" = "Continue";
+"Skip for now" = "Skip for now";
+"Save" = "Save";
+"Delete" = "Delete";
+"Edit" = "Edit";
+"Calendar" = "Calendar";
+
+/* Onboarding — Notifications */
+"notification.enable" = "Enable notifications";
+"notification.requesting" = "Requesting…";
+"notification.skip" = "Maybe later";
+
+/* Onboarding — Premium */
+"premium.title" = "Start for free";
+"premium.subtitle" = "Sunwake is free to use. Premium unlocks more.";
+"premium.free" = "Free";
+"premium.paid" = "Premium";
+"premium.free.1" = "1 calendar";
+"premium.free.2" = "5 PDFs per folder";
+"premium.free.3" = "Read aloud: events";
+"premium.free.4" = "Light & dark theme";
+"premium.paid.1" = "Multiple calendars";
+"premium.paid.2" = "Unlimited PDFs";
+"premium.paid.3" = "Read aloud: everything";
+"premium.paid.4" = "AI chatbot";
+"premium.paid.5" = "Widget & more";
+"premium.cta" = "Start for free";
+"premium.price.hint" = "Premium from €2.00/month · Upgrade anytime";
+
+/* Today */
+"Today's Events" = "Today's Events";
+"Clear day ahead" = "Clear day ahead";
+"No events scheduled for today. Enjoy the open time." = "No events today. Enjoy the open time.";
+"All day" = "All day";
+"Now" = "Now";
+"Play briefing" = "Play briefing";
+"Tap to hear your day read aloud" = "Tap to hear your day";
+"Preparing your briefing…" = "Preparing your briefing…";
+
+/* Calendar View */
+"calendar.title" = "Calendar";
+"calendar.noEvents" = "No events";
+"calendar.allCalendars" = "All Calendars";
+"calendar.selectCalendars" = "Select calendars";
+"calendar.today" = "Today";
+
+/* Library */
+"No Folders Yet" = "No Folders Yet";
+"No PDFs Yet" = "No PDFs Yet";
+"New Folder" = "New Folder";
+
+/* Chat */
+"AI Chat is Premium" = "AI Chat is Premium";
+"Ask about your day…" = "Ask about your day…";
+
+/* Settings */
+"Connected Calendars" = "Connected Calendars";
+"Morning briefing" = "Morning briefing";
+"Appearance" = "Appearance";
+"Subscription" = "Subscription";
+"Premium Active" = "Premium Active";
+"Restore Purchases" = "Restore Purchases";
+"About" = "About";
+"Privacy" = "Privacy";
+"Developer Mode" = "Developer Mode";
+
+/* Premium Paywall */
+"Sunwake Premium" = "Sunwake Premium";
+"Unlock the full morning briefing experience" = "Unlock the full morning briefing experience";
+"Get Premium" = "Get Premium";
+"Best value" = "Best value";
+"Close" = "Close";
+"Multiple calendars simultaneously" = "Multiple calendars simultaneously";
+"Unlimited PDFs & folders" = "Unlimited PDFs & folders";
+"Full audio: events + lecture summaries" = "Full audio: events + lecture summaries";
+"AI chatbot for your day" = "AI chatbot for your day";
+"Home screen widget" = "Home screen widget";
+"Learns your preferences over time" = "Learns your preferences over time";
+"Restore Purchases" = "Restore Purchases";
+"Funktion" = "Feature";
+"Briefing einstellen" = "Briefing Settings";
+"Tab-Reihenfolge" = "Tab Order";
+"App-Icon" = "App Icon";
+"Briefing-Einstellungen" = "Briefing Settings";
+"Kurz" = "Short";
+"Mittel" = "Medium";
+"Lang" = "Long";
+"Freundlich" = "Friendly";
+"Formell" = "Formal";
+"Knapp" = "Concise";
+"Länge" = "Length";
+"Stil" = "Style";
+"Ziehe die Tabs in die gewünschte Reihenfolge. Die Änderung gilt sofort." = "Drag the tabs to your preferred order. Changes apply immediately.";
+"Clear" = "Clear";
+"Unlock Premium" = "Unlock Premium";

@@ -124,7 +124,7 @@ let specs: [IconSpec] = [
     IconSpec(name: "AppIcon-Ocean",    topHex: 0x01579B, bottomHex: 0x039BE5, style: "sun"),   // Ocean blue
 ]
 
-let base = "Lumio/Resources/Assets.xcassets"
+let base = "Sunwake/Resources/Assets.xcassets"
 
 for spec in specs {
     let ctx = makeContext()

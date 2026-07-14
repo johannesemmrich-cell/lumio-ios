@@ -1,4 +1,4 @@
-name: Lumio
+name: Sunwake
 options:
   bundleIdPrefix: com.johannesemmrich
   deploymentTarget:
@@ -21,18 +21,18 @@ settings:
     SWIFT_STRICT_CONCURRENCY: complete
 
 targets:
-  Lumio:
+  Sunwake:
     type: application
     platform: iOS
     deploymentTarget: "26.0"
     sources:
-      - path: Lumio
+      - path: Sunwake
     resources:
-      - path: Lumio/Resources
+      - path: Sunwake/Resources
     info:
-      path: Lumio/Supporting Files/Info.plist
+      path: Sunwake/Supporting Files/Info.plist
       properties:
-        CFBundleDisplayName: Lumio
+        CFBundleDisplayName: Sunwake
         CFBundleShortVersionString: "1.0"
         CFBundleVersion: "1"
         UILaunchScreen:
@@ -46,16 +46,16 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        NSCalendarsUsageDescription: "Lumio liest deinen Kalender für dein persönliches Morgen-Briefing."
-        NSCalendarsWriteOnlyAccessUsageDescription: "Lumio kann per KI-Assistent Termine in deinen Kalender eintragen."
-        NSRemindersUsageDescription: "Lumio kann deine Erinnerungen ins Briefing einbeziehen."
-        NSLocationWhenInUseUsageDescription: "Lumio nutzt deinen Standort, um aktuelle Wetterdaten für dein Briefing abzurufen."
+        NSCalendarsUsageDescription: "Sunwake liest deinen Kalender für dein persönliches Morgen-Briefing."
+        NSCalendarsWriteOnlyAccessUsageDescription: "Sunwake kann per KI-Assistent Termine in deinen Kalender eintragen."
+        NSRemindersUsageDescription: "Sunwake kann deine Erinnerungen ins Briefing einbeziehen."
+        NSLocationWhenInUseUsageDescription: "Sunwake nutzt deinen Standort, um aktuelle Wetterdaten für dein Briefing abzurufen."
         UIBackgroundModes:
           - audio
           - fetch
           - remote-notification
         NSUserActivityTypes:
-          - com.johannesemmrich.lumio.briefing
+          - com.johannesemmrich.sunwake.briefing
         NSSupportsLiveActivities: true
         NSSupportsLiveActivitiesFrequentUpdates: true
         CFBundleIcons:
@@ -89,110 +89,110 @@ targets:
                 - AppIcon-Minimal
               UIPrerenderedIcon: false
     entitlements:
-      path: Lumio/Supporting Files/Lumio.entitlements
+      path: Sunwake/Supporting Files/Sunwake.entitlements
     dependencies:
-      - target: LumioDynamicIsland
+      - target: SunwakeDynamicIsland
         embed: true
-      - target: LumioWidgetExtension
+      - target: SunwakeWidgetExtension
         embed: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio
-        INFOPLIST_FILE: "Lumio/Supporting Files/Info.plist"
-        CODE_SIGN_ENTITLEMENTS: "Lumio/Supporting Files/Lumio.entitlements"
+        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.sunwake
+        INFOPLIST_FILE: "Sunwake/Supporting Files/Info.plist"
+        CODE_SIGN_ENTITLEMENTS: "Sunwake/Supporting Files/Sunwake.entitlements"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: YES
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ENABLE_HARDENED_RUNTIME: YES
 
   # Dynamic Island / Live Activity extension
-  LumioDynamicIsland:
+  SunwakeDynamicIsland:
     type: app-extension
     platform: iOS
     deploymentTarget: "26.0"
     sources:
-      - path: LumioDynamicIsland
+      - path: SunwakeDynamicIsland
       # Share the ActivityAttributes model with the main app
-      - path: Lumio/Core/Services/LiveActivityService.swift
+      - path: Sunwake/Core/Services/LiveActivityService.swift
     info:
-      path: LumioDynamicIsland/Info.plist
+      path: SunwakeDynamicIsland/Info.plist
       properties:
-        CFBundleDisplayName: LumioDynamicIsland
+        CFBundleDisplayName: SunwakeDynamicIsland
         CFBundleShortVersionString: "1.0"
         CFBundleVersion: "1"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio.dynamicisland
+        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.sunwake.dynamicisland
         SKIP_INSTALL: YES
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: NO
 
   # Home Screen Widget extension
-  LumioWidgetExtension:
+  SunwakeWidgetExtension:
     type: app-extension
     platform: iOS
     deploymentTarget: "26.0"
     sources:
-      - path: LumioWidgetExtension
+      - path: SunwakeWidgetExtension
     info:
-      path: LumioWidgetExtension/Info.plist
+      path: SunwakeWidgetExtension/Info.plist
       properties:
-        CFBundleDisplayName: LumioWidget
+        CFBundleDisplayName: SunwakeWidget
         CFBundleShortVersionString: "1.0"
         CFBundleVersion: "1"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio.widget
+        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.sunwake.widget
         SKIP_INSTALL: YES
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: NO
 
-  LumioTests:
+  SunwakeTests:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget: "26.0"
     sources:
-      - path: LumioTests
+      - path: SunwakeTests
     dependencies:
-      - target: Lumio
+      - target: Sunwake
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.sunwake.tests
         GENERATE_INFOPLIST_FILE: YES
 
-  LumioUITests:
+  SunwakeUITests:
     type: bundle.ui-testing
     platform: iOS
     deploymentTarget: "26.0"
     sources:
-      - path: LumioUITests
+      - path: SunwakeUITests
     dependencies:
-      - target: Lumio
+      - target: Sunwake
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.lumio.uitests
+        PRODUCT_BUNDLE_IDENTIFIER: com.johannesemmrich.sunwake.uitests
         GENERATE_INFOPLIST_FILE: YES
 
 schemes:
-  Lumio:
+  Sunwake:
     build:
       targets:
-        Lumio: all
-        LumioDynamicIsland: all
-        LumioWidgetExtension: all
-        LumioTests: [test]
-        LumioUITests: [test]
+        Sunwake: all
+        SunwakeDynamicIsland: all
+        SunwakeWidgetExtension: all
+        SunwakeTests: [test]
+        SunwakeUITests: [test]
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - name: LumioTests
+        - name: SunwakeTests
           parallelizable: true
           randomExecutionOrder: true
-        - name: LumioUITests
+        - name: SunwakeUITests
     profile:
       config: Release
     analyze:
