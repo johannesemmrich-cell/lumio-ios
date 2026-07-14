@@ -17,7 +17,15 @@ final class SubscriptionManager: ObservableObject {
 
     static let allProductIDs: [String] = [monthlyProductID, yearlyProductID, lifetimeProductID]
 
+    // TEMP-PRO-FOR-ALL: Alle Pro-Features sind vorübergehend für alle Nutzer freigeschaltet,
+    // der angezeigte Plan-Status (Paywall etc.) bleibt unverändert Basic/Free.
+    // Rückgängig machen: diese Zeile entfernen. Siehe Backlog-Eintrag "temp-pro-for-all".
+    private static let temporaryProForAllOverride = true
+
     var effectivelyPremium: Bool {
+        if Self.temporaryProForAllOverride {
+            return true
+        }
         #if DEBUG
         // Für Screenshot-Automation: Premium ohne Developer-Mode-UI freischalten.
         if ProcessInfo.processInfo.arguments.contains("-premiumForScreenshots") {
