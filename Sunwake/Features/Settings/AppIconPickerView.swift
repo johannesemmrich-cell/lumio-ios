@@ -87,6 +87,8 @@ struct AppIconPickerView: View {
 }
 
 private struct IconCell: View {
+    @EnvironmentObject private var appState: AppState
+
     let option: AppIconOption
     let isSelected: Bool
     let isChanging: Bool
@@ -128,13 +130,13 @@ private struct IconCell: View {
                 .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
                 .overlay(
                     RoundedRectangle(cornerRadius: 17, style: .continuous)
-                        .strokeBorder(isSelected ? Color.accentColor : Color.clear, lineWidth: 3)
+                        .strokeBorder(isSelected ? appState.accentColor : Color.clear, lineWidth: 3)
                 )
                 .overlay(alignment: .bottomTrailing) {
                     if isSelected {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 20))
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(appState.accentColor)
                             .background(Circle().fill(Color(uiColor: .systemBackground)).padding(2))
                             .offset(x: 4, y: 4)
                     }

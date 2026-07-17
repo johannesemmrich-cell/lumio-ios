@@ -18,7 +18,7 @@ struct BriefingSettingsView: View {
                         Spacer()
                         if appState.briefingLength == length {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(Color.sunwakeAccent)
+                                .foregroundStyle(appState.accentColor)
                                 .fontWeight(.semibold)
                         }
                     }
@@ -45,7 +45,7 @@ struct BriefingSettingsView: View {
                         Spacer()
                         if appState.briefingStyle == style {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(Color.sunwakeAccent)
+                                .foregroundStyle(appState.accentColor)
                                 .fontWeight(.semibold)
                         }
                     }

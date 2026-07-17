@@ -52,7 +52,7 @@ struct SettingsView: View {
                 Section(loc("Abo", "Subscription")) {
                     if subscriptionManager.effectivelyPremium {
                         Label(loc("Premium aktiv", "Premium Active"), systemImage: "star.fill")
-                            .foregroundStyle(Color.sunwakeAccent)
+                            .foregroundStyle(appState.accentColor)
                     } else {
                         Button {
                             showPaywall = true

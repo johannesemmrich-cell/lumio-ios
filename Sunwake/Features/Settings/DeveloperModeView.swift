@@ -99,7 +99,7 @@ struct DeveloperModeView: View {
                 Label("Developer Mode is active", systemImage: "checkmark.shield.fill")
                     .foregroundStyle(.green)
                 Label("All Premium features unlocked", systemImage: "star.fill")
-                    .foregroundStyle(Color.sunwakeAccent)
+                    .foregroundStyle(appState.accentColor)
             }
 
             let inProgressItems = todoItems.filter { InProgressStore.isInProgress($0.id) && !$0.isCompleted }
@@ -139,7 +139,7 @@ struct DeveloperModeView: View {
                     showAddTodo = true
                 } label: {
                     Label("Neues To-Do", systemImage: "plus.circle")
-                        .foregroundStyle(Color.sunwakeAccent)
+                        .foregroundStyle(appState.accentColor)
                 }
             }
 
@@ -186,7 +186,7 @@ struct DeveloperModeView: View {
                     } label: {
                         Label("Offen (\(feedbackEntries.filter { !$0.isResolved }.count))", systemImage: "circle")
                             .font(SunwakeTypography.caption.weight(showOnlyOpen ? .semibold : .regular))
-                            .foregroundStyle(showOnlyOpen ? Color.sunwakeAccent : .secondary)
+                            .foregroundStyle(showOnlyOpen ? appState.accentColor : .secondary)
                     }
                     .buttonStyle(.plain)
 

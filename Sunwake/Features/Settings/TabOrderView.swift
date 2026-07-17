@@ -10,7 +10,7 @@ struct TabOrderView: View {
                     HStack(spacing: 14) {
                         Image(systemName: tab.icon)
                             .font(.body.weight(.medium))
-                            .foregroundStyle(Color.sunwakeAccent)
+                            .foregroundStyle(appState.accentColor)
                             .frame(width: 28)
                         Text(tab.title)
                             .font(SunwakeTypography.body)

@@ -364,7 +364,7 @@ private struct TabPickerSheet: View {
                                     .foregroundStyle(.white)
                                     .padding(.horizontal, 7)
                                     .padding(.vertical, 3)
-                                    .background(Capsule().fill(Color.sunwakeAccent))
+                                    .background(Capsule().fill(appState.accentColor))
                             } else if tab == currentTab {
                                 Image(systemName: "checkmark")
                                     .font(.body.weight(.semibold))

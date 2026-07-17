@@ -3,6 +3,7 @@ import StoreKit
 
 struct PaywallView: View {
     @EnvironmentObject private var subscriptionManager: SubscriptionManager
+    @EnvironmentObject private var appState: AppState
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedProductID = SubscriptionManager.yearlyProductID
@@ -71,7 +72,7 @@ struct PaywallView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .background(Color.sunwakeAccent)
+                            .background(appState.accentColor)
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                         }
@@ -110,6 +111,7 @@ struct PaywallView: View {
                 }
             }
         }
+        .tint(appState.accentColor)
     }
 
     private var comparisonTable: some View {
@@ -126,7 +128,7 @@ struct PaywallView: View {
                     .frame(width: 56, alignment: .center)
                 Text("Premium")
                     .font(SunwakeTypography.caption.weight(.bold))
-                    .foregroundStyle(Color.sunwakeAccent)
+                    .foregroundStyle(appState.accentColor)
                     .frame(width: 72, alignment: .center)
             }
             .padding(.horizontal, 14)
@@ -166,7 +168,7 @@ struct PaywallView: View {
                 .frame(width: 56, alignment: .center)
                 Text(premium)
                     .font(SunwakeTypography.caption.weight(.semibold))
-                    .foregroundStyle(premium == "✓" ? Color.green : Color.sunwakeAccent)
+                    .foregroundStyle(premium == "✓" ? Color.green : appState.accentColor)
                     .frame(width: 72, alignment: .center)
             }
             .padding(.horizontal, 14)
@@ -189,6 +191,8 @@ struct PaywallView: View {
 }
 
 struct ProductPlaceholderRow: View {
+    @EnvironmentObject private var appState: AppState
+
     let title: String
     let price: String
     let subtitle: String?
@@ -221,15 +225,15 @@ struct ProductPlaceholderRow: View {
                 Spacer()
                 Text(price)
                     .font(SunwakeTypography.callout.weight(.bold))
-                    .foregroundStyle(isSelected ? Color.sunwakeAccent : .primary)
+                    .foregroundStyle(isSelected ? appState.accentColor : .primary)
             }
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(isSelected ? Color.sunwakeAccent.opacity(0.08) : Color(uiColor: .secondarySystemBackground))
+                    .fill(isSelected ? appState.accentColor.opacity(0.08) : Color(uiColor: .secondarySystemBackground))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
-                            .strokeBorder(isSelected ? Color.sunwakeAccent : Color.clear, lineWidth: 1.5)
+                            .strokeBorder(isSelected ? appState.accentColor : Color.clear, lineWidth: 1.5)
                     )
             )
         }
@@ -257,6 +261,8 @@ struct PremiumFeatureRow: View {
 }
 
 struct ProductOptionRow: View {
+    @EnvironmentObject private var appState: AppState
+
     let product: Product
     let isSelected: Bool
     let isBestValue: Bool
@@ -285,15 +291,15 @@ struct ProductOptionRow: View {
                 Spacer()
                 Text(product.displayPrice)
                     .font(SunwakeTypography.callout.weight(.bold))
-                    .foregroundStyle(isSelected ? Color.sunwakeAccent : .primary)
+                    .foregroundStyle(isSelected ? appState.accentColor : .primary)
             }
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(isSelected ? Color.sunwakeAccent.opacity(0.08) : Color(uiColor: .secondarySystemBackground))
+                    .fill(isSelected ? appState.accentColor.opacity(0.08) : Color(uiColor: .secondarySystemBackground))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
-                            .strokeBorder(isSelected ? Color.sunwakeAccent : Color.clear, lineWidth: 1.5)
+                            .strokeBorder(isSelected ? appState.accentColor : Color.clear, lineWidth: 1.5)
                     )
             )
         }

@@ -51,7 +51,7 @@ struct ReminderSettingsView: View {
                             Spacer()
                             if !excludedIDs.contains(cal.calendarIdentifier) {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(Color.accentColor)
+                                    .foregroundStyle(appState.accentColor)
                                     .font(.system(size: 14, weight: .semibold))
                             }
                         }
