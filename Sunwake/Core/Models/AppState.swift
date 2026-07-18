@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import Combine
 
 @MainActor
@@ -25,6 +26,9 @@ final class AppState: ObservableObject {
         didSet { UserDefaults.standard.set(topBarActions, forKey: UserDefaultsKey.topBarActions) }
     }
     @Published var pendingBriefingForChat: String?
+
+    /// Premium: user photo shown behind the tab content (nil = default look).
+    @Published private(set) var tabBackgroundImage: UIImage?
 
     var accentColor: Color { Color(hex: accentColorHex) }
 
@@ -54,6 +58,65 @@ final class AppState: ObservableObject {
         self.briefingLength = BriefingLength(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.briefingLength) ?? "") ?? .medium
         self.briefingStyle = BriefingStyle(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.briefingStyle) ?? "") ?? .friendly
         self.accentColorHex = UserDefaults.standard.string(forKey: UserDefaultsKey.accentColorHex) ?? "FF9500"
+
+        if let filename = UserDefaults.standard.string(forKey: UserDefaultsKey.tabBackgroundFilename) {
+            let url = Self.documentsDirectory.appendingPathComponent(filename)
+            self.tabBackgroundImage = UIImage(contentsOfFile: url.path)
+        }
+    }
+
+    // MARK: — Tab background image (Premium)
+
+    private static var documentsDirectory: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+
+    /// Persists the photo (downscaled, as JPEG) and shows it behind the tabs.
+    /// A fresh filename per change busts any stale SwiftUI image caching.
+    func setTabBackground(imageData: Data) {
+        guard let image = UIImage(data: imageData) else { return }
+        let scaled = Self.downscaled(image, maxDimension: 2200)
+        guard let jpeg = scaled.jpegData(compressionQuality: 0.85) else { return }
+
+        deleteTabBackgroundFile()
+        let filename = "tabBackground-\(UUID().uuidString).jpg"
+        let url = Self.documentsDirectory.appendingPathComponent(filename)
+        do {
+            try jpeg.write(to: url, options: .atomic)
+        } catch {
+            return
+        }
+        UserDefaults.standard.set(filename, forKey: UserDefaultsKey.tabBackgroundFilename)
+        withAnimation(.easeInOut(duration: 0.3)) {
+            tabBackgroundImage = scaled
+        }
+    }
+
+    func removeTabBackground() {
+        deleteTabBackgroundFile()
+        UserDefaults.standard.removeObject(forKey: UserDefaultsKey.tabBackgroundFilename)
+        withAnimation(.easeInOut(duration: 0.3)) {
+            tabBackgroundImage = nil
+        }
+    }
+
+    private func deleteTabBackgroundFile() {
+        if let old = UserDefaults.standard.string(forKey: UserDefaultsKey.tabBackgroundFilename) {
+            try? FileManager.default.removeItem(at: Self.documentsDirectory.appendingPathComponent(old))
+        }
+    }
+
+    /// Full-resolution photos are far larger than any screen — cap the longer
+    /// side so the always-resident background doesn't waste memory.
+    private static func downscaled(_ image: UIImage, maxDimension: CGFloat) -> UIImage {
+        let longestSide = max(image.size.width, image.size.height)
+        guard longestSide > maxDimension, longestSide > 0 else { return image }
+        let scale = maxDimension / longestSide
+        let newSize = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
+        }
     }
 
     func completeOnboarding() {
@@ -134,6 +197,8 @@ enum UserDefaultsKey {
     static let briefingScheduleMinute = "briefingScheduleMinute"
     static let hasMigratedPremiumLayout = "hasMigratedPremiumLayout"
     static let selectedVoiceIdentifier = "selectedVoiceIdentifier"
+    static let tabBackgroundFilename = "tabBackgroundFilename"
+    static let voiceQualityHintDismissed = "voiceQualityHintDismissed"
     // Per-day times: "briefingHour_<weekday>" / "briefingMinute_<weekday>"
     static func briefingHourKey(_ weekday: Int) -> String { "briefingHour_\(weekday)" }
     static func briefingMinuteKey(_ weekday: Int) -> String { "briefingMinute_\(weekday)" }

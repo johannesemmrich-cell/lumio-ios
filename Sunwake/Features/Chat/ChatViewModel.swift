@@ -25,7 +25,7 @@ final class ChatViewModel: ObservableObject {
         if messages.isEmpty {
             let greetingText = language == "de"
                 ? "Hallo! Ich bin dein Sunwake-Assistent. Ich kann dir bei deinem Tagesplan helfen, Fragen zu deinen Notizen beantworten oder Termine eintragen. Was kann ich für dich tun?"
-                : String(localized: "Hi! I'm your Sunwake assistant. I can help you with your schedule, answer questions about your lecture notes, or add events to your calendar. What can I help you with?")
+                : "Hi! I'm your Sunwake assistant. I can help you with your schedule, answer questions about your lecture notes, or add events to your calendar. What can I help you with?"
             messages.append(ChatMessage(role: .assistant, text: greetingText, timestamp: Date()))
         }
     }
@@ -118,13 +118,14 @@ final class ChatViewModel: ObservableObject {
             let start = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: targetDate) ?? targetDate
             let end = Calendar.current.date(byAdding: .hour, value: 1, to: start) ?? start
             do {
-                try await calendarService.addEvent(title: title, startDate: start, endDate: end)
+                try await calendarService.addEvent(title: title, startDate: start, endDate: end, language: language)
                 let msg = language == "de"
                     ? "Termin '\(title)' wurde für \(start.formatted(.dateTime.day().month().hour().minute())) erstellt ✓"
                     : "Event '\(title)' created for \(start.formatted(.dateTime.day().month().hour().minute())) ✓"
                 messages.append(ChatMessage(role: .assistant, text: msg, timestamp: Date()))
             } catch {
-                messages.append(ChatMessage(role: .assistant, text: "Fehler beim Erstellen des Termins: \(error.localizedDescription)", timestamp: Date()))
+                let errorPrefix = language == "de" ? "Fehler beim Erstellen des Termins" : "Couldn't create the event"
+                messages.append(ChatMessage(role: .assistant, text: "\(errorPrefix): \(error.localizedDescription)", timestamp: Date()))
             }
         case .deleteEvent:
             let msg = language == "de"

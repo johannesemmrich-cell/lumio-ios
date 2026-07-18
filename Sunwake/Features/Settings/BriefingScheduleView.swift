@@ -170,7 +170,8 @@ struct BriefingScheduleView: View {
         Task {
             await NotificationService.shared.scheduleBriefings(
                 dayTimes: dayTimePairs,
-                previewText: String(localized: "Tap to see your morning briefing.")
+                previewText: loc("Tippe für dein Morgen-Briefing.", "Tap to see your morning briefing."),
+                language: appState.selectedLanguage
             )
         }
     }

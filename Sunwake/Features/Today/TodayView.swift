@@ -17,6 +17,8 @@ struct TodayView: View {
     @State private var showLibrarySheet = false
     @State private var selectedEvent: CalendarEvent? = nil
     @State private var headerOffset: CGFloat = 0
+    @State private var showVoiceQualityHint = false
+    @State private var showVoiceSettingsSheet = false
 
     var body: some View {
         NavigationStack {
@@ -32,7 +34,7 @@ struct TodayView: View {
                         .padding(.bottom, 28)
 
                         if let weather = viewModel.weather {
-                            WeatherCard(weather: weather, accentColor: appState.accentColor)
+                            WeatherCard(weather: weather, accentColor: appState.accentColor, language: appState.selectedLanguage)
                                 .padding(.horizontal, 20)
                                 .padding(.bottom, 16)
                         }
@@ -51,6 +53,20 @@ struct TodayView: View {
                             }
                         }
 
+                        TomorrowPreviewCard(
+                            isPremium: subscriptionManager.effectivelyPremium,
+                            isLoading: viewModel.isLoadingTomorrow,
+                            hasLoaded: viewModel.hasLoadedTomorrow,
+                            summary: viewModel.tomorrowSummary,
+                            events: viewModel.tomorrowEvents,
+                            language: appState.selectedLanguage,
+                            accentColor: appState.accentColor,
+                            onUnlock: { showPaywall = true },
+                            onLoad: { Task { await viewModel.loadTomorrowPreview() } }
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.top, 20)
+
                         Spacer().frame(height: 120)
                     }
                 }
@@ -61,11 +77,25 @@ struct TodayView: View {
                     await viewModel.refresh()
                 }
 
-                PlayBarView(speechService: speechService, aiSummary: viewModel.aiSummary, events: viewModel.events, reminders: viewModel.reminders, weather: viewModel.weather, language: appState.selectedLanguage, accentColor: appState.accentColor, accentColorHex: appState.accentColorHex)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 20)
-                    .shadow(color: .black.opacity(0.08), radius: 20, y: -4)
+                VStack(spacing: 10) {
+                    if showVoiceQualityHint {
+                        VoiceQualityHintBanner(
+                            language: appState.selectedLanguage,
+                            accentColor: appState.accentColor,
+                            onTap: { showVoiceSettingsSheet = true },
+                            onDismiss: {
+                                UserDefaults.standard.set(true, forKey: UserDefaultsKey.voiceQualityHintDismissed)
+                                withAnimation(.easeInOut(duration: 0.2)) { showVoiceQualityHint = false }
+                            }
+                        )
+                    }
+                    PlayBarView(speechService: speechService, aiSummary: viewModel.aiSummary, events: viewModel.events, reminders: viewModel.reminders, weather: viewModel.weather, language: appState.selectedLanguage, accentColor: appState.accentColor, accentColorHex: appState.accentColorHex)
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 20)
+                .shadow(color: .black.opacity(0.08), radius: 20, y: -4)
             }
+            .sunwakeTabBackground()
             .navigationTitle("Today")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -160,7 +190,14 @@ struct TodayView: View {
                 viewModel.language = appState.selectedLanguage
                 viewModel.briefingLength = appState.briefingLength
                 viewModel.briefingStyle = appState.briefingStyle
+                refreshVoiceQualityHint()
                 await viewModel.loadInitialData()
+            }
+            .sheet(isPresented: $showVoiceSettingsSheet, onDismiss: refreshVoiceQualityHint) {
+                NavigationStack { VoiceSettingsView() }
+                    .environmentObject(appState)
+                    .environmentObject(speechService)
+                    .tint(appState.accentColor)
             }
             .onChange(of: appState.pendingBriefingForChat) { _, pending in
                 guard pending != nil else { return }
@@ -184,7 +221,7 @@ struct TodayView: View {
 
                 ForEach(viewModel.events) { event in
                     Button { HapticFeedback.selection(); selectedEvent = event } label: {
-                        EventCard(event: event)
+                        EventCard(event: event, language: appState.selectedLanguage)
                     }
                     .buttonStyle(.plain)
                     .developerFeedbackOverlay(
@@ -196,6 +233,14 @@ struct TodayView: View {
                 }
             }
         }
+    }
+
+    /// Show the hint until the user dismisses it or an Enhanced/Premium voice
+    /// is installed — the single biggest lever for a natural-sounding briefing.
+    private func refreshVoiceQualityHint() {
+        let dismissed = UserDefaults.standard.bool(forKey: UserDefaultsKey.voiceQualityHintDismissed)
+        let langCode = appState.selectedLanguage == "de" ? "de-DE" : "en-US"
+        showVoiceQualityHint = !dismissed && SpeechService.onlyDefaultQualityAvailable(for: langCode)
     }
 
     private var remindersSection: some View {
@@ -307,9 +352,10 @@ struct DayProgressRing: View {
 
 struct EventCard: View {
     let event: CalendarEvent
+    var language: String = "en"
 
     private var timeString: String {
-        if event.isAllDay { return String(localized: "All day") }
+        if event.isAllDay { return language == "de" ? "Ganztägig" : "All day" }
         let fmt = DateFormatter()
         fmt.dateFormat = "HH:mm"
         return "\(fmt.string(from: event.startDate)) – \(fmt.string(from: event.endDate))"
@@ -469,6 +515,170 @@ struct PlayBarView: View {
     }
 }
 
+// MARK: — Voice quality hint
+
+/// Small banner above the play bar, shown while only the robotic
+/// default-quality system voice is installed. Tapping opens the voice
+/// settings, which explain how to download a natural Enhanced/Premium voice.
+struct VoiceQualityHintBanner: View {
+    let language: String
+    let accentColor: Color
+    let onTap: () -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Button(action: onTap) {
+                HStack(spacing: 10) {
+                    Image(systemName: "waveform")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(accentColor)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(language == "de" ? "Natürlichere Stimme verfügbar" : "A more natural voice is available")
+                            .font(SunwakeTypography.caption.weight(.semibold))
+                            .foregroundStyle(.primary)
+                        Text(language == "de" ? "Einmalig kostenlos laden — tippe hier" : "Free one-time download — tap here")
+                            .font(SunwakeTypography.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 26, height: 26)
+                    .background(Circle().fill(Color.secondary.opacity(0.12)))
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.regularMaterial)
+        )
+        .transition(.opacity.combined(with: .move(edge: .bottom)))
+    }
+}
+
+// MARK: — Tomorrow preview (Premium)
+
+struct TomorrowPreviewCard: View {
+    let isPremium: Bool
+    let isLoading: Bool
+    let hasLoaded: Bool
+    let summary: String
+    let events: [CalendarEvent]
+    let language: String
+    let accentColor: Color
+    let onUnlock: () -> Void
+    let onLoad: () -> Void
+
+    private var isDE: Bool { language == "de" }
+
+    private var tomorrowTitle: String {
+        isDE ? "Ausblick auf morgen" : "Tomorrow's outlook"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label(tomorrowTitle, systemImage: "moon.stars.fill")
+                    .font(SunwakeTypography.headline)
+                Spacer()
+                if !isPremium {
+                    Text("Premium")
+                        .font(SunwakeTypography.caption2.weight(.bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(Capsule().fill(accentColor))
+                }
+            }
+
+            if !isPremium {
+                Button(action: onUnlock) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "lock.fill")
+                            .font(.caption)
+                        Text(isDE
+                             ? "Mit Premium siehst du schon heute, was morgen ansteht."
+                             : "With Premium, see tonight what tomorrow holds.")
+                            .font(SunwakeTypography.caption)
+                            .multilineTextAlignment(.leading)
+                    }
+                    .foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            } else if isLoading {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text(isDE ? "Morgen wird vorbereitet…" : "Preparing tomorrow…")
+                        .font(SunwakeTypography.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } else if hasLoaded {
+                if !summary.isEmpty {
+                    Text(summary)
+                        .font(SunwakeTypography.callout)
+                        .foregroundStyle(.secondary)
+                }
+                ForEach(events) { event in
+                    HStack(spacing: 10) {
+                        Text(timeLabel(for: event))
+                            .font(SunwakeTypography.caption.weight(.semibold).monospacedDigit())
+                            .foregroundStyle(accentColor)
+                            .frame(width: 64, alignment: .leading)
+                        Text(event.title)
+                            .font(SunwakeTypography.caption)
+                            .lineLimit(1)
+                        Spacer(minLength: 0)
+                    }
+                }
+                Button(action: onLoad) {
+                    Label(isDE ? "Aktualisieren" : "Refresh", systemImage: "arrow.clockwise")
+                        .font(SunwakeTypography.caption.weight(.semibold))
+                        .foregroundStyle(accentColor)
+                }
+                .buttonStyle(.plain)
+            } else {
+                Button(action: onLoad) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "sparkles")
+                        Text(isDE ? "Vorschau erstellen" : "Generate preview")
+                            .font(SunwakeTypography.callout.weight(.semibold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Capsule().fill(accentColor))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(uiColor: .secondarySystemBackground))
+        )
+    }
+
+    private func timeLabel(for event: CalendarEvent) -> String {
+        if event.isAllDay { return isDE ? "Ganztägig" : "All day" }
+        let fmt = DateFormatter()
+        fmt.dateFormat = "HH:mm"
+        return fmt.string(from: event.startDate)
+    }
+}
+
 // MARK: — Empty state
 
 struct EmptyDayView: View {
@@ -515,6 +725,7 @@ struct SectionHeader: View {
 struct WeatherCard: View {
     let weather: WeatherData
     let accentColor: Color
+    let language: String
 
     var body: some View {
         HStack(spacing: 14) {
@@ -524,7 +735,7 @@ struct WeatherCard: View {
                 .frame(width: 36)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(weather.conditionLabel)
+                Text(weather.conditionLabel(language: language))
                     .font(SunwakeTypography.callout.weight(.semibold))
                 HStack(spacing: 8) {
                     Text("↑\(Int(weather.temperatureMax.rounded()))°")

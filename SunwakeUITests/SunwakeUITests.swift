@@ -71,6 +71,53 @@ final class SunwakeUITests: XCTestCase {
         attachScreenshot(of: app, named: "02-Settings")
     }
 
+    /// Premium "tomorrow preview": scroll to the card, generate, and verify
+    /// that a summary replaces the button (AI or fallback text — both start
+    /// with the pinned opener).
+    @MainActor
+    func testTomorrowPreviewGeneratesSummary() throws {
+        let app = XCUIApplication()
+        app.launchArguments += [
+            "-hasCompletedOnboarding", "YES",
+            "-selectedLanguage", "de",
+        ]
+
+        addUIInterruptionMonitor(withDescription: "System permission alerts") { alert in
+            let allowLabels = [
+                "Vollen Zugriff erlauben", "Beim Verwenden der App erlauben",
+                "Einmal erlauben", "Erlauben",
+                "Allow Full Access", "Allow While Using App", "Allow Once", "Allow", "OK",
+            ]
+            for label in allowLabels where alert.buttons[label].exists {
+                alert.buttons[label].tap()
+                return true
+            }
+            return false
+        }
+
+        app.launch()
+
+        let tabBar = app.tabBars.firstMatch
+        XCTAssertTrue(tabBar.waitForExistence(timeout: 10), "Tab bar not found after launch")
+        tabBar.buttons.firstMatch.tap()
+        Thread.sleep(forTimeInterval: 3)
+        tabBar.buttons.firstMatch.tap()
+
+        let generateButton = app.buttons["Vorschau erstellen"]
+        for _ in 0..<6 where !generateButton.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(generateButton.waitForExistence(timeout: 5), "Tomorrow preview button not found")
+        generateButton.tap()
+
+        // Generation may take a while on-device; the fallback is instant.
+        let summary = app.staticTexts.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "Dein Ausblick auf morgen")
+        ).firstMatch
+        XCTAssertTrue(summary.waitForExistence(timeout: 45), "Tomorrow summary did not appear")
+        attachScreenshot(of: app, named: "03-TomorrowPreview")
+    }
+
     @MainActor
     private func attachScreenshot(of app: XCUIApplication, named name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())

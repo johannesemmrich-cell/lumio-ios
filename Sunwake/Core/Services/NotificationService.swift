@@ -18,13 +18,15 @@ final class NotificationService: @unchecked Sendable {
 
     // Schedule notifications — each weekday can have its own time.
     // dayTimes: [weekday: (hour, minute)], Calendar weekday: 1=Sun…7=Sat
-    func scheduleBriefings(dayTimes: [Int: (hour: Int, minute: Int)], previewText: String) async {
+    // language: the in-app language choice — String(localized:) would follow
+    // the device language instead and mismatch the rest of the app.
+    func scheduleBriefings(dayTimes: [Int: (hour: Int, minute: Int)], previewText: String, language: String) async {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
         guard !dayTimes.isEmpty else { return }
 
         let content = UNMutableNotificationContent()
-        content.title = String(localized: "Good morning ☀️")
+        content.title = language == "de" ? "Guten Morgen ☀️" : "Good morning ☀️"
         content.body = previewText
         content.sound = .default
         content.categoryIdentifier = "DAILY_BRIEFING"
@@ -46,20 +48,12 @@ final class NotificationService: @unchecked Sendable {
         }
     }
 
-    // Legacy — kept for callers that haven't migrated yet
-    func scheduleBriefings(days: Set<Int>, hour: Int, minute: Int, previewText: String) async {
-        let times = Dictionary(uniqueKeysWithValues: days.map { ($0, (hour: hour, minute: minute)) })
-        await scheduleBriefings(dayTimes: times, previewText: previewText)
-    }
-
-    func scheduleDailyBriefing(at hour: Int, minute: Int, previewText: String) async {
-        await scheduleBriefings(days: Set(2...6), hour: hour, minute: minute, previewText: previewText)
-    }
-
-    func buildPreviewText(from events: [CalendarEvent]) -> String {
+    func buildPreviewText(from events: [CalendarEvent], language: String) -> String {
         let topEvents = events.prefix(3)
         if topEvents.isEmpty {
-            return String(localized: "No events today — tap for your full briefing.")
+            return language == "de"
+                ? "Heute keine Termine — tippe für dein volles Briefing."
+                : "No events today — tap for your full briefing."
         }
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"

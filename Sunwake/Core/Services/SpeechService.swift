@@ -13,7 +13,12 @@ final class SpeechService: NSObject, ObservableObject {
     @Published private(set) var currentIndex: Int = 0
 
     private let synthesizer = AVSpeechSynthesizer()
-    private var currentUtterance: AVSpeechUtterance?
+    // The current item is spoken as one utterance per sentence (with a short
+    // pause between them — sounds far less rushed than one long utterance).
+    // Track the last utterance to know when the item is done, and each
+    // utterance's character offset to report progress across the whole item.
+    private var itemUtterances: [AVSpeechUtterance] = []
+    private var utteranceProgressBase: [ObjectIdentifier: (offset: Int, total: Int)] = [:]
     private var lastProgressUpdate: Double = -1
     private let liveActivityService = LiveActivityService()
     private var currentAccentColorHex: String = "FF9500"
@@ -121,15 +126,41 @@ final class SpeechService: NSObject, ObservableObject {
 
         try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
 
-        let utterance = AVSpeechUtterance(string: item.text)
-        utterance.voice = bestVoice(for: item.language)
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        utterance.volume = 1.0
-        currentUtterance = utterance
-        synthesizer.speak(utterance)
+        let voice = bestVoice(for: item.language)
+        let sentences = Self.sentenceChunks(item.text)
+        let totalCharacters = max(sentences.reduce(0) { $0 + $1.count }, 1)
+
+        itemUtterances = []
+        utteranceProgressBase = [:]
+        var offset = 0
+        for (index, sentence) in sentences.enumerated() {
+            let utterance = AVSpeechUtterance(string: sentence)
+            utterance.voice = voice
+            utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+            utterance.volume = 1.0
+            // Breathing pause between sentences; none after the last one so
+            // the next queue item follows without a double gap.
+            utterance.postUtteranceDelay = index == sentences.count - 1 ? 0 : 0.15
+            utteranceProgressBase[ObjectIdentifier(utterance)] = (offset, totalCharacters)
+            itemUtterances.append(utterance)
+            offset += sentence.count
+            synthesizer.speak(utterance)
+        }
         isPlaying = true
         isPaused = false
         updateNowPlayingInfo()
+    }
+
+    /// Splits text into sentences so each becomes its own utterance.
+    /// Falls back to the whole text if sentence enumeration finds nothing.
+    static func sentenceChunks(_ text: String) -> [String] {
+        var chunks: [String] = []
+        text.enumerateSubstrings(in: text.startIndex..., options: .bySentences) { substring, _, _, _ in
+            if let s = substring?.trimmingCharacters(in: .whitespacesAndNewlines), !s.isEmpty {
+                chunks.append(s)
+            }
+        }
+        return chunks.isEmpty ? [text] : chunks
     }
 
     private func bestVoice(for languageCode: String) -> AVSpeechSynthesisVoice? {
@@ -226,8 +257,14 @@ final class SpeechService: NSObject, ObservableObject {
 
 extension SpeechService: AVSpeechSynthesizerDelegate {
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        // AVSpeechUtterance is not Sendable — only its identity crosses into
+        // the MainActor task.
+        let utteranceID = ObjectIdentifier(utterance)
         Task { @MainActor [weak self] in
             guard let self else { return }
+            // Items are spoken as several sentence utterances — only the last
+            // one finishing means the item is done.
+            guard let last = self.itemUtterances.last, ObjectIdentifier(last) == utteranceID else { return }
             if self.currentIndex + 1 < self.queue.count {
                 self.currentIndex += 1
                 self.speakCurrent()
@@ -250,11 +287,12 @@ extension SpeechService: AVSpeechSynthesizerDelegate {
     }
 
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, willSpeakRangeOfSpeechString characterRange: NSRange, utterance: AVSpeechUtterance) {
-        let total = Double(utterance.speechString.count)
-        guard total > 0 else { return }
-        let newProgress = Double(characterRange.location) / total
+        let utteranceID = ObjectIdentifier(utterance)
+        let location = characterRange.location
         Task { @MainActor [weak self] in
             guard let self else { return }
+            guard let base = self.utteranceProgressBase[utteranceID] else { return }
+            let newProgress = Double(base.offset + location) / Double(base.total)
             guard abs(newProgress - self.lastProgressUpdate) >= 0.02 else { return }
             self.lastProgressUpdate = newProgress
             self.progress = newProgress

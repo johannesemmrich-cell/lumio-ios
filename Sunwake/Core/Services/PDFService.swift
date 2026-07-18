@@ -12,26 +12,34 @@ final class PDFService: ObservableObject {
     static let maxPagesPerPDFFree = 20
     static let documentsDirectory: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 
-    func importPDF(from url: URL, into folder: PDFFolder, isPremium: Bool) async throws -> PDFDocument {
+    // language: the in-app language choice — the thrown error messages must
+    // follow it, not the device language (String(localized:) would).
+    func importPDF(from url: URL, into folder: PDFFolder, isPremium: Bool, language: String) async throws -> PDFDocument {
         isProcessing = true
         defer { isProcessing = false }
 
+        let isDE = language == "de"
+
         guard url.startAccessingSecurityScopedResource() else {
-            throw PDFError.accessDenied
+            throw PDFError.accessDenied(isDE ? "Auf diese Datei kann nicht zugegriffen werden." : "Cannot access this file.")
         }
         defer { url.stopAccessingSecurityScopedResource() }
 
         if !isPremium && folder.documents.count >= Self.maxPDFsPerFolderFree {
-            throw PDFError.limitReached(String(localized: "Free plan allows up to 5 PDFs per folder. Upgrade to Premium for unlimited PDFs."))
+            throw PDFError.limitReached(isDE
+                ? "Der Free-Plan erlaubt bis zu 5 PDFs pro Ordner. Mit Premium gibt es keine Grenze."
+                : "Free plan allows up to 5 PDFs per folder. Upgrade to Premium for unlimited PDFs.")
         }
 
         guard let pdfDoc = PDFKit.PDFDocument(url: url) else {
-            throw PDFError.invalidFile
+            throw PDFError.invalidFile(isDE ? "Diese Datei ist kein gültiges PDF." : "This file is not a valid PDF.")
         }
 
         let pageCount = pdfDoc.pageCount
         if !isPremium && pageCount > Self.maxPagesPerPDFFree {
-            throw PDFError.limitReached(String(localized: "Free plan allows PDFs up to 20 pages. Upgrade to Premium for unlimited pages."))
+            throw PDFError.limitReached(isDE
+                ? "Der Free-Plan erlaubt PDFs bis 20 Seiten. Mit Premium gibt es keine Grenze."
+                : "Free plan allows PDFs up to 20 pages. Upgrade to Premium for unlimited pages.")
         }
 
         let filename = "\(UUID().uuidString).pdf"
@@ -75,16 +83,17 @@ final class PDFService: ObservableObject {
     }
 }
 
+// Each case carries its already-localized message, built at the throw site
+// where the app language is known.
 enum PDFError: LocalizedError {
-    case accessDenied
-    case invalidFile
+    case accessDenied(String)
+    case invalidFile(String)
     case limitReached(String)
 
     var errorDescription: String? {
         switch self {
-        case .accessDenied: return String(localized: "Cannot access this file.")
-        case .invalidFile: return String(localized: "This file is not a valid PDF.")
-        case .limitReached(let msg): return msg
+        case .accessDenied(let msg), .invalidFile(let msg), .limitReached(let msg):
+            return msg
         }
     }
 }

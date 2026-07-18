@@ -194,7 +194,7 @@ final class CalendarService: ObservableObject {
                             let dueTomorrow = dueDate.map { $0 >= startOfTomorrow && $0 < startOfDayAfterTomorrow } ?? false
                             return ReminderItem(
                                 id: r.calendarItemIdentifier,
-                                title: r.title ?? "Erinnerung",
+                                title: r.title ?? "—",
                                 dueDate: dueDate,
                                 isDueTomorrow: dueTomorrow,
                                 priority: r.priority,
@@ -230,9 +230,11 @@ final class CalendarService: ObservableObject {
             .map { CalendarEvent(from: $0) }
     }
 
-    func addEvent(title: String, startDate: Date, endDate: Date, calendarIdentifier: String? = nil) async throws {
+    // language: the in-app language choice for error messages —
+    // String(localized:) would follow the device language instead.
+    func addEvent(title: String, startDate: Date, endDate: Date, calendarIdentifier: String? = nil, language: String = "en") async throws {
         guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else {
-            throw CalendarError.accessDenied
+            throw CalendarError.accessDenied(language: language)
         }
         let event = EKEvent(eventStore: store)
         event.title = title
@@ -247,28 +249,83 @@ final class CalendarService: ObservableObject {
         await fetchTodayEvents()
     }
 
-    func deleteEvent(identifier: String) async throws {
+    func deleteEvent(identifier: String, language: String = "en") async throws {
         guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else {
-            throw CalendarError.accessDenied
+            throw CalendarError.accessDenied(language: language)
         }
         guard let event = store.event(withIdentifier: identifier) else {
-            throw CalendarError.eventNotFound
+            throw CalendarError.eventNotFound(language: language)
         }
         try store.remove(event, span: .thisEvent)
         await fetchTodayEvents()
     }
 
-    func updateEvent(identifier: String, newStartDate: Date, newEndDate: Date) async throws {
+    func updateEvent(identifier: String, newStartDate: Date, newEndDate: Date, language: String = "en") async throws {
         guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else {
-            throw CalendarError.accessDenied
+            throw CalendarError.accessDenied(language: language)
         }
         guard let event = store.event(withIdentifier: identifier) else {
-            throw CalendarError.eventNotFound
+            throw CalendarError.eventNotFound(language: language)
         }
         event.startDate = newStartDate
         event.endDate = newEndDate
         try store.save(event, span: .thisEvent)
         await fetchTodayEvents()
+    }
+
+    /// Events on a given day, returned directly — unlike fetchEvents(for:)
+    /// this never touches the published todayEvents, so the tomorrow preview
+    /// can't clobber today's list.
+    func events(on date: Date) async -> [CalendarEvent] {
+        guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else { return [] }
+
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: date)
+        let end = calendar.date(byAdding: .day, value: 1, to: start) ?? start
+
+        let predicate = store.predicateForEvents(withStart: start, end: end, calendars: nil)
+        return store.events(matching: predicate)
+            .sorted { $0.startDate < $1.startDate }
+            .map { CalendarEvent(from: $0) }
+    }
+
+    /// Incomplete reminders due on a given day, returned directly.
+    func reminders(dueOn date: Date) async -> [ReminderItem] {
+        guard EKEventStore.authorizationStatus(for: .reminder) == .fullAccess else { return [] }
+
+        let cal = Calendar.current
+        let dayStart = cal.startOfDay(for: date)
+        let dayEnd = cal.date(byAdding: .day, value: 1, to: dayStart)!
+
+        let predicate = store.predicateForIncompleteReminders(
+            withDueDateStarting: dayStart,
+            ending: dayEnd,
+            calendars: nil
+        )
+
+        // Same main-thread rule as fetchTodayReminders: never touch EKReminder
+        // properties on the callback's background thread.
+        let excluded = ReminderExclusionStore.excludedIDs
+        return await withCheckedContinuation { (continuation: CheckedContinuation<[ReminderItem], Never>) in
+            store.fetchReminders(matching: predicate) { ekReminders in
+                DispatchQueue.main.async {
+                    let mapped = (ekReminders ?? [])
+                        .filter { !excluded.contains($0.calendar.calendarIdentifier) }
+                        .sorted { ($0.dueDateComponents?.date ?? .distantFuture) < ($1.dueDateComponents?.date ?? .distantFuture) }
+                        .map { r -> ReminderItem in
+                            ReminderItem(
+                                id: r.calendarItemIdentifier,
+                                title: r.title ?? "—",
+                                dueDate: r.dueDateComponents?.date,
+                                isDueTomorrow: false,
+                                priority: r.priority,
+                                notes: r.notes
+                            )
+                        }
+                    continuation.resume(returning: mapped)
+                }
+            }
+        }
     }
 
     func availableCalendars() -> [EKCalendar] {
@@ -281,13 +338,15 @@ final class CalendarService: ObservableObject {
 }
 
 enum CalendarError: LocalizedError {
-    case accessDenied
-    case eventNotFound
+    case accessDenied(language: String)
+    case eventNotFound(language: String)
 
     var errorDescription: String? {
         switch self {
-        case .accessDenied: return String(localized: "Calendar access is required.")
-        case .eventNotFound: return String(localized: "The event could not be found.")
+        case .accessDenied(let language):
+            return language == "de" ? "Kalenderzugriff wird benötigt." : "Calendar access is required."
+        case .eventNotFound(let language):
+            return language == "de" ? "Der Termin wurde nicht gefunden." : "The event could not be found."
         }
     }
 }
@@ -295,7 +354,7 @@ enum CalendarError: LocalizedError {
 private extension CalendarEvent {
     init(from event: EKEvent) {
         self.id = event.eventIdentifier ?? UUID().uuidString
-        self.title = event.title ?? String(localized: "Untitled Event")
+        self.title = event.title ?? "—"
         self.startDate = event.startDate
         self.endDate = event.endDate
         self.isAllDay = event.isAllDay

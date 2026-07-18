@@ -91,6 +91,102 @@ final class AIService: ObservableObject {
         return buildFallbackSummary(events: events, reminders: reminders, weather: weather, language: language)
     }
 
+    // MARK: — Tomorrow briefing (Premium preview)
+
+    func summarizeTomorrowBriefing(events: [CalendarEvent], reminders: [ReminderItem], weather: WeatherData?, language: String = "en", length: BriefingLength = .medium, style: BriefingStyle = .friendly) async -> String {
+        isGenerating = true
+        defer { isGenerating = false }
+
+        await checkCapability() // availability can change at runtime
+        if capabilityStatus == .available, #available(iOS 26.0, *) {
+            let prompt = buildTomorrowPrompt(events: events, reminders: reminders, weather: weather, language: language, length: length, style: style)
+            if let result = await runFoundationModelsPrompt(prompt) { return result }
+        }
+        return buildTomorrowFallback(events: events, reminders: reminders, weather: weather, language: language)
+    }
+
+    private func buildTomorrowPrompt(events: [CalendarEvent], reminders: [ReminderItem], weather: WeatherData?, language: String, length: BriefingLength, style: BriefingStyle) -> String {
+        let isDE = language == "de"
+        let fmt = DateFormatter()
+        fmt.dateFormat = "HH:mm"
+        let eventLines = events.map { "- \(fmt.string(from: $0.startDate)): \($0.title)" }.joined(separator: "\n")
+        let reminderLines = reminders.map { "- \($0.title)" }.joined(separator: "\n")
+
+        let weekday = Self.tomorrowWeekdayName(language: language)
+        let noEventsText = isDE ? "(keine Termine)" : "(no events)"
+        let noRemindersText = isDE ? "(keine Erinnerungen)" : "(no reminders)"
+        let langInstruction = isDE
+            ? "Antworte auf Deutsch. \(style == .formal ? "Sei sachlich und präzise." : style == .concise ? "Sei sehr knapp." : "Sei warm und motivierend.")"
+            : "Respond in English. \(style == .formal ? "Be professional and precise." : style == .concise ? "Be very brief." : "Be warm and encouraging.")"
+        // Pinned opener, same trick as the daily briefing — the small
+        // on-device model ignores softer greeting instructions.
+        let opener = isDE ? "Dein Ausblick auf morgen, \(weekday):" : "Your look ahead to tomorrow, \(weekday):"
+        let openerRule = isDE
+            ? "Beginne exakt mit \"\(opener)\" und verwende keine andere Einleitung. Sprich über MORGEN, nicht über heute."
+            : "Start exactly with \"\(opener)\" and use no other opener. Talk about TOMORROW, not today."
+        let plainTextRule = isDE
+            ? "Antworte ausschließlich als natürlicher Fließtext ohne Markdown, ohne Sternchen, ohne Überschriften."
+            : "Respond only as natural flowing text — no markdown, no asterisks, no headings."
+        let weatherSection = weather?.tomorrowSnippet(language: language).map { "\n\nTomorrow's weather forecast: \($0)" } ?? ""
+
+        return """
+        You are Sunwake, a calm and intelligent daily briefing assistant. Preview the user's day TOMORROW (\(weekday)).
+        \(openerRule)\(weatherSection)
+
+        Tomorrow's events (\(events.count) total):
+        \(eventLines.isEmpty ? noEventsText : eventLines)
+
+        Tomorrow's reminders (\(reminders.count) total):
+        \(reminderLines.isEmpty ? noRemindersText : reminderLines)
+
+        IMPORTANT: Mention EVERY event and EVERY reminder listed above — do not skip any. Do not invent items not listed.
+        \(langInstruction) Write \(length.maxSentences) sentence(s), but always include all events and reminders even if that requires more sentences.
+        \(plainTextRule)
+        """
+    }
+
+    func buildTomorrowFallback(events: [CalendarEvent], reminders: [ReminderItem], weather: WeatherData?, language: String) -> String {
+        let isDE = language == "de"
+        let fmt = DateFormatter()
+        fmt.dateFormat = "HH:mm"
+        let weekday = Self.tomorrowWeekdayName(language: language)
+
+        var parts: [String] = [isDE ? "Dein Ausblick auf morgen, \(weekday):" : "Your look ahead to tomorrow, \(weekday):"]
+
+        if let forecast = weather?.tomorrowSnippet(language: language) {
+            parts.append(isDE ? "Wetter: \(forecast)." : "Weather: \(forecast).")
+        }
+
+        if events.isEmpty && reminders.isEmpty {
+            parts.append(isDE
+                ? "Keine Termine oder Erinnerungen — ein freier Tag liegt vor dir."
+                : "No events or reminders — a clear day is ahead of you.")
+        } else {
+            if !events.isEmpty {
+                let eventList = events.map { "\($0.title) \(isDE ? "um" : "at") \(fmt.string(from: $0.startDate))" }.joined(separator: ", ")
+                parts.append(isDE
+                    ? (events.count == 1 ? "Ein Termin: \(eventList)." : "\(events.count) Termine: \(eventList).")
+                    : (events.count == 1 ? "One event: \(eventList)." : "\(events.count) events: \(eventList)."))
+            }
+            if !reminders.isEmpty {
+                let reminderList = reminders.map(\.title).joined(separator: ", ")
+                parts.append(isDE
+                    ? (reminders.count == 1 ? "Erinnerung: \(reminderList)." : "\(reminders.count) Erinnerungen: \(reminderList).")
+                    : (reminders.count == 1 ? "Reminder: \(reminderList)." : "\(reminders.count) reminders: \(reminderList)."))
+            }
+        }
+
+        return parts.joined(separator: " ")
+    }
+
+    private static func tomorrowWeekdayName(language: String) -> String {
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+        let fmt = DateFormatter()
+        fmt.locale = Locale(identifier: language == "de" ? "de_DE" : "en_US")
+        fmt.dateFormat = "EEEE"
+        return fmt.string(from: tomorrow)
+    }
+
     // MARK: — Chat answer
 
     func answerQuestion(_ question: String, context: BriefingContext, language: String = "en") async -> String {
@@ -105,8 +201,8 @@ final class AIService: ObservableObject {
                     : "Das KI-Modell wird noch vorbereitet. Bitte versuche es gleich erneut."
             }
             return capabilityStatus == .deviceNotSupported
-                ? String(localized: "AI chat requires an iPhone 15 Pro or newer. Your calendar and PDF features still work perfectly.")
-                : String(localized: "The AI model is getting ready. Try again in a moment.")
+                ? "AI chat requires an iPhone 15 Pro or newer. Your calendar and PDF features still work perfectly."
+                : "The AI model is getting ready. Try again in a moment."
         }
 
         if #available(iOS 26.0, *) {
@@ -267,7 +363,7 @@ final class AIService: ObservableObject {
             ? "Antworte ausschließlich als natürlicher Fließtext ohne Markdown, ohne Sternchen, ohne Überschriften."
             : "Respond only as natural flowing text — no markdown, no asterisks, no headings."
 
-        let weatherSection = weather.map { "\n\nWeather: \($0.briefingSnippet)" } ?? ""
+        let weatherSection = weather.map { "\n\nWeather: \($0.briefingSnippet(language: language))" } ?? ""
 
         let eventCount = events.count
         let reminderCount = reminders.count
@@ -321,11 +417,7 @@ final class AIService: ObservableObject {
         var parts: [String] = []
 
         if let w = weather {
-            if language == "de" {
-                parts.append("\(w.conditionLabel), \(Int(w.temperatureCurrent.rounded()))°C.")
-            } else {
-                parts.append("\(w.conditionLabel), \(Int(w.temperatureCurrent.rounded()))°C.")
-            }
+            parts.append("\(w.conditionLabel(language: language)), \(Int(w.temperatureCurrent.rounded()))°C.")
         }
 
         if language == "de" {
@@ -347,12 +439,12 @@ final class AIService: ObservableObject {
             }
         } else {
             if events.isEmpty && reminders.isEmpty {
-                parts.append(String(localized: "You have a clear day today. Enjoy the focus time."))
+                parts.append("You have a clear day today. Enjoy the focus time.")
             } else {
                 if !events.isEmpty {
                     let eventList = events.map { "\($0.title) at \(fmt.string(from: $0.startDate))" }.joined(separator: ", ")
                     parts.append(events.count == 1
-                        ? String(localized: "\(events[0].title) at \(fmt.string(from: events[0].startDate)) — that's your only event today.")
+                        ? "\(events[0].title) at \(fmt.string(from: events[0].startDate)) — that's your only event today."
                         : "\(events.count) events today: \(eventList).")
                 }
                 if !reminders.isEmpty {
@@ -381,13 +473,13 @@ final class AIService: ObservableObject {
                 return busy.isEmpty ? "Du hast heute den ganzen Tag frei." : "Du bist beschäftigt um: \(busy)"
             }
             return busy.isEmpty
-                ? String(localized: "You're free all day today.")
-                : String(localized: "You're busy at: \(busy)")
+                ? "You're free all day today."
+                : "You're busy at: \(busy)"
         }
         if language == "de" {
             return "Ich kann dir bei Fragen zu deinem Kalender und deinen Notizen helfen. Zum Beispiel: \"Was habe ich heute?\" oder \"Bin ich um 15 Uhr frei?\""
         }
-        return String(localized: "I can help you with questions about your calendar and lecture notes. For example: \"What do I have today?\" or \"Am I free at 3pm?\"")
+        return "I can help you with questions about your calendar and lecture notes. For example: \"What do I have today?\" or \"Am I free at 3pm?\""
     }
 }
 

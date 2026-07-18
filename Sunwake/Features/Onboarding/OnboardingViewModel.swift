@@ -34,7 +34,11 @@ final class OnboardingViewModel: ObservableObject {
         let granted = await calendarService.requestAccess()
         calendarConnected = granted
         if granted { advance() }
-        else { errorMessage = String(localized: "Calendar access was denied. You can change this in Settings.") }
+        else {
+            errorMessage = selectedLanguage == "de"
+                ? "Kalenderzugriff wurde abgelehnt. Du kannst das in den Einstellungen ändern."
+                : "Calendar access was denied. You can change this in Settings."
+        }
     }
 
     func requestNotifications() async {

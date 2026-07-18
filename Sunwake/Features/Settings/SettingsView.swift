@@ -136,6 +136,7 @@ struct SettingsView: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .sunwakeTabBackground()
             .tint(appState.accentColor)
             .toolbar {
                 if appState.isDeveloperModeActive {

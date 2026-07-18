@@ -53,6 +53,7 @@ struct ChatView: View {
                 Task { await viewModel.sendMessage() }
             }
         }
+        .sunwakeTabBackground()
         .navigationTitle("Chat")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {

@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 private struct SlotID: Identifiable { let id: Int }
 
@@ -51,6 +52,7 @@ struct AppLayoutConfigView: View {
     @State private var topSlot1: TopBarAction = .refresh
     @State private var editingTopSlot: SlotID? = nil
     @State private var showResetConfirmation = false
+    @State private var backgroundPickerItem: PhotosPickerItem? = nil
 
     /// Picks the German or English string based on the app language.
     private func loc(_ de: String, _ en: String) -> String {
@@ -62,6 +64,7 @@ struct AppLayoutConfigView: View {
             VStack(spacing: 28) {
                 phonePreview
                 accentColorSection
+                backgroundImageSection
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 24)
@@ -278,6 +281,86 @@ struct AppLayoutConfigView: View {
         VStack(alignment: .leading, spacing: 10) {
             sectionHeader(loc("Akzentfarbe", "Accent color"), icon: "paintpalette.fill")
             ColorPaletteGrid(selectedHex: $appState.accentColorHex)
+        }
+    }
+
+    // MARK: — Tab background image
+
+    private var backgroundImageSection: some View {
+        // Hoisted out of the PhotosPicker label closures — they are not
+        // MainActor-isolated, so touching loc()/appState inside them warns.
+        let changeLabel = loc("Foto ändern", "Change photo")
+        let chooseLabel = loc("Foto auswählen", "Choose photo")
+        let accent = appState.accentColor
+
+        return VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(loc("Hintergrundbild", "Background image"), icon: "photo.fill")
+
+            VStack(spacing: 14) {
+                if let image = appState.tabBackgroundImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 130)
+                        .frame(maxWidth: .infinity)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+                    HStack(spacing: 12) {
+                        PhotosPicker(selection: $backgroundPickerItem, matching: .images) {
+                            Label(changeLabel, systemImage: "photo.on.rectangle")
+                                .font(SunwakeTypography.callout.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button(role: .destructive) {
+                            HapticFeedback.impact(.light)
+                            appState.removeTabBackground()
+                        } label: {
+                            Label(loc("Entfernen", "Remove"), systemImage: "trash")
+                                .font(SunwakeTypography.callout.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                } else {
+                    PhotosPicker(selection: $backgroundPickerItem, matching: .images) {
+                        VStack(spacing: 8) {
+                            Image(systemName: "photo.badge.plus")
+                                .font(.title2)
+                                .foregroundStyle(accent)
+                            Text(chooseLabel)
+                                .font(SunwakeTypography.callout.weight(.semibold))
+                                .foregroundStyle(.primary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 24)
+                    }
+                }
+
+                Text(loc(
+                    "Dein Foto erscheint dezent hinter dem Inhalt aller Tabs.",
+                    "Your photo appears subtly behind the content of every tab."
+                ))
+                .font(SunwakeTypography.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(Color(uiColor: .secondarySystemBackground))
+            )
+        }
+        .onChange(of: backgroundPickerItem) { _, item in
+            guard let item else { return }
+            Task {
+                if let data = try? await item.loadTransferable(type: Data.self) {
+                    appState.setTabBackground(imageData: data)
+                    HapticFeedback.success()
+                }
+                backgroundPickerItem = nil
+            }
         }
     }
 

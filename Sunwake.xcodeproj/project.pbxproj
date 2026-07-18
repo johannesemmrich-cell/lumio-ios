@@ -48,6 +48,7 @@
 		CE3C09E7D5FD7938F4693822 /* OnboardingStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E5CFF71EBAD922400A6099 /* OnboardingStepView.swift */; };
 		D1FD9B345A698DF2CDB9E7D9 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E47F3A382C158FD75DB93B2 /* MainTabView.swift */; };
 		D26754C08E6AC5735AB4D4CB /* SwiftDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2699366BDC0C119E265FCEF3 /* SwiftDataModels.swift */; };
+		D3FB6CF5B74F07182F4A32ED /* TabBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81BD66C7FF4C43B3D10C6CF /* TabBackground.swift */; };
 		D59B3ECA30D1BEC6249C6EBF /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128ED1902A4F4F6B2198EC04 /* LibraryView.swift */; };
 		DF41F752375425F9EFA3CB55 /* SunwakeDynamicIslandBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB52FBE1BE46700CE4B08975 /* SunwakeDynamicIslandBundle.swift */; };
 		E0B3C98AE826E9E0584BA5FD /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB0C81EA30D74676F83F10D /* ChatViewModel.swift */; };
@@ -152,6 +153,7 @@
 		D3193FCF15E059D3C20CB7F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D418596DD3A14F652C9B533C /* SunwakeUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SunwakeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB4DB59F3B20D8C6849CC3D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		E81BD66C7FF4C43B3D10C6CF /* TabBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBackground.swift; sourceTree = "<group>"; };
 		EB52FBE1BE46700CE4B08975 /* SunwakeDynamicIslandBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunwakeDynamicIslandBundle.swift; sourceTree = "<group>"; };
 		EFB0C81EA30D74676F83F10D /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		F23AF8694D90A93CBD730A9C /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
@@ -372,6 +374,7 @@
 		E3D21356CD3A04CF87A36CE9 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				E81BD66C7FF4C43B3D10C6CF /* TabBackground.swift */,
 				3614B113A1519BC13584C2A1 /* ThemeManager.swift */,
 			);
 			path = Theme;
@@ -613,6 +616,7 @@
 				1AF73843DBBBF614E5BA092F /* SubscriptionManager.swift in Sources */,
 				1FE44125E31586252A19A0E3 /* SunwakeApp.swift in Sources */,
 				D26754C08E6AC5735AB4D4CB /* SwiftDataModels.swift in Sources */,
+				D3FB6CF5B74F07182F4A32ED /* TabBackground.swift in Sources */,
 				CA81B6D8F796A16D95D46B32 /* TabOrderView.swift in Sources */,
 				1018C1926D051530E512CAC6 /* ThemeManager.swift in Sources */,
 				0D5CE697E7264DE82710B3FE /* TodayView.swift in Sources */,

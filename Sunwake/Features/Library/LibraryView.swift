@@ -40,6 +40,7 @@ struct LibraryView: View {
                     .listStyle(.insetGrouped)
                 }
             }
+            .sunwakeTabBackground()
             .navigationTitle("Library")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -203,7 +204,8 @@ struct FolderDetailView: View {
             let doc = try await pdfService.importPDF(
                 from: url,
                 into: folder,
-                isPremium: subscriptionManager.effectivelyPremium
+                isPremium: subscriptionManager.effectivelyPremium,
+                language: appState.selectedLanguage
             )
             HapticFeedback.success()
             folder.documents.append(doc)

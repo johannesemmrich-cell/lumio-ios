@@ -29,9 +29,9 @@ enum BriefingNarrator {
         if let w = weather {
             let temp = Int(w.temperatureCurrent.rounded())
             if isDE {
-                parts.append("Das Wetter heute: \(w.conditionLabel), \(temp) Grad.")
+                parts.append("Das Wetter heute: \(w.conditionLabel(language: language)), \(temp) Grad.")
             } else {
-                parts.append("Today's weather: \(w.conditionLabel), \(temp) degrees.")
+                parts.append("Today's weather: \(w.conditionLabel(language: language)), \(temp) degrees.")
             }
         }
 

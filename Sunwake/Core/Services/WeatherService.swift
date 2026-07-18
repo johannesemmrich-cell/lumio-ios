@@ -10,28 +10,38 @@ struct WeatherData {
     let windSpeed: Double
     let precipitation: Double
     let fetchedAt: Date
+    // Day-2 forecast (nil if the API response only covered today) —
+    // used by the premium "tomorrow briefing" preview.
+    let tomorrowMax: Double?
+    let tomorrowMin: Double?
+    let tomorrowCode: Int?
 
-    var conditionLabel: String {
-        switch weatherCode {
-        case 0:           return "Klarer Himmel"
-        case 1:           return "Überwiegend klar"
-        case 2:           return "Teils bewölkt"
-        case 3:           return "Bewölkt"
-        case 45, 48:      return "Nebel"
-        case 51, 53, 55:  return "Nieselregen"
-        case 61, 63, 65:  return "Regen"
-        case 71, 73, 75:  return "Schneefall"
-        case 77:          return "Schneegriesel"
-        case 80, 81, 82:  return "Regenschauer"
-        case 85, 86:      return "Schneeschauer"
-        case 95:          return "Gewitter"
-        case 96, 99:      return "Gewitter mit Hagel"
-        default:          return "Unbekannt"
+    static func conditionLabel(for code: Int, language: String) -> String {
+        let isDE = language == "de"
+        switch code {
+        case 0:           return isDE ? "Klarer Himmel" : "Clear sky"
+        case 1:           return isDE ? "Überwiegend klar" : "Mostly clear"
+        case 2:           return isDE ? "Teils bewölkt" : "Partly cloudy"
+        case 3:           return isDE ? "Bewölkt" : "Overcast"
+        case 45, 48:      return isDE ? "Nebel" : "Fog"
+        case 51, 53, 55:  return isDE ? "Nieselregen" : "Drizzle"
+        case 61, 63, 65:  return isDE ? "Regen" : "Rain"
+        case 71, 73, 75:  return isDE ? "Schneefall" : "Snow"
+        case 77:          return isDE ? "Schneegriesel" : "Snow grains"
+        case 80, 81, 82:  return isDE ? "Regenschauer" : "Rain showers"
+        case 85, 86:      return isDE ? "Schneeschauer" : "Snow showers"
+        case 95:          return isDE ? "Gewitter" : "Thunderstorm"
+        case 96, 99:      return isDE ? "Gewitter mit Hagel" : "Thunderstorm with hail"
+        default:          return isDE ? "Unbekannt" : "Unknown"
         }
     }
 
-    var sfSymbol: String {
-        switch weatherCode {
+    func conditionLabel(language: String) -> String {
+        Self.conditionLabel(for: weatherCode, language: language)
+    }
+
+    static func sfSymbol(for code: Int) -> String {
+        switch code {
         case 0:           return "sun.max.fill"
         case 1, 2:        return "cloud.sun.fill"
         case 3:           return "cloud.fill"
@@ -47,11 +57,23 @@ struct WeatherData {
         }
     }
 
-    var briefingSnippet: String {
+    var sfSymbol: String { Self.sfSymbol(for: weatherCode) }
+
+    func briefingSnippet(language: String) -> String {
         let temp = Int(temperatureCurrent.rounded())
         let high = Int(temperatureMax.rounded())
         let low = Int(temperatureMin.rounded())
-        return "\(conditionLabel), \(temp)°C (↑\(high)° ↓\(low)°)"
+        return "\(conditionLabel(language: language)), \(temp)°C (↑\(high)° ↓\(low)°)"
+    }
+
+    /// Forecast line for tomorrow, e.g. "Regen, 12° bis 18°" — nil if no day-2 data.
+    func tomorrowSnippet(language: String) -> String? {
+        guard let code = tomorrowCode, let max = tomorrowMax, let min = tomorrowMin else { return nil }
+        let condition = Self.conditionLabel(for: code, language: language)
+        let range = language == "de"
+            ? "\(Int(min.rounded()))° bis \(Int(max.rounded()))°"
+            : "\(Int(min.rounded()))° to \(Int(max.rounded()))°"
+        return "\(condition), \(range)"
     }
 }
 
@@ -155,7 +177,7 @@ final class WeatherService: NSObject, ObservableObject, CLLocationManagerDelegat
             .init(name: "current", value: "temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation"),
             .init(name: "daily", value: "temperature_2m_max,temperature_2m_min,weather_code"),
             .init(name: "timezone", value: "auto"),
-            .init(name: "forecast_days", value: "1"),
+            .init(name: "forecast_days", value: "2"),
         ]
 
         guard let url = comps.url else { return nil }
@@ -182,6 +204,7 @@ final class WeatherService: NSObject, ObservableObject, CLLocationManagerDelegat
         let precip   = (current["precipitation"] as? Double) ?? 0
         let maxTemps = (daily["temperature_2m_max"] as? [Double]) ?? []
         let minTemps = (daily["temperature_2m_min"] as? [Double]) ?? []
+        let dailyCodes = (daily["weather_code"] as? [Int]) ?? []
 
         return WeatherData(
             temperatureCurrent: temp,
@@ -191,7 +214,10 @@ final class WeatherService: NSObject, ObservableObject, CLLocationManagerDelegat
             weatherCode: code,
             windSpeed: wind,
             precipitation: precip,
-            fetchedAt: Date()
+            fetchedAt: Date(),
+            tomorrowMax: maxTemps.count > 1 ? maxTemps[1] : nil,
+            tomorrowMin: minTemps.count > 1 ? minTemps[1] : nil,
+            tomorrowCode: dailyCodes.count > 1 ? dailyCodes[1] : nil
         )
     }
 }

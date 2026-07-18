@@ -84,6 +84,7 @@ struct SunwakeCalendarView: View {
                 }
                 .animation(.easeInOut(duration: 0.18), value: viewModel.filteredEvents.map(\.id))
             }
+            .sunwakeTabBackground()
             .navigationTitle(loc("Kalender", "Calendar"))
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -699,7 +700,7 @@ struct EventDetailSheet: View {
                 Button(loc("Löschen", "Delete"), role: .destructive) {
                     HapticFeedback.impact(.medium)
                     Task {
-                        try? await calendarService.deleteEvent(identifier: event.id)
+                        try? await calendarService.deleteEvent(identifier: event.id, language: appState.selectedLanguage)
                         dismiss()
                     }
                 }
@@ -819,7 +820,8 @@ private struct RescheduleSheet: View {
                                 try await calendarService.updateEvent(
                                     identifier: event.id,
                                     newStartDate: newStart,
-                                    newEndDate: newEnd
+                                    newEndDate: newEnd,
+                                    language: appState.selectedLanguage
                                 )
                                 HapticFeedback.success()
                                 dismiss()
@@ -1194,7 +1196,7 @@ struct AddEventSheet: View {
         }
 
         do {
-            try await calendarService.addEvent(title: trimmed, startDate: start, endDate: end, calendarIdentifier: selectedCalendarID.isEmpty ? nil : selectedCalendarID)
+            try await calendarService.addEvent(title: trimmed, startDate: start, endDate: end, calendarIdentifier: selectedCalendarID.isEmpty ? nil : selectedCalendarID, language: appState.selectedLanguage)
             HapticFeedback.success()
             onSave()
             dismiss()
